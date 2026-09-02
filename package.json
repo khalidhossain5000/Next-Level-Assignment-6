@@ -1,0 +1,12 @@
+{
+  "name": "next-level-assignment-6",
+  "version": "1.0.0",
+  "description": "Next level assignment 6 Load Shedding and Power Management system",
+  "license": "ISC",
+  "author": "Md Khalid Hossain",
+  "type": "module",
+  "main": "server.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
