@@ -99,10 +99,9 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 		where: { email },
 	});
 
-	if (!isUserExist) throw new AppError(httpStatus.NOT_FOUND, "User not found with this email,Register again");
+	
 
-
-	if (isUserExist.emailVerified === true) throw new AppError(httpStatus.BAD_REQUEST, "User already verified,Please login now");
+	if (isUserExist && isUserExist.emailVerified === true) throw new AppError(httpStatus.BAD_REQUEST, "User already verified,Please login now");
 
 	if (isUserExist?.status === "BAN") throw new AppError(httpStatus.FORBIDDEN, "User is banned,Please contact support for more information");
 
@@ -147,10 +146,11 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 				}
 			})
 		}
-		redisClient.del(userRegisterKey);
+	
 
 		return user
 	})
+		await redisClient.del(userRegisterKey);
 	//user created in db now generate access and refresh token with jwt
 	const jwtPayload = {
 		userId: createdUser.id,
