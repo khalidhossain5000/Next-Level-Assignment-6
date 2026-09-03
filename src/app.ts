@@ -1,7 +1,9 @@
 import express, { type Application, type Request, type Response } from "express";
 import cors from "cors";
-import config from "./config";
 import cookieParser from "cookie-parser";
+import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
+import { notFound } from "./app/middlewares/notFound";
+import config from "./app/config";
 const app: Application = express();
 
 //cors setup
@@ -21,5 +23,16 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
 });
+
+
+
+
+app.use(globalErrorHandler);
+app.use(notFound);
+
+
+
+
+
 
 export default app;
