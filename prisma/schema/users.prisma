@@ -6,7 +6,7 @@ model User {
   role              Role               @default(CUSTOMER)
   emailVerified     Boolean            @default(false)
   status            UserStatus         @default(ACTIVE)
-
+  password          String
   technicianProfile TechnicianProfile?
 
   createdAt         DateTime           @default(now())

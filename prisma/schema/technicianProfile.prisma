@@ -1,6 +1,6 @@
 model TechnicianProfile {
   id           String           @id @default(uuid())
-  expertise    String[]
+  expertise    String[]         @default([])
   experience   Int              @default(0)
   availability TechnicianStatus @default(AVAILABLE)
 

@@ -1,4 +1,4 @@
-import { Role, UserStatus } from "../../../generated/prisma/enums";
+import type { Role, UserStatus } from "../../../generated/prisma/enums";
 
 export interface IRegisterUser {
     name:string;
@@ -7,4 +7,11 @@ export interface IRegisterUser {
     role:Role;
     status:UserStatus;
     profileImage?:string;
+}
+
+
+
+export interface IVerifyEmailPayload{
+    email:string;
+    otp:string
 }
