@@ -55,6 +55,8 @@ const registerUserInDb = async (payload: IRegisterUser) => {
 
     //redis store end
 
+    //send email fuunc logic over here
+
 }
 
 
