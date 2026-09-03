@@ -1,0 +1,6 @@
+-- AlterEnum
+ALTER TYPE "Role" ADD VALUE 'ADMIN';
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "role" SET DEFAULT 'CUSTOMER';

@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.10.0",
   "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
   "activeProvider": "postgresql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n",
+  "inlineSchema": "enum Role {\n  CUSTOMER\n  TECHNICIAN\n  ADMIN\n}\n\nenum TechnicianStatus {\n  AVAILABLE\n  UNAVAILABLE\n}\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel TechnicianProfile {\n  id           String           @id @default(uuid())\n  expertise    String[]\n  experience   Int              @default(0)\n  availability TechnicianStatus @default(AVAILABLE)\n\n  // Relation to User\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n}\n\nmodel User {\n  id                String             @id @default(uuid())\n  name              String\n  email             String             @unique\n  role              Role               @default(CUSTOMER)\n  emailVerified     Boolean            @default(false)\n  createdAt         DateTime           @default(now())\n  updatedAt         DateTime           @updatedAt\n  technicianProfile TechnicianProfile?\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -32,10 +32,10 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"TechnicianProfile\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expertise\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"experience\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"availability\",\"kind\":\"enum\",\"type\":\"TechnicianStatus\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TechnicianProfileToUser\"}],\"dbName\":null,\"schema\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"Role\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"technicianProfile\",\"kind\":\"object\",\"type\":\"TechnicianProfile\",\"relationName\":\"TechnicianProfileToUser\"}],\"dbName\":null,\"schema\":null}},\"enums\":{},\"types\":{}}")
 config.parameterizationSchema = {
-  strings: JSON.parse("[]"),
-  graph: "AAAA"
+  strings: JSON.parse("[\"where\",\"technicianProfile\",\"user\",\"TechnicianProfile.findUnique\",\"TechnicianProfile.findUniqueOrThrow\",\"orderBy\",\"cursor\",\"TechnicianProfile.findFirst\",\"TechnicianProfile.findFirstOrThrow\",\"TechnicianProfile.findMany\",\"data\",\"TechnicianProfile.createOne\",\"TechnicianProfile.createMany\",\"TechnicianProfile.createManyAndReturn\",\"TechnicianProfile.updateOne\",\"TechnicianProfile.updateMany\",\"TechnicianProfile.updateManyAndReturn\",\"create\",\"update\",\"TechnicianProfile.upsertOne\",\"TechnicianProfile.deleteOne\",\"TechnicianProfile.deleteMany\",\"having\",\"_count\",\"_avg\",\"_sum\",\"_min\",\"_max\",\"TechnicianProfile.groupBy\",\"TechnicianProfile.aggregate\",\"User.findUnique\",\"User.findUniqueOrThrow\",\"User.findFirst\",\"User.findFirstOrThrow\",\"User.findMany\",\"User.createOne\",\"User.createMany\",\"User.createManyAndReturn\",\"User.updateOne\",\"User.updateMany\",\"User.updateManyAndReturn\",\"User.upsertOne\",\"User.deleteOne\",\"User.deleteMany\",\"User.groupBy\",\"User.aggregate\",\"AND\",\"OR\",\"NOT\",\"id\",\"name\",\"email\",\"Role\",\"role\",\"emailVerified\",\"createdAt\",\"updatedAt\",\"equals\",\"in\",\"notIn\",\"lt\",\"lte\",\"gt\",\"gte\",\"not\",\"contains\",\"startsWith\",\"endsWith\",\"expertise\",\"experience\",\"TechnicianStatus\",\"availability\",\"userId\",\"has\",\"hasEvery\",\"hasSome\",\"is\",\"isNot\",\"connectOrCreate\",\"upsert\",\"disconnect\",\"delete\",\"connect\",\"set\",\"increment\",\"decrement\",\"multiply\",\"divide\",\"push\"]"),
+  graph: "cxMgCQIAAFMAIC4AAFAAMC8AAAMAEDAAAFAAMDEBAAAAAUQAAEkAIEUCAFEAIUcAAFJHIkgBAAAAAQEAAAABACAJAgAAUwAgLgAAUAAwLwAAAwAQMAAAUAAwMQEAQwAhRAAASQAgRQIAUQAhRwAAUkciSAEAQwAhAQAAAAMAIAEAAAABACABAgAAbgAgAwAAAAMAIAUAAAYAMAYAAAEAIAMAAAADACAFAAAGADAGAAABACADAAAAAwAgBQAABgAwBgAAAQAgBgIAAG0AIDEBAAAAAUQAAGQAIEUCAAAAAUcAAABHAkgBAAAAAQEKAAAKACAFMQEAAAABRAAAZAAgRQIAAAABRwAAAEcCSAEAAAABAQoAAAwAMAEKAAAMADAGAgAAbAAgMQEAVwAhRAAAYQAgRQIAYgAhRwAAY0ciSAEAVwAhAgAAAAEAIAoAAA8AIAUxAQBXACFEAABhACBFAgBiACFHAABjRyJIAQBXACECAAAAAwAgCgAAEQAgAgAAAAMAIAoAABEAIAMAAAABACARAAAKACASAAAPACABAAAAAQAgAQAAAAMAIAUXAABnACAYAABoACAZAABrACAaAABqACAbAABpACAILgAASAAwLwAAGAAQMAAASAAwMQEANQAhRAAASQAgRQIASgAhRwAAS0ciSAEANQAhAwAAAAMAIAUAABcAMBYAABgAIAMAAAADACAFAAAGADAGAAABACALAQAARwAgLgAAQgAwLwAAHgAQMAAAQgAwMQEAAAABMgEAQwAhMwEAAAABNQAARDUiNiAARQAhN0AARgAhOEAARgAhAQAAABsAIAEAAAAbACALAQAARwAgLgAAQgAwLwAAHgAQMAAAQgAwMQEAQwAhMgEAQwAhMwEAQwAhNQAARDUiNiAARQAhN0AARgAhOEAARgAhAQEAAGYAIAMAAAAeACAFAAAfADAGAAAbACADAAAAHgAgBQAAHwAwBgAAGwAgAwAAAB4AIAUAAB8AMAYAABsAIAgBAABlACAxAQAAAAEyAQAAAAEzAQAAAAE1AAAANQI2IAAAAAE3QAAAAAE4QAAAAAEBCgAAIwAgBzEBAAAAATIBAAAAATMBAAAAATUAAAA1AjYgAAAAATdAAAAAAThAAAAAAQEKAAAlADABCgAAJQAwCAEAAFsAIDEBAFcAITIBAFcAITMBAFcAITUAAFg1IjYgAFkAITdAAFoAIThAAFoAIQIAAAAbACAKAAAoACAHMQEAVwAhMgEAVwAhMwEAVwAhNQAAWDUiNiAAWQAhN0AAWgAhOEAAWgAhAgAAAB4AIAoAACoAIAIAAAAeACAKAAAqACADAAAAGwAgEQAAIwAgEgAAKAAgAQAAABsAIAEAAAAeACADFwAAVAAgGgAAVgAgGwAAVQAgCi4AADQAMC8AADEAEDAAADQAMDEBADUAITIBADUAITMBADUAITUAADY1IjYgADcAITdAADgAIThAADgAIQMAAAAeACAFAAAwADAWAAAxACADAAAAHgAgBQAAHwAwBgAAGwAgCi4AADQAMC8AADEAEDAAADQAMDEBADUAITIBADUAITMBADUAITUAADY1IjYgADcAITdAADgAIThAADgAIQ4XAAA6ACAaAABBACAbAABBACA5AQAAAAE6AQAAAAQ7AQAAAAQ8AQAAAAE9AQAAAAE-AQAAAAE_AQAAAAFAAQBAACFBAQAAAAFCAQAAAAFDAQAAAAEHFwAAOgAgGgAAPwAgGwAAPwAgOQAAADUCOgAAADUIOwAAADUIQAAAPjUiBRcAADoAIBoAAD0AIBsAAD0AIDkgAAAAAUAgADwAIQsXAAA6ACAaAAA7ACAbAAA7ACA5QAAAAAE6QAAAAAQ7QAAAAAQ8QAAAAAE9QAAAAAE-QAAAAAE_QAAAAAFAQAA5ACELFwAAOgAgGgAAOwAgGwAAOwAgOUAAAAABOkAAAAAEO0AAAAAEPEAAAAABPUAAAAABPkAAAAABP0AAAAABQEAAOQAhCDkCAAAAAToCAAAABDsCAAAABDwCAAAAAT0CAAAAAT4CAAAAAT8CAAAAAUACADoAIQg5QAAAAAE6QAAAAAQ7QAAAAAQ8QAAAAAE9QAAAAAE-QAAAAAE_QAAAAAFAQAA7ACEFFwAAOgAgGgAAPQAgGwAAPQAgOSAAAAABQCAAPAAhAjkgAAAAAUAgAD0AIQcXAAA6ACAaAAA_ACAbAAA_ACA5AAAANQI6AAAANQg7AAAANQhAAAA-NSIEOQAAADUCOgAAADUIOwAAADUIQAAAPzUiDhcAADoAIBoAAEEAIBsAAEEAIDkBAAAAAToBAAAABDsBAAAABDwBAAAAAT0BAAAAAT4BAAAAAT8BAAAAAUABAEAAIUEBAAAAAUIBAAAAAUMBAAAAAQs5AQAAAAE6AQAAAAQ7AQAAAAQ8AQAAAAE9AQAAAAE-AQAAAAE_AQAAAAFAAQBBACFBAQAAAAFCAQAAAAFDAQAAAAELAQAARwAgLgAAQgAwLwAAHgAQMAAAQgAwMQEAQwAhMgEAQwAhMwEAQwAhNQAARDUiNiAARQAhN0AARgAhOEAARgAhCzkBAAAAAToBAAAABDsBAAAABDwBAAAAAT0BAAAAAT4BAAAAAT8BAAAAAUABAEEAIUEBAAAAAUIBAAAAAUMBAAAAAQQ5AAAANQI6AAAANQg7AAAANQhAAAA_NSICOSAAAAABQCAAPQAhCDlAAAAAATpAAAAABDtAAAAABDxAAAAAAT1AAAAAAT5AAAAAAT9AAAAAAUBAADsAIQsCAABTACAuAABQADAvAAADABAwAABQADAxAQBDACFEAABJACBFAgBRACFHAABSRyJIAQBDACFMAAADACBNAAADACAILgAASAAwLwAAGAAQMAAASAAwMQEANQAhRAAASQAgRQIASgAhRwAAS0ciSAEANQAhBDkBAAAABUkBAAAAAUoBAAAABEsBAAAABA0XAAA6ACAYAABPACAZAAA6ACAaAAA6ACAbAAA6ACA5AgAAAAE6AgAAAAQ7AgAAAAQ8AgAAAAE9AgAAAAE-AgAAAAE_AgAAAAFAAgBOACEHFwAAOgAgGgAATQAgGwAATQAgOQAAAEcCOgAAAEcIOwAAAEcIQAAATEciBxcAADoAIBoAAE0AIBsAAE0AIDkAAABHAjoAAABHCDsAAABHCEAAAExHIgQ5AAAARwI6AAAARwg7AAAARwhAAABNRyINFwAAOgAgGAAATwAgGQAAOgAgGgAAOgAgGwAAOgAgOQIAAAABOgIAAAAEOwIAAAAEPAIAAAABPQIAAAABPgIAAAABPwIAAAABQAIATgAhCDkIAAAAAToIAAAABDsIAAAABDwIAAAAAT0IAAAAAT4IAAAAAT8IAAAAAUAIAE8AIQkCAABTACAuAABQADAvAAADABAwAABQADAxAQBDACFEAABJACBFAgBRACFHAABSRyJIAQBDACEIOQIAAAABOgIAAAAEOwIAAAAEPAIAAAABPQIAAAABPgIAAAABPwIAAAABQAIAOgAhBDkAAABHAjoAAABHCDsAAABHCEAAAE1HIg0BAABHACAuAABCADAvAAAeABAwAABCADAxAQBDACEyAQBDACEzAQBDACE1AABENSI2IABFACE3QABGACE4QABGACFMAAAeACBNAAAeACAAAAABUwEAAAABAVMAAAA1AgFTIAAAAAEBU0AAAAABBxEAAFwAIBIAAF8AIE4AAF0AIE8AAF4AIFAAAAMAIFEAAAMAIFIAAAEAIAQxAQAAAAFEAABkACBFAgAAAAFHAAAARwICAAAAAQAgEQAAXAAgAwAAAAMAIBEAAFwAIBIAAGAAIAYAAAADACAKAABgACAxAQBXACFEAABhACBFAgBiACFHAABjRyIEMQEAVwAhRAAAYQAgRQIAYgAhRwAAY0ciAlMBAAAABFgBAAAABQVTAgAAAAFUAgAAAAFVAgAAAAFWAgAAAAFXAgAAAAEBUwAAAEcCAVMBAAAABAMRAABcACBOAABdACBSAAABACABAgAAbgAgAAAAAAAFEQAAbwAgEgAAcgAgTgAAcAAgTwAAcQAgUgAAGwAgAxEAAG8AIE4AAHAAIFIAABsAIAEBAABmACAHMQEAAAABMgEAAAABMwEAAAABNQAAADUCNiAAAAABN0AAAAABOEAAAAABAgAAABsAIBEAAG8AIAMAAAAeACARAABvACASAABzACAJAAAAHgAgCgAAcwAgMQEAVwAhMgEAVwAhMwEAVwAhNQAAWDUiNiAAWQAhN0AAWgAhOEAAWgAhBzEBAFcAITIBAFcAITMBAFcAITUAAFg1IjYgAFkAITdAAFoAIThAAFoAIQECAAIBAQQBAAECAAIBAgACBRcABxgACBkACRoAChsACwAAAAAABRcABxgACBkACRoAChsACwAAAxcAEBoAERsAEgAAAAMXABAaABEbABIDAgEEBQEHBwEICAEJCQELCwEMDQMNDgQOEAEPEgMQEwUTFAEUFQEVFgMcGQYdGgweHAIfHQIgIAIhIQIiIgIjJAIkJgMlJw0mKQInKwMoLA4pLQIqLgIrLwMsMg8tMxM"
 }
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
@@ -70,8 +70,8 @@ export interface PrismaClientConstructor {
    * const prisma = new PrismaClient({
    *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
    * })
-   * // Fetch zero or more Users
-   * const users = await prisma.user.findMany()
+   * // Fetch zero or more TechnicianProfiles
+   * const technicianProfiles = await prisma.technicianProfile.findMany()
    * ```
    * 
    * Read more in our [docs](https://pris.ly/d/client).
@@ -94,8 +94,8 @@ export interface PrismaClientConstructor {
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more TechnicianProfiles
+ * const technicianProfiles = await prisma.technicianProfile.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -188,7 +188,25 @@ export interface PrismaClient<
     extArgs: ExtArgs
   }>>
 
-    
+      /**
+   * `prisma.technicianProfile`: Exposes CRUD operations for the **TechnicianProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TechnicianProfiles
+    * const technicianProfiles = await prisma.technicianProfile.findMany()
+    * ```
+    */
+  get technicianProfile(): Prisma.TechnicianProfileDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.user`: Exposes CRUD operations for the **User** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.user.findMany()
+    * ```
+    */
+  get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {
