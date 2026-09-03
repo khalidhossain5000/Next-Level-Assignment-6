@@ -11,3 +11,7 @@ enum TechnicianStatus {
   AVAILABLE
   UNAVAILABLE
 }
+enum AuthProvider {
+  GOOGLE
+  CREDENTIAL
+}

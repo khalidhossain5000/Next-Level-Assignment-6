@@ -32,3 +32,11 @@ export const TechnicianStatus = {
 } as const
 
 export type TechnicianStatus = (typeof TechnicianStatus)[keyof typeof TechnicianStatus]
+
+
+export const AuthProvider = {
+  GOOGLE: 'GOOGLE',
+  CREDENTIAL: 'CREDENTIAL'
+} as const
+
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]

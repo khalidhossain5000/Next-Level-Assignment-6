@@ -3,6 +3,10 @@ model User {
   name              String
   email             String             @unique
   profileImage      String?            @default("https://i.ibb.co.com/mrH7HCPN/default-profile.png")
+  profileImagePublicId String       @default("")
+  googleId             String?      @unique
+  authProvider         AuthProvider @default(CREDENTIAL)
+
   role              Role               @default(CUSTOMER)
   emailVerified     Boolean            @default(false)
   status            UserStatus         @default(ACTIVE)
