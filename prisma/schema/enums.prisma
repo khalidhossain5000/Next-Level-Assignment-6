@@ -3,7 +3,10 @@ enum Role {
   TECHNICIAN
   ADMIN
 }
-
+enum UserStatus {
+  ACTIVE
+  BAN
+}
 enum TechnicianStatus {
   AVAILABLE
   UNAVAILABLE
