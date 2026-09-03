@@ -7,6 +7,12 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis";
 import path from "path"
+import ejs from "ejs"
+import { transporter } from "../../lib/nodemailer";
+import config from "../../config";
+
+
+
 const registerUserInDb = async (payload: IRegisterUser) => {
     const { name, password, role } = payload
     const email = payload.email.trim().toLowerCase();
@@ -56,6 +62,35 @@ const registerUserInDb = async (payload: IRegisterUser) => {
     //redis store end
 
     //send email fuunc logic over here
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/verify-email.ejs",
+	);
+	const templateData = {
+		name,
+		otp: otpValue,
+		expirationTime: 10,
+	};
+
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: config.smtp_user,
+		to: email,
+		subject: "Email verification otp ",
+		html,
+	});
+
+
+
+
+
+
+
+
+
+
 
 }
 
