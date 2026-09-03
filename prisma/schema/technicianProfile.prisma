@@ -1,0 +1,10 @@
+model TechnicianProfile {
+  id           String           @id @default(uuid())
+  expertise    String[]
+  experience   Int              @default(0)
+  availability TechnicianStatus @default(AVAILABLE)
+
+  // Relation to User
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}

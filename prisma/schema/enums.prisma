@@ -1,0 +1,9 @@
+enum Role {
+  CUSTOMER
+  TECHNICIAN
+}
+
+enum TechnicianStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
