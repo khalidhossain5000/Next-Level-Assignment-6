@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { notFound } from "./app/middlewares/notFound";
 import config from "./app/config";
+import { AuthRoutes } from "./app/modules/auth/auth.route";
 const app: Application = express();
 
 //cors setup
@@ -19,10 +20,23 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
+
+
 //default get
 app.get("/", (req: Request, res: Response) => {
   res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
 });
+
+//auth related route set
+
+app.use("/api/v1/auth",AuthRoutes)
+
+
+
+
+
+
+
 
 
 
