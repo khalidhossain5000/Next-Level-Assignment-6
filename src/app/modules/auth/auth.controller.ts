@@ -31,7 +31,7 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 
 	const result = await authServices.verifyOtpAndCreateUser(payload)
 
-	const { accessToken, refreshToken, user, patient } = result;
+	const { accessToken, refreshToken, createdUser } = result;
 	//cookie set
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
@@ -49,10 +49,11 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 		statusCode: httpStatus.CREATED,
 		success: true,
 		message: "Patient registered successfully",
-		data: { accessToken, refreshToken, user, patient },
+		data: { accessToken, refreshToken, createdUser },
 	});
 });
 
 export const authController={
-    registerUser
+    registerUser,
+    verifyUserEmail
 }
