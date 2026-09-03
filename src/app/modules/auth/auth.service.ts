@@ -6,7 +6,7 @@ import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis";
-
+import path from "path"
 const registerUserInDb = async (payload: IRegisterUser) => {
     const { name, password, role } = payload
     const email = payload.email.trim().toLowerCase();

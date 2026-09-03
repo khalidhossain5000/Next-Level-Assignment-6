@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Verify Your Email</title>
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7f6;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #17211f;
+    }
+
+    .email-wrapper {
+      width: 100%;
+      padding: 40px 16px;
+    }
+
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #e4e9e7;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Header */
+    .header {
+      background-color: #0f766e;
+      padding: 28px 30px;
+      text-align: center;
+    }
+
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f59e0b;
+      font-size: 24px;
+    }
+
+    .brand-name {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-subtitle {
+      margin-top: 6px;
+      color: #d7fffa;
+      font-size: 13px;
+    }
+
+    /* Content */
+    .content {
+      padding: 38px 40px;
+    }
+
+    .greeting {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+
+    .message {
+      color: #5d6966;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* OTP */
+    .otp-section {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .otp-label {
+      color: #687572;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .otp {
+      display: inline-block;
+      padding: 15px 28px;
+      border-radius: 10px;
+      background-color: #f0fdfa;
+      border: 1px dashed #0f766e;
+      color: #0f766e;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      min-width: 190px;
+    }
+
+    .expiration {
+      margin-top: 14px;
+      color: #7a8582;
+      font-size: 13px;
+    }
+
+    .expiration strong {
+      color: #d97706;
+    }
+
+    /* Security notice */
+    .security-box {
+      margin-top: 30px;
+      padding: 16px;
+      border-radius: 9px;
+      background-color: #fffbeb;
+      border-left: 4px solid #f59e0b;
+    }
+
+    .security-title {
+      color: #92400e;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .security-text {
+      color: #785b2c;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 24px 30px;
+      text-align: center;
+      background-color: #f8faf9;
+      border-top: 1px solid #edf1ef;
+    }
+
+    .footer-text {
+      color: #7a8582;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-brand {
+      margin-top: 8px;
+      color: #0f766e;
+      font-weight: 600;
+    }
+
+    @media (max-width: 480px) {
+      .content {
+        padding: 30px 22px;
+      }
+
+      .header {
+        padding: 24px 20px;
+      }
+
+      .otp {
+        font-size: 27px;
+        letter-spacing: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-wrapper">
+    <div class="email-container">
+
+      <!-- Header -->
+      <div class="header">
+        <div class="logo-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+
+        <div class="brand-name">
+          Power Management System
+        </div>
+
+        <div class="brand-subtitle">
+          Load Shedding Schedule & Power Management
+        </div>
+        
+      </div>
+
+      <!-- Main Content -->
+      <div class="content">
+
+        <div class="greeting">
+          Hello <%= name %>,
+        </div>
+
+        <p class="message">
+          We received a request to verify your email address for your
+          Power Management System account.
+          Please use the verification code below to complete the process.
+        </p>
+
+        <!-- OTP -->
+        <div class="otp-section">
+
+          <div class="otp-label">
+            Email Verification Code
+          </div>
+
+          <div class="otp">
+            <%= otp %>
+          </div>
+
+          <div class="expiration">
+            This verification code will expire in
+            <strong><%= expirationTime %> minutes</strong>.
+          </div>
+
+        </div>
+
+        <!-- Security Notice -->
+        <div class="security-box">
+
+          <div class="security-title">
+            <i class="fa-solid fa-shield-halved"></i>
+            Security Notice
+          </div>
+
+          <div class="security-text">
+            Never share this verification code with anyone.
+            Our team will never ask you for your OTP or password.
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+
+        <div class="footer-text">
+          If you did not request this verification code,
+          you can safely ignore this email.
+        </div>
+
+        <div class="footer-brand">
+          Power Management System
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
+
