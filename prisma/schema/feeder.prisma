@@ -3,7 +3,7 @@ model Feeder {
     name          String
     code          String         @db.VarChar(10) @unique
     voltageLevel  String
-    status        ZoneStatus   @default(ACTIVE)
+    status        InfrastructureStatus   @default(ACTIVE)
 
     substationId  String
     substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id],onDelete: Cascade,onUpdate: Cascade)

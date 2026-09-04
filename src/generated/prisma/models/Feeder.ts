@@ -29,7 +29,7 @@ export type FeederMinAggregateOutputType = {
   name: string | null
   code: string | null
   voltageLevel: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   substationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -40,7 +40,7 @@ export type FeederMaxAggregateOutputType = {
   name: string | null
   code: string | null
   voltageLevel: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   substationId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -170,7 +170,7 @@ export type FeederGroupByOutputType = {
   name: string
   code: string
   voltageLevel: string
-  status: $Enums.ZoneStatus
+  status: $Enums.InfrastructureStatus
   substationId: string
   createdAt: Date
   updatedAt: Date
@@ -202,7 +202,7 @@ export type FeederWhereInput = {
   name?: Prisma.StringFilter<"Feeder"> | string
   code?: Prisma.StringFilter<"Feeder"> | string
   voltageLevel?: Prisma.StringFilter<"Feeder"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Feeder"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Feeder"> | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFilter<"Feeder"> | string
   createdAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
@@ -231,7 +231,7 @@ export type FeederWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.FeederWhereInput | Prisma.FeederWhereInput[]
   name?: Prisma.StringFilter<"Feeder"> | string
   voltageLevel?: Prisma.StringFilter<"Feeder"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Feeder"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Feeder"> | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFilter<"Feeder"> | string
   createdAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
@@ -261,7 +261,7 @@ export type FeederScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Feeder"> | string
   code?: Prisma.StringWithAggregatesFilter<"Feeder"> | string
   voltageLevel?: Prisma.StringWithAggregatesFilter<"Feeder"> | string
-  status?: Prisma.EnumZoneStatusWithAggregatesFilter<"Feeder"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusWithAggregatesFilter<"Feeder"> | $Enums.InfrastructureStatus
   substationId?: Prisma.StringWithAggregatesFilter<"Feeder"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Feeder"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Feeder"> | Date | string
@@ -272,7 +272,7 @@ export type FeederCreateInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   substation: Prisma.SubstationCreateNestedOneWithoutFeedersInput
@@ -284,7 +284,7 @@ export type FeederUncheckedCreateInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   substationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -296,7 +296,7 @@ export type FeederUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   substation?: Prisma.SubstationUpdateOneRequiredWithoutFeedersNestedInput
@@ -308,7 +308,7 @@ export type FeederUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -320,7 +320,7 @@ export type FeederCreateManyInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   substationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -331,7 +331,7 @@ export type FeederUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -341,7 +341,7 @@ export type FeederUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -456,7 +456,7 @@ export type FeederCreateWithoutAreasInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   substation: Prisma.SubstationCreateNestedOneWithoutFeedersInput
@@ -467,7 +467,7 @@ export type FeederUncheckedCreateWithoutAreasInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   substationId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -494,7 +494,7 @@ export type FeederUpdateWithoutAreasInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   substation?: Prisma.SubstationUpdateOneRequiredWithoutFeedersNestedInput
@@ -505,7 +505,7 @@ export type FeederUncheckedUpdateWithoutAreasInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -516,7 +516,7 @@ export type FeederCreateWithoutSubstationInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   areas?: Prisma.AreaCreateNestedManyWithoutFeederInput
@@ -527,7 +527,7 @@ export type FeederUncheckedCreateWithoutSubstationInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   areas?: Prisma.AreaUncheckedCreateNestedManyWithoutFeederInput
@@ -567,7 +567,7 @@ export type FeederScalarWhereInput = {
   name?: Prisma.StringFilter<"Feeder"> | string
   code?: Prisma.StringFilter<"Feeder"> | string
   voltageLevel?: Prisma.StringFilter<"Feeder"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Feeder"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Feeder"> | $Enums.InfrastructureStatus
   substationId?: Prisma.StringFilter<"Feeder"> | string
   createdAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
@@ -578,7 +578,7 @@ export type FeederCreateManySubstationInput = {
   name: string
   code: string
   voltageLevel: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -588,7 +588,7 @@ export type FeederUpdateWithoutSubstationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areas?: Prisma.AreaUpdateManyWithoutFeederNestedInput
@@ -599,7 +599,7 @@ export type FeederUncheckedUpdateWithoutSubstationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areas?: Prisma.AreaUncheckedUpdateManyWithoutFeederNestedInput
@@ -610,7 +610,7 @@ export type FeederUncheckedUpdateManyWithoutSubstationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   voltageLevel?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -719,7 +719,7 @@ export type $FeederPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     name: string
     code: string
     voltageLevel: string
-    status: $Enums.ZoneStatus
+    status: $Enums.InfrastructureStatus
     substationId: string
     createdAt: Date
     updatedAt: Date
@@ -1152,7 +1152,7 @@ export interface FeederFieldRefs {
   readonly name: Prisma.FieldRef<"Feeder", 'String'>
   readonly code: Prisma.FieldRef<"Feeder", 'String'>
   readonly voltageLevel: Prisma.FieldRef<"Feeder", 'String'>
-  readonly status: Prisma.FieldRef<"Feeder", 'ZoneStatus'>
+  readonly status: Prisma.FieldRef<"Feeder", 'InfrastructureStatus'>
   readonly substationId: Prisma.FieldRef<"Feeder", 'String'>
   readonly createdAt: Prisma.FieldRef<"Feeder", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Feeder", 'DateTime'>

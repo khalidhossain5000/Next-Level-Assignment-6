@@ -29,7 +29,7 @@ export type AreaMinAggregateOutputType = {
   name: string | null
   code: string | null
   address: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   feederId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -40,7 +40,7 @@ export type AreaMaxAggregateOutputType = {
   name: string | null
   code: string | null
   address: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   feederId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -170,7 +170,7 @@ export type AreaGroupByOutputType = {
   name: string
   code: string
   address: string
-  status: $Enums.ZoneStatus
+  status: $Enums.InfrastructureStatus
   feederId: string
   createdAt: Date
   updatedAt: Date
@@ -202,7 +202,7 @@ export type AreaWhereInput = {
   name?: Prisma.StringFilter<"Area"> | string
   code?: Prisma.StringFilter<"Area"> | string
   address?: Prisma.StringFilter<"Area"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Area"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Area"> | $Enums.InfrastructureStatus
   feederId?: Prisma.StringFilter<"Area"> | string
   createdAt?: Prisma.DateTimeFilter<"Area"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Area"> | Date | string
@@ -229,7 +229,7 @@ export type AreaWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AreaWhereInput | Prisma.AreaWhereInput[]
   name?: Prisma.StringFilter<"Area"> | string
   address?: Prisma.StringFilter<"Area"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Area"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Area"> | $Enums.InfrastructureStatus
   feederId?: Prisma.StringFilter<"Area"> | string
   createdAt?: Prisma.DateTimeFilter<"Area"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Area"> | Date | string
@@ -258,7 +258,7 @@ export type AreaScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Area"> | string
   code?: Prisma.StringWithAggregatesFilter<"Area"> | string
   address?: Prisma.StringWithAggregatesFilter<"Area"> | string
-  status?: Prisma.EnumZoneStatusWithAggregatesFilter<"Area"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusWithAggregatesFilter<"Area"> | $Enums.InfrastructureStatus
   feederId?: Prisma.StringWithAggregatesFilter<"Area"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Area"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Area"> | Date | string
@@ -269,7 +269,7 @@ export type AreaCreateInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
   feeder: Prisma.FeederCreateNestedOneWithoutAreasInput
@@ -280,7 +280,7 @@ export type AreaUncheckedCreateInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   feederId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -291,7 +291,7 @@ export type AreaUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   feeder?: Prisma.FeederUpdateOneRequiredWithoutAreasNestedInput
@@ -302,7 +302,7 @@ export type AreaUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   feederId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -313,7 +313,7 @@ export type AreaCreateManyInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   feederId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -324,7 +324,7 @@ export type AreaUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -334,7 +334,7 @@ export type AreaUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   feederId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -387,8 +387,8 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
-export type EnumZoneStatusFieldUpdateOperationsInput = {
-  set?: $Enums.ZoneStatus
+export type EnumInfrastructureStatusFieldUpdateOperationsInput = {
+  set?: $Enums.InfrastructureStatus
 }
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -442,7 +442,7 @@ export type AreaCreateWithoutFeederInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -452,7 +452,7 @@ export type AreaUncheckedCreateWithoutFeederInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -491,7 +491,7 @@ export type AreaScalarWhereInput = {
   name?: Prisma.StringFilter<"Area"> | string
   code?: Prisma.StringFilter<"Area"> | string
   address?: Prisma.StringFilter<"Area"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Area"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Area"> | $Enums.InfrastructureStatus
   feederId?: Prisma.StringFilter<"Area"> | string
   createdAt?: Prisma.DateTimeFilter<"Area"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Area"> | Date | string
@@ -502,7 +502,7 @@ export type AreaCreateManyFeederInput = {
   name: string
   code: string
   address: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -512,7 +512,7 @@ export type AreaUpdateWithoutFeederInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -522,7 +522,7 @@ export type AreaUncheckedUpdateWithoutFeederInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -532,7 +532,7 @@ export type AreaUncheckedUpdateManyWithoutFeederInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -607,7 +607,7 @@ export type $AreaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     code: string
     address: string
-    status: $Enums.ZoneStatus
+    status: $Enums.InfrastructureStatus
     feederId: string
     createdAt: Date
     updatedAt: Date
@@ -1039,7 +1039,7 @@ export interface AreaFieldRefs {
   readonly name: Prisma.FieldRef<"Area", 'String'>
   readonly code: Prisma.FieldRef<"Area", 'String'>
   readonly address: Prisma.FieldRef<"Area", 'String'>
-  readonly status: Prisma.FieldRef<"Area", 'ZoneStatus'>
+  readonly status: Prisma.FieldRef<"Area", 'InfrastructureStatus'>
   readonly feederId: Prisma.FieldRef<"Area", 'String'>
   readonly createdAt: Prisma.FieldRef<"Area", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Area", 'DateTime'>

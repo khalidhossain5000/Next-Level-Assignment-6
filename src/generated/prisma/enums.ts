@@ -51,9 +51,9 @@ export const TechnicianProfileStatus = {
 export type TechnicianProfileStatus = (typeof TechnicianProfileStatus)[keyof typeof TechnicianProfileStatus]
 
 
-export const ZoneStatus = {
+export const InfrastructureStatus = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE'
 } as const
 
-export type ZoneStatus = (typeof ZoneStatus)[keyof typeof ZoneStatus]
+export type InfrastructureStatus = (typeof InfrastructureStatus)[keyof typeof InfrastructureStatus]

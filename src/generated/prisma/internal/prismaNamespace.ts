@@ -1043,16 +1043,16 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'ZoneStatus'
+ * Reference to a field of type 'InfrastructureStatus'
  */
-export type EnumZoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ZoneStatus'>
+export type EnumInfrastructureStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InfrastructureStatus'>
     
 
 
 /**
- * Reference to a field of type 'ZoneStatus[]'
+ * Reference to a field of type 'InfrastructureStatus[]'
  */
-export type ListEnumZoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ZoneStatus[]'>
+export type ListEnumInfrastructureStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InfrastructureStatus[]'>
     
 
 

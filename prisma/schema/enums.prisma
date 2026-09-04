@@ -23,7 +23,9 @@ enum TechnicianProfileStatus {
   REJECTED
 }
 
-enum ZoneStatus {
+enum InfrastructureStatus {
   ACTIVE
   INACTIVE
 }
+
+

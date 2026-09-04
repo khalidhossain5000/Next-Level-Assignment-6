@@ -29,11 +29,11 @@ export type StringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
-export type EnumZoneStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.ZoneStatus | Prisma.EnumZoneStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel> | $Enums.ZoneStatus
+export type EnumInfrastructureStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InfrastructureStatus | Prisma.EnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel> | $Enums.InfrastructureStatus
 }
 
 export type DateTimeFilter<$PrismaModel = never> = {
@@ -65,14 +65,14 @@ export type StringWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedStringFilter<$PrismaModel>
 }
 
-export type EnumZoneStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ZoneStatus | Prisma.EnumZoneStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumZoneStatusWithAggregatesFilter<$PrismaModel> | $Enums.ZoneStatus
+export type EnumInfrastructureStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InfrastructureStatus | Prisma.EnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInfrastructureStatusWithAggregatesFilter<$PrismaModel> | $Enums.InfrastructureStatus
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel>
 }
 
 export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -266,11 +266,11 @@ export type NestedStringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
-export type NestedEnumZoneStatusFilter<$PrismaModel = never> = {
-  equals?: $Enums.ZoneStatus | Prisma.EnumZoneStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel> | $Enums.ZoneStatus
+export type NestedEnumInfrastructureStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InfrastructureStatus | Prisma.EnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel> | $Enums.InfrastructureStatus
 }
 
 export type NestedDateTimeFilter<$PrismaModel = never> = {
@@ -312,14 +312,14 @@ export type NestedIntFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
 }
 
-export type NestedEnumZoneStatusWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.ZoneStatus | Prisma.EnumZoneStatusFieldRefInput<$PrismaModel>
-  in?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  notIn?: $Enums.ZoneStatus[] | Prisma.ListEnumZoneStatusFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumZoneStatusWithAggregatesFilter<$PrismaModel> | $Enums.ZoneStatus
+export type NestedEnumInfrastructureStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InfrastructureStatus | Prisma.EnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InfrastructureStatus[] | Prisma.ListEnumInfrastructureStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInfrastructureStatusWithAggregatesFilter<$PrismaModel> | $Enums.InfrastructureStatus
   _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumZoneStatusFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInfrastructureStatusFilter<$PrismaModel>
 }
 
 export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {

@@ -29,7 +29,7 @@ export type ZoneMinAggregateOutputType = {
   name: string | null
   code: string | null
   description: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   zoneImageUrl: string | null
   zoneImagePublicId: string | null
   createdAt: Date | null
@@ -41,7 +41,7 @@ export type ZoneMaxAggregateOutputType = {
   name: string | null
   code: string | null
   description: string | null
-  status: $Enums.ZoneStatus | null
+  status: $Enums.InfrastructureStatus | null
   zoneImageUrl: string | null
   zoneImagePublicId: string | null
   createdAt: Date | null
@@ -176,7 +176,7 @@ export type ZoneGroupByOutputType = {
   name: string
   code: string
   description: string
-  status: $Enums.ZoneStatus
+  status: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt: Date
@@ -209,7 +209,7 @@ export type ZoneWhereInput = {
   name?: Prisma.StringFilter<"Zone"> | string
   code?: Prisma.StringFilter<"Zone"> | string
   description?: Prisma.StringFilter<"Zone"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Zone"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Zone"> | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFilter<"Zone"> | string
   zoneImagePublicId?: Prisma.StringFilter<"Zone"> | string
   createdAt?: Prisma.DateTimeFilter<"Zone"> | Date | string
@@ -238,7 +238,7 @@ export type ZoneWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.ZoneWhereInput | Prisma.ZoneWhereInput[]
   name?: Prisma.StringFilter<"Zone"> | string
   description?: Prisma.StringFilter<"Zone"> | string
-  status?: Prisma.EnumZoneStatusFilter<"Zone"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFilter<"Zone"> | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFilter<"Zone"> | string
   zoneImagePublicId?: Prisma.StringFilter<"Zone"> | string
   createdAt?: Prisma.DateTimeFilter<"Zone"> | Date | string
@@ -269,7 +269,7 @@ export type ZoneScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Zone"> | string
   code?: Prisma.StringWithAggregatesFilter<"Zone"> | string
   description?: Prisma.StringWithAggregatesFilter<"Zone"> | string
-  status?: Prisma.EnumZoneStatusWithAggregatesFilter<"Zone"> | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusWithAggregatesFilter<"Zone"> | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringWithAggregatesFilter<"Zone"> | string
   zoneImagePublicId?: Prisma.StringWithAggregatesFilter<"Zone"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Zone"> | Date | string
@@ -281,7 +281,7 @@ export type ZoneCreateInput = {
   name: string
   code: string
   description: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt?: Date | string
@@ -294,7 +294,7 @@ export type ZoneUncheckedCreateInput = {
   name: string
   code: string
   description: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt?: Date | string
@@ -307,7 +307,7 @@ export type ZoneUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -320,7 +320,7 @@ export type ZoneUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -333,7 +333,7 @@ export type ZoneCreateManyInput = {
   name: string
   code: string
   description: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt?: Date | string
@@ -345,7 +345,7 @@ export type ZoneUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -357,7 +357,7 @@ export type ZoneUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -424,7 +424,7 @@ export type ZoneCreateWithoutSubstationsInput = {
   name: string
   code: string
   description: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt?: Date | string
@@ -436,7 +436,7 @@ export type ZoneUncheckedCreateWithoutSubstationsInput = {
   name: string
   code: string
   description: string
-  status?: $Enums.ZoneStatus
+  status?: $Enums.InfrastructureStatus
   zoneImageUrl: string
   zoneImagePublicId: string
   createdAt?: Date | string
@@ -464,7 +464,7 @@ export type ZoneUpdateWithoutSubstationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -476,7 +476,7 @@ export type ZoneUncheckedUpdateWithoutSubstationsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumZoneStatusFieldUpdateOperationsInput | $Enums.ZoneStatus
+  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
   zoneImageUrl?: Prisma.StringFieldUpdateOperationsInput | string
   zoneImagePublicId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -582,7 +582,7 @@ export type $ZonePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     name: string
     code: string
     description: string
-    status: $Enums.ZoneStatus
+    status: $Enums.InfrastructureStatus
     zoneImageUrl: string
     zoneImagePublicId: string
     createdAt: Date
@@ -1015,7 +1015,7 @@ export interface ZoneFieldRefs {
   readonly name: Prisma.FieldRef<"Zone", 'String'>
   readonly code: Prisma.FieldRef<"Zone", 'String'>
   readonly description: Prisma.FieldRef<"Zone", 'String'>
-  readonly status: Prisma.FieldRef<"Zone", 'ZoneStatus'>
+  readonly status: Prisma.FieldRef<"Zone", 'InfrastructureStatus'>
   readonly zoneImageUrl: Prisma.FieldRef<"Zone", 'String'>
   readonly zoneImagePublicId: Prisma.FieldRef<"Zone", 'String'>
   readonly createdAt: Prisma.FieldRef<"Zone", 'DateTime'>

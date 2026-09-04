@@ -3,7 +3,7 @@ model Zone {
     name              String
     code              String     @db.VarChar(10) @unique
     description       String
-    status            ZoneStatus @default(ACTIVE)
+    status            InfrastructureStatus  @default(ACTIVE)
     zoneImageUrl      String
     zoneImagePublicId String
     substations       Substation[]
