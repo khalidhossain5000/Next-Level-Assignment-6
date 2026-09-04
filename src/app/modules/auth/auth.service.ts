@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import type { IGoogleLoginPayload, ILoginUserPayload, IRegisterUser, IVerifyEmailPayload } from "./auth.interface"
+import type { IGoogleLoginPayload, ILoginUserPayload, IRegisterUser, IRequestUser, IVerifyEmailPayload } from "./auth.interface"
 import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -533,10 +533,33 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 };
 
 
+//get me
+const getMe = async (user: IRequestUser) => {
+	const isUserExists = await prisma.user.findUnique({
+		where: {
+			id: user.userId,
+		},
+		include: {
+			technicianProfile:true
+		},
+		omit: {
+			password: true,
+		},
+	});
+
+	if (!isUserExists) {
+		throw new AppError(httpStatus.NOT_FOUND, "User not found");
+	}
+
+	return isUserExists;
+};
+
 
 export const authServices = {
 	registerUserInDb,
 	verifyOtpAndCreateUser,
 	loginUser,
-	refreshToken
+	refreshToken,
+	googleLogin,
+	getMe
 }

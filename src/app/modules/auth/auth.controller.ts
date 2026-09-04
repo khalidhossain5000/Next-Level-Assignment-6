@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 import { authServices } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { AppError } from "../../utils/AppError";
+import { IRequestUser } from "./auth.interface";
 const registerUser=catchAsync(async (req: Request, res: Response) => {
 	console.log("register patient hited controller", req.body);
 
@@ -115,11 +116,57 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+//google login
+
+const googleLoginUser = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const result = await authServices.googleLogin(payload);
+
+	const { accessToken, refreshToken } = result;
+	res.cookie("accessToken", accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Google Login successfull",
+		data: {
+			accessToken,
+			refreshToken,
+		},
+	});
+});
 
 
 
 
+//get me
 
+const getMe = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user as unknown as IRequestUser;
+
+	if (!user) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "User information is missing in the request");
+	}
+
+	const result = await authServices.getMe(user);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "User profile fetched successfully",
+		data: result,
+	});
+});
 
 
 
@@ -128,5 +175,7 @@ export const authController={
     registerUser,
     verifyUserEmail,
 	loginUser,
-	refreshToken
+	refreshToken,
+	googleLoginUser,
+	getMe
 }

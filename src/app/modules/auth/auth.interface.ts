@@ -28,3 +28,10 @@ export interface IGoogleLoginPayload {
 	idToken: string;
     role?:Role
 }
+
+export interface IRequestUser {
+	userId: string;
+	email: string;
+	name: string;
+	role: Role;
+}
