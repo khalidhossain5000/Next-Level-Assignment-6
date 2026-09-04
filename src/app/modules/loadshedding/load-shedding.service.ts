@@ -59,10 +59,7 @@ const createLoadSheddingScheduleInDb = async (
           not: "CANCELLED",
         },
 
-        // Overlap condition:
-        // existing.startTime < new.endTime
-        // AND
-        // existing.endTime > new.startTime
+
         startTime: {
           lt: endTime,
         },
