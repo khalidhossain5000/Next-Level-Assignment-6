@@ -34,9 +34,27 @@ const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+//details
+
+const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) => {
+
+    const loadsheddingId = req.params.loadsheddingId
+
+    const result = await ZoneService.getZoneDetails(loadsheddingId as string)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: " Loadshedding Details Successfully",
+        data: result,
+
+    });
+});
+
+
 
 
 export const LoadSheddingController = {
 createLoadShedding,
-getAllLoadShedding
+getAllLoadShedding,
+getLoadSheddingDetails
 }

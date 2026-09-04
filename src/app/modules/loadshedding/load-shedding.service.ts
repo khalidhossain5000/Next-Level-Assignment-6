@@ -169,6 +169,12 @@ const getAllLoadSheddingSchdeule=async(query:IQuery)=>{
         
 }
 
+
+
+const getLoadSheddingDetails=async(loadsheddingId:string)=>{
+    
+}
+
 export const LoadSheddingService = {
 createLoadSheddingScheduleInDb,
 getAllLoadSheddingSchdeule

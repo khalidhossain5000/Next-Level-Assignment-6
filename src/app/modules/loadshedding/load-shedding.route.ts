@@ -15,7 +15,8 @@ router.post("/",auth(Role.ADMIN),validateRequest(loadSheddingValidation.createLo
 
 router.get("/",LoadSheddingController.getAllLoadShedding)
 
-//--details load shedding public
+//--details load shedding protected for custoerm
+
 
 
 
