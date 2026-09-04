@@ -6,7 +6,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import { AppError } from "../../utils/AppError";
 import { IRequestUser } from "./auth.interface";
 const registerUser=catchAsync(async (req: Request, res: Response) => {
-	console.log("register patient hited controller", req.body);
+	console.log("register user hited controller", req.body);
 
 	//zod sanitization
 
