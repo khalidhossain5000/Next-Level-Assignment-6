@@ -1,7 +1,7 @@
 model Zone {
     id                String     @id @default(uuid())
     name              String
-    code              String     @db.VarChar(10)
+    code              String     @db.VarChar(10) @unique
     description       String
     status            ZoneStatus @default(ACTIVE)
     zoneImageUrl      String?

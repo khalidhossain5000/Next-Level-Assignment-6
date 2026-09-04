@@ -1,7 +1,7 @@
 model Area {
     id          String     @id @default(uuid())
     name        String
-    code        String
+    code        String      @db.VarChar(10) @unique
     address     String
     status      ZoneStatus @default(ACTIVE)
     feederId    String

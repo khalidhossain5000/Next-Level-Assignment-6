@@ -2,7 +2,7 @@ model Substation {
     id          String       @id @default(uuid())
     name        String
     capacity    String
-    code        String
+    code        String       @db.VarChar(10) @unique
     location    String
     status      ZoneStatus   @default(ACTIVE)
     //foregin key making realtien with zone
