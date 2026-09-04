@@ -12,3 +12,13 @@ export interface ILoadSheddingPayload {
     reason?: string;
     areaId: string;
 }
+
+
+export interface ILoadSheddingUpdatePayload {
+    title?: string;
+    startTime?: Date;
+    endTime?: Date;
+    status?: LoadSheddingStatus;
+    reason?: string;
+   
+}
