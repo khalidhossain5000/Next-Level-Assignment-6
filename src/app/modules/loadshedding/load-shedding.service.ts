@@ -172,7 +172,12 @@ const getAllLoadSheddingSchdeule=async(query:IQuery)=>{
 
 
 const getLoadSheddingDetails=async(loadsheddingId:string)=>{
-const getDetails=await prisma.
+const getDetails=await prisma.loadShedding.findUniqueOrThrow({
+    where:{
+        id:loadsheddingId
+    }
+})
+return getDetails
 }
 
 export const LoadSheddingService = {
