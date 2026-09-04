@@ -507,10 +507,6 @@ export type UserUpdateOneRequiredWithoutTechnicianProfileNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTechnicianProfileInput, Prisma.UserUpdateWithoutTechnicianProfileInput>, Prisma.UserUncheckedUpdateWithoutTechnicianProfileInput>
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumAuthProviderFieldUpdateOperationsInput = {
   set?: $Enums.AuthProvider
 }

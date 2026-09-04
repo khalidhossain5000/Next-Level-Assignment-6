@@ -3,8 +3,16 @@ model TechnicianProfile {
   expertise    String[]         @default([])
   experience   Int              @default(0)
   availability TechnicianStatus @default(AVAILABLE)
+  bio           String?  
+  resume          String?
+  resumePublicId   String?
+
+ technicianvProfileVerificationStatus  TechnicianProfileStatus @default(PENDING)
+   rejectionReason    String?
 
   // Relation to User
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+    @@index([id], name: "idx_technician_id")
+
 }

@@ -40,3 +40,12 @@ export const AuthProvider = {
 } as const
 
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
+
+
+export const TechnicianProfileStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type TechnicianProfileStatus = (typeof TechnicianProfileStatus)[keyof typeof TechnicianProfileStatus]

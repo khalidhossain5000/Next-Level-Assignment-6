@@ -610,6 +610,11 @@ export const TechnicianProfileScalarFieldEnum = {
   expertise: 'expertise',
   experience: 'experience',
   availability: 'availability',
+  bio: 'bio',
+  resume: 'resume',
+  resumePublicId: 'resumePublicId',
+  technicianvProfileVerificationStatus: 'technicianvProfileVerificationStatus',
+  rejectionReason: 'rejectionReason',
   userId: 'userId'
 } as const
 
@@ -704,6 +709,20 @@ export type EnumTechnicianStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'TechnicianStatus[]'
  */
 export type ListEnumTechnicianStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TechnicianStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'TechnicianProfileStatus'
+ */
+export type EnumTechnicianProfileStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TechnicianProfileStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TechnicianProfileStatus[]'
+ */
+export type ListEnumTechnicianProfileStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TechnicianProfileStatus[]'>
     
 
 

@@ -38,6 +38,11 @@ export type TechnicianProfileMinAggregateOutputType = {
   id: string | null
   experience: number | null
   availability: $Enums.TechnicianStatus | null
+  bio: string | null
+  resume: string | null
+  resumePublicId: string | null
+  technicianvProfileVerificationStatus: $Enums.TechnicianProfileStatus | null
+  rejectionReason: string | null
   userId: string | null
 }
 
@@ -45,6 +50,11 @@ export type TechnicianProfileMaxAggregateOutputType = {
   id: string | null
   experience: number | null
   availability: $Enums.TechnicianStatus | null
+  bio: string | null
+  resume: string | null
+  resumePublicId: string | null
+  technicianvProfileVerificationStatus: $Enums.TechnicianProfileStatus | null
+  rejectionReason: string | null
   userId: string | null
 }
 
@@ -53,6 +63,11 @@ export type TechnicianProfileCountAggregateOutputType = {
   expertise: number
   experience: number
   availability: number
+  bio: number
+  resume: number
+  resumePublicId: number
+  technicianvProfileVerificationStatus: number
+  rejectionReason: number
   userId: number
   _all: number
 }
@@ -70,6 +85,11 @@ export type TechnicianProfileMinAggregateInputType = {
   id?: true
   experience?: true
   availability?: true
+  bio?: true
+  resume?: true
+  resumePublicId?: true
+  technicianvProfileVerificationStatus?: true
+  rejectionReason?: true
   userId?: true
 }
 
@@ -77,6 +97,11 @@ export type TechnicianProfileMaxAggregateInputType = {
   id?: true
   experience?: true
   availability?: true
+  bio?: true
+  resume?: true
+  resumePublicId?: true
+  technicianvProfileVerificationStatus?: true
+  rejectionReason?: true
   userId?: true
 }
 
@@ -85,6 +110,11 @@ export type TechnicianProfileCountAggregateInputType = {
   expertise?: true
   experience?: true
   availability?: true
+  bio?: true
+  resume?: true
+  resumePublicId?: true
+  technicianvProfileVerificationStatus?: true
+  rejectionReason?: true
   userId?: true
   _all?: true
 }
@@ -180,6 +210,11 @@ export type TechnicianProfileGroupByOutputType = {
   expertise: string[]
   experience: number
   availability: $Enums.TechnicianStatus
+  bio: string | null
+  resume: string | null
+  resumePublicId: string | null
+  technicianvProfileVerificationStatus: $Enums.TechnicianProfileStatus
+  rejectionReason: string | null
   userId: string
   _count: TechnicianProfileCountAggregateOutputType | null
   _avg: TechnicianProfileAvgAggregateOutputType | null
@@ -211,6 +246,11 @@ export type TechnicianProfileWhereInput = {
   expertise?: Prisma.StringNullableListFilter<"TechnicianProfile">
   experience?: Prisma.IntFilter<"TechnicianProfile"> | number
   availability?: Prisma.EnumTechnicianStatusFilter<"TechnicianProfile"> | $Enums.TechnicianStatus
+  bio?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  resume?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  resumePublicId?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFilter<"TechnicianProfile"> | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
   userId?: Prisma.StringFilter<"TechnicianProfile"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -220,6 +260,11 @@ export type TechnicianProfileOrderByWithRelationInput = {
   expertise?: Prisma.SortOrder
   experience?: Prisma.SortOrder
   availability?: Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  resume?: Prisma.SortOrderInput | Prisma.SortOrder
+  resumePublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  technicianvProfileVerificationStatus?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -233,6 +278,11 @@ export type TechnicianProfileWhereUniqueInput = Prisma.AtLeast<{
   expertise?: Prisma.StringNullableListFilter<"TechnicianProfile">
   experience?: Prisma.IntFilter<"TechnicianProfile"> | number
   availability?: Prisma.EnumTechnicianStatusFilter<"TechnicianProfile"> | $Enums.TechnicianStatus
+  bio?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  resume?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  resumePublicId?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFilter<"TechnicianProfile"> | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.StringNullableFilter<"TechnicianProfile"> | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "userId">
 
@@ -241,6 +291,11 @@ export type TechnicianProfileOrderByWithAggregationInput = {
   expertise?: Prisma.SortOrder
   experience?: Prisma.SortOrder
   availability?: Prisma.SortOrder
+  bio?: Prisma.SortOrderInput | Prisma.SortOrder
+  resume?: Prisma.SortOrderInput | Prisma.SortOrder
+  resumePublicId?: Prisma.SortOrderInput | Prisma.SortOrder
+  technicianvProfileVerificationStatus?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   _count?: Prisma.TechnicianProfileCountOrderByAggregateInput
   _avg?: Prisma.TechnicianProfileAvgOrderByAggregateInput
@@ -257,6 +312,11 @@ export type TechnicianProfileScalarWhereWithAggregatesInput = {
   expertise?: Prisma.StringNullableListFilter<"TechnicianProfile">
   experience?: Prisma.IntWithAggregatesFilter<"TechnicianProfile"> | number
   availability?: Prisma.EnumTechnicianStatusWithAggregatesFilter<"TechnicianProfile"> | $Enums.TechnicianStatus
+  bio?: Prisma.StringNullableWithAggregatesFilter<"TechnicianProfile"> | string | null
+  resume?: Prisma.StringNullableWithAggregatesFilter<"TechnicianProfile"> | string | null
+  resumePublicId?: Prisma.StringNullableWithAggregatesFilter<"TechnicianProfile"> | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusWithAggregatesFilter<"TechnicianProfile"> | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.StringNullableWithAggregatesFilter<"TechnicianProfile"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"TechnicianProfile"> | string
 }
 
@@ -265,6 +325,11 @@ export type TechnicianProfileCreateInput = {
   expertise?: Prisma.TechnicianProfileCreateexpertiseInput | string[]
   experience?: number
   availability?: $Enums.TechnicianStatus
+  bio?: string | null
+  resume?: string | null
+  resumePublicId?: string | null
+  technicianvProfileVerificationStatus?: $Enums.TechnicianProfileStatus
+  rejectionReason?: string | null
   user: Prisma.UserCreateNestedOneWithoutTechnicianProfileInput
 }
 
@@ -273,6 +338,11 @@ export type TechnicianProfileUncheckedCreateInput = {
   expertise?: Prisma.TechnicianProfileCreateexpertiseInput | string[]
   experience?: number
   availability?: $Enums.TechnicianStatus
+  bio?: string | null
+  resume?: string | null
+  resumePublicId?: string | null
+  technicianvProfileVerificationStatus?: $Enums.TechnicianProfileStatus
+  rejectionReason?: string | null
   userId: string
 }
 
@@ -281,6 +351,11 @@ export type TechnicianProfileUpdateInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutTechnicianProfileNestedInput
 }
 
@@ -289,6 +364,11 @@ export type TechnicianProfileUncheckedUpdateInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -297,6 +377,11 @@ export type TechnicianProfileCreateManyInput = {
   expertise?: Prisma.TechnicianProfileCreateexpertiseInput | string[]
   experience?: number
   availability?: $Enums.TechnicianStatus
+  bio?: string | null
+  resume?: string | null
+  resumePublicId?: string | null
+  technicianvProfileVerificationStatus?: $Enums.TechnicianProfileStatus
+  rejectionReason?: string | null
   userId: string
 }
 
@@ -305,6 +390,11 @@ export type TechnicianProfileUpdateManyMutationInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicianProfileUncheckedUpdateManyInput = {
@@ -312,6 +402,11 @@ export type TechnicianProfileUncheckedUpdateManyInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -328,6 +423,11 @@ export type TechnicianProfileCountOrderByAggregateInput = {
   expertise?: Prisma.SortOrder
   experience?: Prisma.SortOrder
   availability?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  resume?: Prisma.SortOrder
+  resumePublicId?: Prisma.SortOrder
+  technicianvProfileVerificationStatus?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -339,6 +439,11 @@ export type TechnicianProfileMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   experience?: Prisma.SortOrder
   availability?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  resume?: Prisma.SortOrder
+  resumePublicId?: Prisma.SortOrder
+  technicianvProfileVerificationStatus?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -346,6 +451,11 @@ export type TechnicianProfileMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   experience?: Prisma.SortOrder
   availability?: Prisma.SortOrder
+  bio?: Prisma.SortOrder
+  resume?: Prisma.SortOrder
+  resumePublicId?: Prisma.SortOrder
+  technicianvProfileVerificationStatus?: Prisma.SortOrder
+  rejectionReason?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -381,6 +491,14 @@ export type IntFieldUpdateOperationsInput = {
 
 export type EnumTechnicianStatusFieldUpdateOperationsInput = {
   set?: $Enums.TechnicianStatus
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
+export type EnumTechnicianProfileStatusFieldUpdateOperationsInput = {
+  set?: $Enums.TechnicianProfileStatus
 }
 
 export type TechnicianProfileCreateNestedOneWithoutUserInput = {
@@ -420,6 +538,11 @@ export type TechnicianProfileCreateWithoutUserInput = {
   expertise?: Prisma.TechnicianProfileCreateexpertiseInput | string[]
   experience?: number
   availability?: $Enums.TechnicianStatus
+  bio?: string | null
+  resume?: string | null
+  resumePublicId?: string | null
+  technicianvProfileVerificationStatus?: $Enums.TechnicianProfileStatus
+  rejectionReason?: string | null
 }
 
 export type TechnicianProfileUncheckedCreateWithoutUserInput = {
@@ -427,6 +550,11 @@ export type TechnicianProfileUncheckedCreateWithoutUserInput = {
   expertise?: Prisma.TechnicianProfileCreateexpertiseInput | string[]
   experience?: number
   availability?: $Enums.TechnicianStatus
+  bio?: string | null
+  resume?: string | null
+  resumePublicId?: string | null
+  technicianvProfileVerificationStatus?: $Enums.TechnicianProfileStatus
+  rejectionReason?: string | null
 }
 
 export type TechnicianProfileCreateOrConnectWithoutUserInput = {
@@ -450,6 +578,11 @@ export type TechnicianProfileUpdateWithoutUserInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type TechnicianProfileUncheckedUpdateWithoutUserInput = {
@@ -457,6 +590,11 @@ export type TechnicianProfileUncheckedUpdateWithoutUserInput = {
   expertise?: Prisma.TechnicianProfileUpdateexpertiseInput | string[]
   experience?: Prisma.IntFieldUpdateOperationsInput | number
   availability?: Prisma.EnumTechnicianStatusFieldUpdateOperationsInput | $Enums.TechnicianStatus
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resume?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resumePublicId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  technicianvProfileVerificationStatus?: Prisma.EnumTechnicianProfileStatusFieldUpdateOperationsInput | $Enums.TechnicianProfileStatus
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -466,6 +604,11 @@ export type TechnicianProfileSelect<ExtArgs extends runtime.Types.Extensions.Int
   expertise?: boolean
   experience?: boolean
   availability?: boolean
+  bio?: boolean
+  resume?: boolean
+  resumePublicId?: boolean
+  technicianvProfileVerificationStatus?: boolean
+  rejectionReason?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["technicianProfile"]>
@@ -475,6 +618,11 @@ export type TechnicianProfileSelectCreateManyAndReturn<ExtArgs extends runtime.T
   expertise?: boolean
   experience?: boolean
   availability?: boolean
+  bio?: boolean
+  resume?: boolean
+  resumePublicId?: boolean
+  technicianvProfileVerificationStatus?: boolean
+  rejectionReason?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["technicianProfile"]>
@@ -484,6 +632,11 @@ export type TechnicianProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.T
   expertise?: boolean
   experience?: boolean
   availability?: boolean
+  bio?: boolean
+  resume?: boolean
+  resumePublicId?: boolean
+  technicianvProfileVerificationStatus?: boolean
+  rejectionReason?: boolean
   userId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["technicianProfile"]>
@@ -493,10 +646,15 @@ export type TechnicianProfileSelectScalar = {
   expertise?: boolean
   experience?: boolean
   availability?: boolean
+  bio?: boolean
+  resume?: boolean
+  resumePublicId?: boolean
+  technicianvProfileVerificationStatus?: boolean
+  rejectionReason?: boolean
   userId?: boolean
 }
 
-export type TechnicianProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "expertise" | "experience" | "availability" | "userId", ExtArgs["result"]["technicianProfile"]>
+export type TechnicianProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "expertise" | "experience" | "availability" | "bio" | "resume" | "resumePublicId" | "technicianvProfileVerificationStatus" | "rejectionReason" | "userId", ExtArgs["result"]["technicianProfile"]>
 export type TechnicianProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -517,6 +675,11 @@ export type $TechnicianProfilePayload<ExtArgs extends runtime.Types.Extensions.I
     expertise: string[]
     experience: number
     availability: $Enums.TechnicianStatus
+    bio: string | null
+    resume: string | null
+    resumePublicId: string | null
+    technicianvProfileVerificationStatus: $Enums.TechnicianProfileStatus
+    rejectionReason: string | null
     userId: string
   }, ExtArgs["result"]["technicianProfile"]>
   composites: {}
@@ -946,6 +1109,11 @@ export interface TechnicianProfileFieldRefs {
   readonly expertise: Prisma.FieldRef<"TechnicianProfile", 'String[]'>
   readonly experience: Prisma.FieldRef<"TechnicianProfile", 'Int'>
   readonly availability: Prisma.FieldRef<"TechnicianProfile", 'TechnicianStatus'>
+  readonly bio: Prisma.FieldRef<"TechnicianProfile", 'String'>
+  readonly resume: Prisma.FieldRef<"TechnicianProfile", 'String'>
+  readonly resumePublicId: Prisma.FieldRef<"TechnicianProfile", 'String'>
+  readonly technicianvProfileVerificationStatus: Prisma.FieldRef<"TechnicianProfile", 'TechnicianProfileStatus'>
+  readonly rejectionReason: Prisma.FieldRef<"TechnicianProfile", 'String'>
   readonly userId: Prisma.FieldRef<"TechnicianProfile", 'String'>
 }
     

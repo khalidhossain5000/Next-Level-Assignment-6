@@ -76,6 +76,11 @@ export const TechnicianProfileScalarFieldEnum = {
   expertise: 'expertise',
   experience: 'experience',
   availability: 'availability',
+  bio: 'bio',
+  resume: 'resume',
+  resumePublicId: 'resumePublicId',
+  technicianvProfileVerificationStatus: 'technicianvProfileVerificationStatus',
+  rejectionReason: 'rejectionReason',
   userId: 'userId'
 } as const
 
