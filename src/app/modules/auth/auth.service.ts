@@ -151,6 +151,40 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 		return user
 	})
 		await redisClient.del(userRegisterKey);
+
+
+
+//ewlcome emil startshere here
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/patient-welcome-email.ejs",
+	);
+	const templateData = {
+		name: name,
+	};
+	const html = await ejs.renderFile(templatePath, templateData);
+
+	await transporter.sendMail({
+		from: config.smtp_user,
+		to: email,
+		subject: "Welcome to PowerPulse ",
+		html,
+	});
+
+	//welcome email enda here
+
+
+
+
+
+
+
+
+
+
+
+
 	//user created in db now generate access and refresh token with jwt
 	const jwtPayload = {
 		userId: createdUser.id,
