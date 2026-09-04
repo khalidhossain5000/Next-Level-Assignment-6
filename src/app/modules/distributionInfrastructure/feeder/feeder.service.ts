@@ -94,13 +94,6 @@ const getAllFeederFromDb = async (query: IQuery) => {
 
 
 
-
-
-
-
-
-
-
 }
 
 

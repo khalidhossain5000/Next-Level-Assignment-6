@@ -1,5 +1,22 @@
 import { Router } from "express";
+import { Role } from "../../../../generated/prisma/enums";
+import { auth } from "../../../middlewares/checkAuth";
+import { validateRequest } from "../../../middlewares/validateRequest";
+
 
 const router = Router();
 
-export const AreaRoutes = router;
+
+router.post("/",auth(Role.ADMIN),validateRequest(feederValidation.createFeederZodSchema),FeederController.createFeeder)
+
+
+//get all substion public
+router.get("/",FeederController.getAllFeeder)
+
+//get details protected need lgoin
+
+router.get("/:areaId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),FeederController.getFeederDetails)
+
+
+
+export const FeederRoutes = router;
