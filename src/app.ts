@@ -6,6 +6,10 @@ import { notFound } from "./app/middlewares/notFound";
 import config from "./app/config";
 import { AuthRoutes } from "./app/modules/auth/auth.route";
 import { TechnicianRoutes } from "./app/modules/technicianProfile/technician-profile.route";
+import { ZoneRoutes } from "./app/modules/distributionInfrastructure/zone/zone.route";
+import { SubstationRoutes } from "./app/modules/distributionInfrastructure/substation/substation.route";
+import { FeederRoutes } from "./app/modules/distributionInfrastructure/feeder/feeder.route";
+import { AreaRoutes } from "./app/modules/distributionInfrastructure/area/area.route";
 const app: Application = express();
 
 //cors setup
@@ -39,7 +43,11 @@ app.use("/api/v1/auth",AuthRoutes)
 app.use("/api/v1/technician",TechnicianRoutes)
 
 
-
+//infrastructre routes
+app.use("/api/v1/zone",ZoneRoutes)
+app.use("/api/v1/substation",SubstationRoutes)
+app.use("/api/v1/feeder",FeederRoutes)
+app.use("/api/v1/area",AreaRoutes)
 
 
 

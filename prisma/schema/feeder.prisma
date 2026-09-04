@@ -6,10 +6,10 @@ model Feeder {
     status        ZoneStatus   @default(ACTIVE)
 
     substationId  String
-    substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id])
+    substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id],onDelete: Cascade,onUpdate: Cascade)
 
     areas         Area[]        @relation("FeederAreas")
-    
+
     createdAt     DateTime     @default(now())
     updatedAt     DateTime     @updatedAt
 
