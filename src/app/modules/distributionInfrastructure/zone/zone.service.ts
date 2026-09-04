@@ -120,16 +120,36 @@ const getAllZoneFromDb=async(query: IQuery)=>{
 	}
 
 
-const getAllZone=await prisma.zone.findMany({
+const allZones=await prisma.zone.findMany({
 where:{
     AND:andConditions.length >0 ? andConditions : undefined
-}
+},
+		take: limit,
+		skip: skip,
+        orderBy: {
+			[sortBy]: sortOrder
+		},
+        include:{
+            substations:true
+        }
+})
+
+const totalZoneCount=await prisma.zone.count({
+    where:{
+        AND:andConditions
+    }
 })
 
 
-
-
-
+return {
+    data:allZones,
+    meta:{
+        page,
+        limit,
+        total:totalZoneCount,
+        totalPages:Math.ceil(totalZoneCount/limit)
+    }
+}
 
 
 
