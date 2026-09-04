@@ -35,7 +35,7 @@ const result=await TechnicianProfileService.updateTechnicicanProfileInDb(payload
         statusCode: httpStatus.OK,
         success: true,
         message: "Technicain profile is updated successfully",
-        data: null,
+        data: result,
     });
 });
 
