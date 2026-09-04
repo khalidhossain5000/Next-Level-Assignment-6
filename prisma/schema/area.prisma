@@ -1,0 +1,16 @@
+model Area {
+    id          String     @id @default(uuid())
+    name        String
+    code        String
+    address     String
+    status      ZoneStatus @default(ACTIVE)
+    feederId    String
+    feeder      Feeder     @relation("FeederAreas", fields: [feederId], references: [id])
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+
+    @@index([name], name: "idx_area_name")
+    @@index([code], name: "idx_area_code")
+    @@index([feederId], name: "idx_area_feeder_id")
+    @@map("Areas")
+}

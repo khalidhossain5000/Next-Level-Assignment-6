@@ -14,5 +14,6 @@ model TechnicianProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
     @@index([id], name: "idx_technician_id")
+    @@map("TechnicianProfiles")
 
-}
+} 

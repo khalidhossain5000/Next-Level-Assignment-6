@@ -1,0 +1,17 @@
+model Feeder {
+    id            String       @id @default(uuid())
+    name          String
+    code          String
+    voltageLevel  String
+    status        ZoneStatus   @default(ACTIVE)
+    substationId  String
+    substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id])
+    areas         Area[]        @relation("FeederAreas")
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+
+    @@index([name], name: "idx_feeder_name")
+    @@index([code], name: "idx_feeder_code")
+    @@index([substationId], name: "idx_feeder_substation_id")
+    @@map("Feeders")
+}

@@ -22,3 +22,8 @@ enum TechnicianProfileStatus {
   APPROVED
   REJECTED
 }
+
+enum ZoneStatus {
+  ACTIVE
+  INACTIVE
+}
