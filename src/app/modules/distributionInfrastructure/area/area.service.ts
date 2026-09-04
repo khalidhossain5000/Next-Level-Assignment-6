@@ -83,8 +83,8 @@ const getAllAreaFromDb = async (query: IQuery) => {
         meta: {
             page,
             limit,
-            total: totalFeederCount,
-            totalPages: Math.ceil(totalFeederCount / limit)
+            total: totalAreaCount,
+            totalPages: Math.ceil(totalAreaCount / limit)
         }
     }
 
