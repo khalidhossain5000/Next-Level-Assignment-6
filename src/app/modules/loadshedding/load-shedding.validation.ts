@@ -33,9 +33,6 @@ const updateLoadSheddingZodSchema = z
             .max(150, "Title should not be more than 150 chars").optional(),
         startTime: z.coerce.date("Start time must be a valid date").optional(),
         endTime: z.coerce.date("End time must be a valid date").optional(),
-        status: z
-            .enum(["ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
-            .optional(),
         reason: z
             .string("Reason is not a string")
             .min(5, "Reason should minimum have 5 chars")
