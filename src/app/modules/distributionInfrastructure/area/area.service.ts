@@ -1,33 +1,30 @@
-import type { FeederWhereInput } from "../../../../generated/prisma/models"
+import type { AreaWhereInput, FeederWhereInput } from "../../../../generated/prisma/models"
 import type { IQuery } from "../../../interfaces/interface"
 import { prisma } from "../../../lib/prisma"
-import { IFeederInterface } from "../feeder/feeder.interface"
+import type { IAreaInterface } from "./area.interface"
 
-const createAreaInDb = async (payload: IFeederInterface) => {
-    const { name, code, voltageLevel,substationId} = payload
+const createAreaInDb = async (payload: IAreaInterface) => {
+    const { name, code, address,feederId} = payload
 
 
-    const createdSubstationResult = await prisma.feeder.create({
+    const createdAreaResult = await prisma.area.create({
         data: {
             name,
-            voltageLevel,
+            address,
             code,
-            substationId
+            feederId
             
 
-        },
-        include: {
-           substation:true,
-           areas:true
         }
+       
     })
-    return createdSubstationResult
+    return createdAreaResult
 
 }
 
 //get all substion ( not adding  filter)
 
-const getAllFeederFromDb = async (query: IQuery) => {
+const getAllAreaFromDb = async (query: IQuery) => {
     const limit = query.limit ? Number(query.limit) : 10;
     const page = query.page ? Number(query.page) : 1;
     const skip = (page - 1) * limit;
@@ -36,7 +33,7 @@ const getAllFeederFromDb = async (query: IQuery) => {
 
 
 
-    const andConditions: FeederWhereInput[] = []
+    const andConditions: AreaWhereInput[] = []
 
 
     //Searching
@@ -46,7 +43,7 @@ const getAllFeederFromDb = async (query: IQuery) => {
                 { name: { contains: query.searchTerm, mode: "insensitive" } },
                 { code: { contains: query.searchTerm, mode: "insensitive" } },
                 {
-                    voltageLevel: {
+                    address: {
                         contains: query.searchTerm,
                         mode: "insensitive",
                     },
@@ -58,7 +55,7 @@ const getAllFeederFromDb = async (query: IQuery) => {
 
 
 
-    const allFeeders = await prisma.feeder.findMany({
+    const allAreas = await prisma.area.findMany({
         where: {
             AND: andConditions.length > 0 ? andConditions : undefined
         },
@@ -68,13 +65,13 @@ const getAllFeederFromDb = async (query: IQuery) => {
             [sortBy]: sortOrder
         },
         include: {
-      areas:true,
+           feeder:true,
             substation:true,
             zone:true
         }
     })
 
-    const totalFeederCount = await prisma.feeder.count({
+    const totalAreaCount = await prisma.area.count({
         where: {
             AND: andConditions
         }
@@ -82,7 +79,7 @@ const getAllFeederFromDb = async (query: IQuery) => {
 
 
     return {
-        data: allFeeders,
+        data: allAreas,
         meta: {
             page,
             limit,
@@ -113,8 +110,8 @@ const getFeederDetails = async (feederId: string) => {
     return substationDetails
 }
 
-export const FeederService = {
-    createFeederInDb,
+export const AreaService = {
+    createAreaInDb,
     getAllFeederFromDb,
     getFeederDetails
 }
