@@ -15,3 +15,10 @@ export interface IVerifyEmailPayload{
     email:string;
     otp:string
 }
+
+
+
+export interface ILoginUserPayload{
+    email:string;
+    password:string;
+}

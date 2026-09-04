@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/style/useNodejsImportProtocol: <explanation> */
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import type { IRegisterUser, IVerifyEmailPayload } from "./auth.interface"
+import type { ILoginUserPayload, IRegisterUser, IVerifyEmailPayload } from "./auth.interface"
 import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -224,6 +224,75 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 		createdUser
 	}
 }
+
+
+
+
+//login user with email pass
+
+const loginUser=async(payload:ILoginUserPayload)=>{
+		const { password } = payload;
+	const email = payload.email.trim().toLowerCase();
+
+	const user=await prisma.user.findUnique({
+		where:{
+			email
+		}
+	})
+
+if(!user)  throw new AppError(httpStatus.NOT_FOUND,"User havent register yet,register first")
+
+
+if(user.status==="BAN") throw new AppError(httpStatus.BAD_REQUEST,"User is banned")
+
+
+
+	const isPasswordMatched = await bcrypt.compare(
+		password,
+		user?.password as string,
+	);
+
+
+if(!isPasswordMatched) throw new AppError(httpStatus.UNAUTHORIZED,"Invalid credentials try again")
+
+
+
+	const jwtPayload = {
+		userId: user.id,
+		email: user.email,
+		name: user.name,
+		role: user.role
+	}
+
+
+const accessToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_access_secret,
+		config.jwt_access_expires_in as SignOptions,
+	);
+
+	const refreshToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_refresh_secret,
+		config.jwt_refresh_expires_in as SignOptions,
+	);
+
+
+return {
+	accessToken,
+	refreshToken
+}
+
+
+}
+
+
+
+
+
+
+
+
 
 export const authServices = {
 	registerUserInDb,
