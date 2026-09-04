@@ -25,4 +25,6 @@ if (existingZoneCode) {
 }
 
 
-export const 
+export const ZoneService={
+    createZoneInDb
+}
