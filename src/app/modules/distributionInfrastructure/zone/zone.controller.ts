@@ -31,32 +31,32 @@ const createZone = catchAsync(async (req: Request, res: Response) => {
 
 //get all zone with pagination search filter
 const getAllZone = catchAsync(async (req: Request, res: Response) => {
-	
 
-	const {data, meta} = await ZoneService.getAllZoneFromDb(req.query)
-	sendResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: "All Zone Retrieved Successfully",
-		data: data,
-		meta : meta,
-	});
+
+    const { data, meta } = await ZoneService.getAllZoneFromDb(req.query)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "All Zone Retrieved Successfully",
+        data: data,
+        meta: meta,
+    });
 });
 
 //zone details 
 
 const getZoneDetails = catchAsync(async (req: Request, res: Response) => {
-	
-    const zoneId=req.params.zoneId
 
-	const result= await ZoneService.getZoneDetails(zoneId as string)
-	sendResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: " Zone Details Successfully",
-		data: result,
-		
-	});
+    const zoneId = req.params.zoneId
+
+    const result = await ZoneService.getZoneDetails(zoneId as string)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: " Zone Details Successfully",
+        data: result,
+
+    });
 });
 
 
