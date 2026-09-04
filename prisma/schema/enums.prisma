@@ -3,19 +3,21 @@ enum Role {
   TECHNICIAN
   ADMIN
 }
+
 enum UserStatus {
   ACTIVE
   BAN
 }
+
 enum TechnicianStatus {
   AVAILABLE
   UNAVAILABLE
 }
+
 enum AuthProvider {
   GOOGLE
   CREDENTIAL
 }
-
 
 enum TechnicianProfileStatus {
   PENDING
@@ -28,12 +30,10 @@ enum InfrastructureStatus {
   INACTIVE
 }
 
-
 enum OutagePriority {
   HIGH
   NORMAL
 }
-
 
 enum OutageStatus {
   REPORTED

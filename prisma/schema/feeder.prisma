@@ -1,20 +1,20 @@
 model Feeder {
-    id            String       @id @default(uuid())
-    name          String
-    code          String         @db.VarChar(10) @unique
-    voltageLevel  String
-    status        InfrastructureStatus   @default(ACTIVE)
+  id           String               @id @default(uuid())
+  name         String
+  code         String               @unique @db.VarChar(10)
+  voltageLevel String
+  status       InfrastructureStatus @default(ACTIVE)
 
-    substationId  String
-    substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id],onDelete: Cascade,onUpdate: Cascade)
+  substationId String
+  substation   Substation @relation("SubstationFeeders", fields: [substationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-    areas         Area[]        @relation("FeederAreas")
+  areas Area[] @relation("FeederAreas")
 
-    createdAt     DateTime     @default(now())
-    updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@index([name], name: "idx_feeder_name")
-    @@index([code], name: "idx_feeder_code")
-    @@index([substationId], name: "idx_feeder_substation_id")
-    @@map("Feeders")
+  @@index([name], name: "idx_feeder_name")
+  @@index([code], name: "idx_feeder_code")
+  @@index([substationId], name: "idx_feeder_substation_id")
+  @@map("Feeders")
 }

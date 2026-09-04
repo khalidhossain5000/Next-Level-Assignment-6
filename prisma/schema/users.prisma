@@ -1,8 +1,8 @@
 model User {
-  id                String             @id @default(uuid())
-  name              String
-  email             String             @unique
-  profileImage      String?            @default("https://i.ibb.co.com/mrH7HCPN/default-profile.png")
+  id                   String       @id @default(uuid())
+  name                 String
+  email                String       @unique
+  profileImage         String?      @default("https://i.ibb.co.com/mrH7HCPN/default-profile.png")
   profileImagePublicId String       @default("")
   googleId             String?      @unique
   authProvider         AuthProvider @default(CREDENTIAL)
@@ -13,8 +13,10 @@ model User {
   password          String?
   technicianProfile TechnicianProfile?
 
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-    @@index([email], name: "idx_user_email")
-    @@map("Users")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  outages   Outage[]
+
+  @@index([email], name: "idx_user_email")
+  @@map("Users")
 }

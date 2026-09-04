@@ -1,16 +1,16 @@
 model Zone {
-    id                String     @id @default(uuid())
-    name              String
-    code              String     @db.VarChar(10) @unique
-    description       String
-    status            InfrastructureStatus  @default(ACTIVE)
-    zoneImageUrl      String
-    zoneImagePublicId String
-    substations       Substation[]
-    createdAt         DateTime   @default(now())
-    updatedAt         DateTime   @updatedAt
+  id                String               @id @default(uuid())
+  name              String
+  code              String               @unique @db.VarChar(10)
+  description       String
+  status            InfrastructureStatus @default(ACTIVE)
+  zoneImageUrl      String
+  zoneImagePublicId String
+  substations       Substation[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
 
-    @@index([name], name: "idx_zone_name")
-    @@index([code], name: "idx_zone_code")
-    @@map("Zones")
+  @@index([name], name: "idx_zone_name")
+  @@index([code], name: "idx_zone_code")
+  @@map("Zones")
 }
