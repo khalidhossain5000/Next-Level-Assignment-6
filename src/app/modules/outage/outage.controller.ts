@@ -21,8 +21,8 @@ const createOutage = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-//get all zone with pagination search filter
-const getAllArea = catchAsync(async (req: Request, res: Response) => {
+//get all zone with pagination search filter admin
+const getAllOutageForAdminManage = catchAsync(async (req: Request, res: Response) => {
 
 
     const { data, meta } = await    AreaService.getAllAreaFromDb(req.query)
