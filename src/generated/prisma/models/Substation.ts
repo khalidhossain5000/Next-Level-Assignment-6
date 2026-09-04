@@ -177,7 +177,7 @@ export type SubstationGroupByOutputType = {
   capacity: string
   code: string
   location: string
-  status: $Enums.InfrastructureStatus
+  status: $Enums.InfrastructureStatus | null
   zoneId: string
   createdAt: Date
   updatedAt: Date
@@ -210,7 +210,7 @@ export type SubstationWhereInput = {
   capacity?: Prisma.StringFilter<"Substation"> | string
   code?: Prisma.StringFilter<"Substation"> | string
   location?: Prisma.StringFilter<"Substation"> | string
-  status?: Prisma.EnumInfrastructureStatusFilter<"Substation"> | $Enums.InfrastructureStatus
+  status?: Prisma.EnumInfrastructureStatusNullableFilter<"Substation"> | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFilter<"Substation"> | string
   createdAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
@@ -224,7 +224,7 @@ export type SubstationOrderByWithRelationInput = {
   capacity?: Prisma.SortOrder
   code?: Prisma.SortOrder
   location?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   zoneId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -241,7 +241,7 @@ export type SubstationWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Substation"> | string
   capacity?: Prisma.StringFilter<"Substation"> | string
   location?: Prisma.StringFilter<"Substation"> | string
-  status?: Prisma.EnumInfrastructureStatusFilter<"Substation"> | $Enums.InfrastructureStatus
+  status?: Prisma.EnumInfrastructureStatusNullableFilter<"Substation"> | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFilter<"Substation"> | string
   createdAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
@@ -255,7 +255,7 @@ export type SubstationOrderByWithAggregationInput = {
   capacity?: Prisma.SortOrder
   code?: Prisma.SortOrder
   location?: Prisma.SortOrder
-  status?: Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   zoneId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -273,7 +273,7 @@ export type SubstationScalarWhereWithAggregatesInput = {
   capacity?: Prisma.StringWithAggregatesFilter<"Substation"> | string
   code?: Prisma.StringWithAggregatesFilter<"Substation"> | string
   location?: Prisma.StringWithAggregatesFilter<"Substation"> | string
-  status?: Prisma.EnumInfrastructureStatusWithAggregatesFilter<"Substation"> | $Enums.InfrastructureStatus
+  status?: Prisma.EnumInfrastructureStatusNullableWithAggregatesFilter<"Substation"> | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringWithAggregatesFilter<"Substation"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Substation"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Substation"> | Date | string
@@ -285,7 +285,7 @@ export type SubstationCreateInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   zone: Prisma.ZoneCreateNestedOneWithoutSubstationsInput
@@ -298,7 +298,7 @@ export type SubstationUncheckedCreateInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   zoneId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -311,7 +311,7 @@ export type SubstationUpdateInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.ZoneUpdateOneRequiredWithoutSubstationsNestedInput
@@ -324,7 +324,7 @@ export type SubstationUncheckedUpdateInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,7 +337,7 @@ export type SubstationCreateManyInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   zoneId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -349,7 +349,7 @@ export type SubstationUpdateManyMutationInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -360,7 +360,7 @@ export type SubstationUncheckedUpdateManyInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -431,6 +431,10 @@ export type SubstationUpdateOneRequiredWithoutFeedersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SubstationUpdateToOneWithWhereWithoutFeedersInput, Prisma.SubstationUpdateWithoutFeedersInput>, Prisma.SubstationUncheckedUpdateWithoutFeedersInput>
 }
 
+export type NullableEnumInfrastructureStatusFieldUpdateOperationsInput = {
+  set?: $Enums.InfrastructureStatus | null
+}
+
 export type SubstationCreateNestedManyWithoutZoneInput = {
   create?: Prisma.XOR<Prisma.SubstationCreateWithoutZoneInput, Prisma.SubstationUncheckedCreateWithoutZoneInput> | Prisma.SubstationCreateWithoutZoneInput[] | Prisma.SubstationUncheckedCreateWithoutZoneInput[]
   connectOrCreate?: Prisma.SubstationCreateOrConnectWithoutZoneInput | Prisma.SubstationCreateOrConnectWithoutZoneInput[]
@@ -479,7 +483,7 @@ export type SubstationCreateWithoutFeedersInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   zone: Prisma.ZoneCreateNestedOneWithoutSubstationsInput
@@ -491,7 +495,7 @@ export type SubstationUncheckedCreateWithoutFeedersInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   zoneId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -519,7 +523,7 @@ export type SubstationUpdateWithoutFeedersInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   zone?: Prisma.ZoneUpdateOneRequiredWithoutSubstationsNestedInput
@@ -531,7 +535,7 @@ export type SubstationUncheckedUpdateWithoutFeedersInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -543,7 +547,7 @@ export type SubstationCreateWithoutZoneInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   feeders?: Prisma.FeederCreateNestedManyWithoutSubstationInput
@@ -555,7 +559,7 @@ export type SubstationUncheckedCreateWithoutZoneInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
   feeders?: Prisma.FeederUncheckedCreateNestedManyWithoutSubstationInput
@@ -596,7 +600,7 @@ export type SubstationScalarWhereInput = {
   capacity?: Prisma.StringFilter<"Substation"> | string
   code?: Prisma.StringFilter<"Substation"> | string
   location?: Prisma.StringFilter<"Substation"> | string
-  status?: Prisma.EnumInfrastructureStatusFilter<"Substation"> | $Enums.InfrastructureStatus
+  status?: Prisma.EnumInfrastructureStatusNullableFilter<"Substation"> | $Enums.InfrastructureStatus | null
   zoneId?: Prisma.StringFilter<"Substation"> | string
   createdAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
@@ -608,7 +612,7 @@ export type SubstationCreateManyZoneInput = {
   capacity: string
   code: string
   location: string
-  status?: $Enums.InfrastructureStatus
+  status?: $Enums.InfrastructureStatus | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -619,7 +623,7 @@ export type SubstationUpdateWithoutZoneInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   feeders?: Prisma.FeederUpdateManyWithoutSubstationNestedInput
@@ -631,7 +635,7 @@ export type SubstationUncheckedUpdateWithoutZoneInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   feeders?: Prisma.FeederUncheckedUpdateManyWithoutSubstationNestedInput
@@ -643,7 +647,7 @@ export type SubstationUncheckedUpdateManyWithoutZoneInput = {
   capacity?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.StringFieldUpdateOperationsInput | string
   location?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus
+  status?: Prisma.NullableEnumInfrastructureStatusFieldUpdateOperationsInput | $Enums.InfrastructureStatus | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -757,7 +761,7 @@ export type $SubstationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     capacity: string
     code: string
     location: string
-    status: $Enums.InfrastructureStatus
+    status: $Enums.InfrastructureStatus | null
     zoneId: string
     createdAt: Date
     updatedAt: Date

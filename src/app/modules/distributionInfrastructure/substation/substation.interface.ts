@@ -5,5 +5,6 @@ export interface ISubstationPayload{
     code:string;
     capacity:string;
     location:string;
-    status:InfrastructureStatus
+    zoneId:string;
+    status:InfrastructureStatus;
 }

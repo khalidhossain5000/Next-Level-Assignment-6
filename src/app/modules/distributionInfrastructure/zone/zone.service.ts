@@ -6,7 +6,7 @@ import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../../lib/cloudinary";
 import type { IQuery } from "../../../interfaces/interface";
 import type { ZoneWhereInput } from "../../../../generated/prisma/models";
-import type { ZoneStatus } from "../../../../generated/prisma/enums";
+import { InfrastructureStatus } from "../../../../generated/prisma/enums";
 
 const createZoneInDb = async (
   payload: ICreateZonePayload,
@@ -113,7 +113,7 @@ const getAllZoneFromDb=async(query: IQuery)=>{
 
 	if (query.status) {
 		andConditions.push({
-			status: query.status as ZoneStatus,
+			status: query.status as InfrastructureStatus,
 		});
 	}
 
