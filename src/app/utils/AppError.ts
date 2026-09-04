@@ -5,6 +5,7 @@ export class AppError extends Error {
 
     constructor(statusCode: number, message: string, stack = "") {
         super(message) 
+        console.log(message,'this is message from app error')
 
         this.statusCode = statusCode
 

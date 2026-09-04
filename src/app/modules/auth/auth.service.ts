@@ -158,10 +158,10 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 
 	const templatePath = path.join(
 		process.cwd(),
-		"src/app/templates/patient-welcome-email.ejs",
+		"src/app/templates/welcome-email.ejs",
 	);
 	const templateData = {
-		name: name,
+		name: createdUser.name,
 	};
 	const html = await ejs.renderFile(templatePath, templateData);
 
