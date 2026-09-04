@@ -3,7 +3,7 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import type { IGoogleLoginPayload, ILoginUserPayload, IRegisterUser, IRequestUser, IVerifyEmailPayload } from "./auth.interface"
+import type { IGoogleLoginPayload, ILoginUserPayload, IRegisterUser, IRequestUser, IUpadteUserProfile, IVerifyEmailPayload } from "./auth.interface"
 import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -18,6 +18,9 @@ import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
 import type { TokenPayload } from "google-auth-library";
 import { googleClient } from "../../lib/googleAuth";
+import type { UploadApiResponse } from "cloudinary";
+import { cloudinary } from "../../lib/cloudinary";
+import { Prisma } from "../../../generated/prisma/client";
 
 
 
@@ -555,11 +558,78 @@ const getMe = async (user: IRequestUser) => {
 };
 
 
+//update user profile service
+
+const updateUserProfileInDb=async(payload:IUpadteUserProfile, profileImage: Express.Multer.File | null,userId:string)=>{
+
+  let profileImageUrl: string | null = null;
+  let profileImagePublicId: string | null = null;
+
+//profile image upload
+
+  if (profileImage) {
+    const uploadResult = await new Promise<UploadApiResponse>(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            {
+              resource_type: "image",
+            },
+            (error, result) => {
+              if (error) {
+                return reject(error);
+              }
+
+              if (!result) {
+                return reject(
+                  new AppError(
+                    httpStatus.INTERNAL_SERVER_ERROR,
+                    "No result returned from Cloudinary"
+                  )
+                );
+              }
+
+              resolve(result);
+            }
+          )
+          .end(profileImage.buffer);
+      }
+    );
+
+    profileImageUrl = uploadResult.secure_url;
+    profileImagePublicId = uploadResult.public_id;
+  }
+
+
+
+if(!payload.name) throw new AppError(httpStatus.BAD_REQUEST,"Name is required")
+
+const updateData: Prisma.UserUpdateInput = {
+  name: payload.name,
+};
+
+if (profileImage) {
+  updateData.profileImage = profileImageUrl!;
+  updateData.profileImagePublicId = profileImagePublicId!;
+}
+
+const updatedUser = await prisma.user.update({
+  where: {
+    id: userId,
+  },
+  data: updateData,
+});
+
+return updatedUser
+
+}
+
 export const authServices = {
 	registerUserInDb,
 	verifyOtpAndCreateUser,
 	loginUser,
 	refreshToken,
 	googleLogin,
-	getMe
+	getMe,
+	updateUserProfileInDb
 }

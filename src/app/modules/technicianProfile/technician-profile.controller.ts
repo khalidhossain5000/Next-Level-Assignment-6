@@ -9,12 +9,12 @@ import { TechnicianProfileService } from "./technician-profile.service";
 
 const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) => {
     const resume = req.file;
-   
+
     if (!resume) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Resume is required"
-      );
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "Resume is required"
+        );
     }
 
 
@@ -27,10 +27,10 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
     }
 
     const payload = zodValidationResult.data;
-    const technicianUserId=req.user?.userId
-    console.log(resume, "thisis the files in controller", payload,technicianUserId)
+    const technicianUserId = req.user?.userId
+    console.log(resume, "thisis the files in controller", payload, technicianUserId)
 
-const result=await TechnicianProfileService.updateTechnicicanProfileInDb(payload,resume,technicianUserId as string)
+    const result = await TechnicianProfileService.updateTechnicicanProfileInDb(payload, resume, technicianUserId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -38,6 +38,9 @@ const result=await TechnicianProfileService.updateTechnicicanProfileInDb(payload
         data: result,
     });
 });
+
+
+
 
 
 

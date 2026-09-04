@@ -5,6 +5,7 @@ import { authServices } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { AppError } from "../../utils/AppError";
 import { IRequestUser } from "./auth.interface";
+
 const registerUser=catchAsync(async (req: Request, res: Response) => {
 	console.log("register user hited controller", req.body);
 
@@ -168,6 +169,26 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+//update user profile controller
+
+
+const updateUserProfile=catchAsync(async (req: Request, res: Response) => {
+	const profileImageFile=req.file as Express.Multer.File | undefined
+
+
+
+	const payload = JSON.parse(req.body.data);
+	const userId=req.user?.userId
+
+	const result=await authServices.updateUserProfileInDb(payload,profileImageFile ?? null,userId as string)
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "User profile updated successfully",
+		data: result,
+	});
+})
 
 
 
@@ -177,5 +198,6 @@ export const authController={
 	loginUser,
 	refreshToken,
 	googleLoginUser,
-	getMe
+	getMe,
+	updateUserProfile
 }

@@ -4,6 +4,7 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status"
 import { prisma } from "../../lib/prisma";
 import type { ITechcianProfileUploadPayload } from "./technician-profile.interface";
+
 const updateTechnicicanProfileInDb = async (payload: ITechcianProfileUploadPayload, resume: Express.Multer.File | null,
  technicianUserId: string)=> {
     //s-1 upload resume
@@ -37,7 +38,6 @@ const updateTechnicicanProfileInDb = async (payload: ITechcianProfileUploadPaylo
         },
     );
 
-    console.log({ resumeUploadResult }, 'RESUME UPLOAD RESULT IS HERE');
 
 //now resume is upload now update it in technical profile
 

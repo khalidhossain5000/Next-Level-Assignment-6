@@ -35,3 +35,7 @@ export interface IRequestUser {
 	name: string;
 	role: Role;
 }
+
+export interface IUpadteUserProfile{
+	name:string;
+}
