@@ -1,3 +1,6 @@
+import { LoadSheddingStatus } from "../../../generated/prisma/enums";
+import { LoadSheddingWhereInput } from "../../../generated/prisma/models";
+import { IQuery } from "../../interfaces/interface";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import { ILoadSheddingPayload } from "./load-shedding.interface"
@@ -96,8 +99,74 @@ const createLoadSheddingScheduleInDb = async (
 
 //get all load shedding schedule
 
-const getAllLoadSheddingSchdeule=async()=>{
-    
+const getAllLoadSheddingSchdeule=async(query:IQuery)=>{
+    const limit = query.limit ? Number(query.limit) : 10;
+            const page = query.page ? Number(query.page) : 1;
+            const skip = (page - 1) * limit;
+            const sortBy = query.sortBy ? query.sortBy : "createdAt";
+            const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+        
+        
+            const andConditions: LoadSheddingWhereInput[] = []
+        
+        
+            //Searching
+            if (query.searchTerm) {
+                andConditions.push({
+                    OR: [
+                        { title: { contains: query.searchTerm, mode: "insensitive" } },
+                        {
+                            reason: {
+                                contains: query.searchTerm,
+                                mode: "insensitive",
+                            },
+                        },
+        
+                    ],
+                });
+            }
+        
+         
+        
+            if (query.status) {
+                andConditions.push({
+                    status: query.status as LoadSheddingStatus,
+                });
+            }
+        
+        
+            const allLoadsheddingSchdeule = await prisma.loadShedding.findMany({
+                where: {
+                    AND: andConditions.length > 0 ? andConditions : undefined
+                },
+                take: limit,
+                skip: skip,
+                orderBy: {
+                    [sortBy]: sortOrder
+                },
+                include: {
+                    area:true,
+
+                }
+            })
+        
+            const totalLoadSheddingCount = await prisma.loadShedding.count({
+                where: {
+                    AND: andConditions
+                }
+            })
+        
+        
+            return {
+                data: allLoadsheddingSchdeule,
+                meta: {
+                    page,
+                    limit,
+                    total: totalLoadSheddingCount,
+                    totalPages: Math.ceil(totalLoadSheddingCount / limit)
+                }
+            }
+        
 }
 
 export const LoadSheddingService = {
