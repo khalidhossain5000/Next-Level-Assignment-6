@@ -1,7 +1,8 @@
 /** biome-ignore-all lint/style/useNodejsImportProtocol: <explanation> */
+/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import type { ILoginUserPayload, IRegisterUser, IVerifyEmailPayload } from "./auth.interface"
+import type { IGoogleLoginPayload, ILoginUserPayload, IRegisterUser, IVerifyEmailPayload } from "./auth.interface"
 import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -10,9 +11,11 @@ import path from "path"
 import ejs from "ejs"
 import { transporter } from "../../lib/nodemailer";
 import config from "../../config";
-import { Role } from "../../../generated/prisma/enums";
+import { AuthProvider, Role, UserStatus } from "../../../generated/prisma/enums";
 import { jwtUtils } from "../../utils/jwt";
 import { JwtPayload, SignOptions } from "jsonwebtoken";
+import { TokenPayload } from "google-auth-library";
+import { googleClient } from "../../lib/googleAuth";
 
 
 
@@ -340,7 +343,194 @@ const refreshToken = async (token: string) => {
 
 
 
+//google login
 
+const googleLogin = async (payload: IGoogleLoginPayload) => {
+  let googleIdTokenPayload: TokenPayload | null | undefined = null;
+
+  // 1. Verify Google ID token
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: payload.idToken,
+      audience: config.google_client_id,
+    });
+
+    googleIdTokenPayload = ticket.getPayload();
+  } catch (error) {
+    console.log("Google login id token failed", error);
+
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Invalid or expired Google ID token"
+    );
+  }
+
+  if (!googleIdTokenPayload) {
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Invalid or expired Google ID token"
+    );
+  }
+
+  if (!googleIdTokenPayload.email) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Email not found in Google account"
+    );
+  }
+
+  if (!googleIdTokenPayload.name) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Name not found in Google account"
+    );
+  }
+
+  const email = googleIdTokenPayload.email.trim().toLowerCase();
+  const googleId = googleIdTokenPayload.sub;
+
+  // 2. First check existing Google user
+  let user = await prisma.user.findUnique({
+    where: {
+      googleId,
+    },
+  });
+
+  // 3. Existing Google user
+  if (user) {
+    if (user.status === UserStatus.BAN) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "User is banned"
+      );
+    }
+
+   
+  }
+
+  // 4. If Google user not found, check email
+  if (!user) {
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    // 5. Same email exists as credential user
+    if (existingUser) {
+      if (!existingUser.emailVerified) {
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "Email is not verified"
+        );
+      }
+
+      if (existingUser.status === UserStatus.BAN) {
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "User is banned"
+        );
+      }
+
+      // Link Google account with existing user
+      user = await prisma.user.update({
+        where: {
+          id: existingUser.id,
+        },
+        data: {
+          googleId,
+        },
+      });
+    }
+  }
+
+  // 6. Completely new Google user
+  if (!user) {
+    // New user registration needs role
+    if (!payload.role) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Role is required for new Google registration"
+      );
+    }
+
+    // Public Google registration should not allow ADMIN
+    if (
+      payload.role !== Role.CUSTOMER &&
+      payload.role !== Role.TECHNICIAN
+    ) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Invalid registration role"
+      );
+    }
+
+    user = await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          name: googleIdTokenPayload!.name!,
+          email,
+          profileImage: googleIdTokenPayload!.picture,
+          role: payload.role!,
+          googleId,
+          authProvider: AuthProvider.GOOGLE,
+          emailVerified: true,
+        },
+      
+      });
+
+      if (createdUser.role === Role.TECHNICIAN) {
+        await tx.technicianProfile.create({
+          data: {
+            userId: createdUser.id,
+          },
+        });
+      }
+
+      return createdUser;
+    });
+  }
+
+  // 7. Final safety check
+  if (!user) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "User not found"
+    );
+  }
+
+  if (user.status === UserStatus.BAN) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "User is banned"
+    );
+  }
+
+  // 8. Generate JWT payload
+  const jwtPayload = {
+    userId: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_access_secret,
+    config.jwt_access_expires_in as SignOptions
+  );
+
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.jwt_refresh_secret,
+    config.jwt_refresh_expires_in as SignOptions
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
+};
 
 
 
