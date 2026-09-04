@@ -1,10 +1,10 @@
 import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
 import { LoadSheddingService } from "./load-shedding.service";
-
+import httpStatus from "http-status"
 const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
 
-    const userId=req.user?.userId
 
     const result = await LoadSheddingService.createLoadSheddingScheduleInDb(payload)
 
