@@ -13,13 +13,13 @@ router.post("/",auth(Role.CUSTOMER),validateRequest(outageValidation.createOutag
 //--get all unexpected outage for admin manage
 router.get("/",auth(Role.ADMIN),OutageController.getAllOutageForAdminManage)
 
-//-- get  unexpected outage details
+//-- get  unexpected outage details (WILL DONE LATER IF NEEDED)
 
 
 
 //--get my (currentuser addeda ll ) outage
 
-
+router.get("/",auth(Role.CUSTOMER),OutageController.getCurrentUserAddedOutages)
 //--update outage
 
 //--assign technician to solve this outage admin only

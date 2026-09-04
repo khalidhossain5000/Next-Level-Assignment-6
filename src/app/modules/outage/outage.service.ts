@@ -93,7 +93,34 @@ const getAllOutageFromDb=async(query:IQuery)=>{
     
 }
 
+
+
+
+
+//get current user added all outages
+
+const getCurrentUserAddedAllOutagesFromDb=async(userId:string)=>{
+const currentUserOutages=await prisma.outage.findMany({
+    where:{
+        userId
+    },
+    include:{
+        techician:true,
+        user:true
+    }
+})
+
+return currentUserOutages
+}
+
+
+
+
+
+
+
 export const OutageService = {
     createOutageInDb,
-    getAllOutageFromDb
+    getAllOutageFromDb,
+    getCurrentUserAddedAllOutagesFromDb
 }

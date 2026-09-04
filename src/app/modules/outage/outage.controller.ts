@@ -21,7 +21,7 @@ const createOutage = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-//get all zone with pagination search filter admin
+//get all outages with pagination search filter admin
 const getAllOutageForAdminManage = catchAsync(async (req: Request, res: Response) => {
 
 
@@ -35,25 +35,30 @@ const getAllOutageForAdminManage = catchAsync(async (req: Request, res: Response
     });
 });
 
-//zone detailss
 
-const getOutageDetails = catchAsync(async (req: Request, res: Response) => {
+//get all outage for current logged user which he added
 
-    const areaId = req.params.areaId
+const getCurrentUserAddedOutages = catchAsync(async (req: Request, res: Response) => {
 
-    const result = await AreaService.getAreaDetails(areaId as string)
+    const userId=req.user?.userId
+
+    const result=await OutageService.getCurrentUserAddedAllOutagesFromDb(userId as string)
+
+
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Area Details Retrieved Successfully",
+        message: "All Outages Retrieved Successfully",
         data: result,
-
+       
     });
 });
+
 
 
 export const OutageController = {
     createOutage,
     getAllOutageForAdminManage,
-    getAreaDetails
+    getCurrentUserAddedOutages
+    
 }
