@@ -5,6 +5,7 @@ import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import { notFound } from "./app/middlewares/notFound";
 import config from "./app/config";
 import { AuthRoutes } from "./app/modules/auth/auth.route";
+import { TechnicianRoutes } from "./app/modules/technicianProfile/technician-profile.route";
 const app: Application = express();
 
 //cors setup
@@ -32,8 +33,10 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/v1/auth",AuthRoutes)
 
 
+//technician profile
 
 
+app.use("/api/v1/technician",TechnicianRoutes)
 
 
 
