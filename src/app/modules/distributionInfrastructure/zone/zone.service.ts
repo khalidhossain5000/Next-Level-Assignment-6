@@ -4,9 +4,9 @@ import httpStatus from "http-status";
 import type { ICreateZonePayload } from "./zone.interface";
 import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../../lib/cloudinary";
-import { IQuery } from "../../../interfaces/interface";
-import { ZoneWhereInput } from "../../../../generated/prisma/models";
-import { ZoneStatus } from "../../../../generated/prisma/enums";
+import type { IQuery } from "../../../interfaces/interface";
+import type { ZoneWhereInput } from "../../../../generated/prisma/models";
+import type { ZoneStatus } from "../../../../generated/prisma/enums";
 
 const createZoneInDb = async (
   payload: ICreateZonePayload,
@@ -104,8 +104,6 @@ const getAllZoneFromDb=async(query: IQuery)=>{
 		});
 	}
 
-
-
 	//filtering
 	if (query.code) {
 		andConditions.push({
@@ -160,12 +158,22 @@ return {
 }
 
 
+//get zone details public route
 
+const getZoneDetails=async(zoneId:string)=>{
+    const zoneDetails=await prisma.zone.findUnique({
+        where:{
+            id:zoneId
+        }
+    })
+    return zoneDetails
+}
 
 
 
 
 export const ZoneService = {
   createZoneInDb,
-  getAllZoneFromDb
+  getAllZoneFromDb,
+  getZoneDetails
 };
