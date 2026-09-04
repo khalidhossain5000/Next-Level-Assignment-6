@@ -4,8 +4,8 @@ model Zone {
     code              String     @db.VarChar(10) @unique
     description       String
     status            ZoneStatus @default(ACTIVE)
-    zoneImageUrl      String?
-    zoneImagePublicId String?
+    zoneImageUrl      String
+    zoneImagePublicId String
     substations       Substation[]
     createdAt         DateTime   @default(now())
     updatedAt         DateTime   @updatedAt

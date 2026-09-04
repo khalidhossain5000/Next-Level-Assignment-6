@@ -173,6 +173,7 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 
 
 const updateUserProfile=catchAsync(async (req: Request, res: Response) => {
+	
 	const profileImageFile=req.file as Express.Multer.File | undefined
 
 
