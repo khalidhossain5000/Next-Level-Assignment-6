@@ -20,7 +20,7 @@ const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
 
 
 const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
-  
+
 
 
     const result = await LoadSheddingService.getAllLoadSheddingSchdeule(req.query)
@@ -55,8 +55,8 @@ const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) =>
 const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response) => {
 
     const loadsheddingId = req.params.loadsheddingId
-
-    const result = await LoadSheddingService.getLoadSheddingDetails(loadsheddingId as string)
+    const payload = req.body
+    const result = await LoadSheddingService.updateSchedule(payload, loadsheddingId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -68,8 +68,8 @@ const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response
 
 
 export const LoadSheddingController = {
-createLoadShedding,
-getAllLoadShedding,
-getLoadSheddingDetails,
-updateLoadSheddingSchedule
+    createLoadShedding,
+    getAllLoadShedding,
+    getLoadSheddingDetails,
+    updateLoadSheddingSchedule
 }
