@@ -5,9 +5,12 @@ import { OutageService } from "./outage.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 
-const createArea = catchAsync(async (req: Request, res: Response) => {
+const createOutage = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-    const result = await OutageService.createOutageInDb(payload)
+
+    const userId=req.user?.userId
+
+    const result = await OutageService.createOutageInDb(payload,userId as string)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -50,7 +53,7 @@ const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
 
 
 export const OutageController = {
-    createArea,
+    createOutage,
     getAllArea,
     getAreaDetails
 }
