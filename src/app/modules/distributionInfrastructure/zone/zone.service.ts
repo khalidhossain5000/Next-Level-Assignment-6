@@ -167,4 +167,5 @@ return {
 
 export const ZoneService = {
   createZoneInDb,
+  getAllZoneFromDb
 };

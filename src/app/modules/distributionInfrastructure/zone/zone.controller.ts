@@ -29,7 +29,22 @@ const createZone = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+//get all zone with pagination search filter
+const getAllZone = catchAsync(async (req: Request, res: Response) => {
+	
+
+	const {data, meta} = await ZoneService.getAllZoneFromDb(req.query)
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "All Zone Retrieved Successfully",
+		data: data,
+		meta : meta,
+	});
+});
+
 
 export const ZoneController = {
-    createZone
+    createZone,
+    getAllZone
 }
