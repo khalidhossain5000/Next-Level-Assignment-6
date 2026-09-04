@@ -31,7 +31,7 @@ const getAllArea = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-//zone details 
+//zone detailss
 
 const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
 
