@@ -10,10 +10,6 @@ const router = Router();
 
 //patch to update technican profile
 
-router.patch("/", auth(Role.TECHNICIAN), upload.fields([
-    {
-        name: "resume",
-        maxCount: 1,
-    }]),TechnicianProfileController.updateTechnicianProfile)
+router.patch("/", auth(Role.TECHNICIAN), upload.single("resume"),TechnicianProfileController.updateTechnicianProfile)
 
 export const TechnicianRoutes = router;
