@@ -3,13 +3,9 @@ import { catchAsync } from "../../../utils/catchAsync";
 import { SubstationService } from "./substation.service";
 import httpStatus from "http-status"
 import { sendResponse } from "../../../utils/sendResponse";
+
 const createSubstation = catchAsync(async (req: Request, res: Response) => {
-    
-
     const payload = req.body
-
-   
-
     const result = await SubstationService.createSubstation(payload)
 
     sendResponse(res, {
@@ -21,6 +17,6 @@ const createSubstation = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const SubstationController={
+export const SubstationController = {
     createSubstation
 }
