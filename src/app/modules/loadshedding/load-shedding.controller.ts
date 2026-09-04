@@ -23,7 +23,7 @@ const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
   
 
 
-    const result = await LoadSheddingService.getAllLoadSheddingSchdeule
+    const result = await LoadSheddingService.getAllLoadSheddingSchdeule(req.query)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -40,7 +40,7 @@ const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) =>
 
     const loadsheddingId = req.params.loadsheddingId
 
-    const result = await ZoneService.getZoneDetails(loadsheddingId as string)
+    const result = await LoadSheddingService.getLoadSheddingDetails(loadsheddingId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
