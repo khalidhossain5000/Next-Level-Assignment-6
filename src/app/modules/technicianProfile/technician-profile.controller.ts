@@ -5,6 +5,7 @@ import httpStatus from "http-status"
 import { sendResponse } from "../../utils/sendResponse";
 import { AppError } from "../../utils/AppError";
 import { technicianProfileZodSchema } from "./technician-profile.validation";
+import { TechnicianProfileService } from "./technician-profile.service";
 
 const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) => {
     const resume = req.file;
@@ -16,7 +17,7 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
       );
     }
 
-    
+
     const zodValidationResult = technicianProfileZodSchema.safeParse(
         JSON.parse(req.body.data),
     );
@@ -29,7 +30,7 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
     const technicianUserId=req.user?.userId
     console.log(resume, "thisis the files in controller", payload,technicianUserId)
 
-
+const result=await TechnicianProfileService.updateTechnicicanProfileInDb(payload,resume,technicianUserId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
