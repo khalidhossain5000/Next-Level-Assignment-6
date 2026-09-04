@@ -2,29 +2,30 @@ import type { Request, Response } from "express";
 import { catchAsync } from "../../../utils/catchAsync";
 import httpStatus from "http-status"
 import { sendResponse } from "../../../utils/sendResponse";
+import { AreaService } from "./area.service";
 
-const createFeeder = catchAsync(async (req: Request, res: Response) => {
+const createArea = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-    const result = await    (payload)
+    const result = await    AreaService.createAreaInDb(payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Feeder created successfully",
+        message: "Area created successfully",
         data: result,
     });
 });
 
 
 //get all zone with pagination search filter
-const getAllFeeder = catchAsync(async (req: Request, res: Response) => {
+const getAllArea = catchAsync(async (req: Request, res: Response) => {
 
 
-    const { data, meta } = await FeederService.getAllFeederFromDb(req.query)
+    const { data, meta } = await    AreaService.getAllAreaFromDb(req.query)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "All Feeder Retrieved Successfully",
+        message: "All Area Retrieved Successfully",
         data: data,
         meta: meta,
     });
@@ -32,23 +33,23 @@ const getAllFeeder = catchAsync(async (req: Request, res: Response) => {
 
 //zone details 
 
-const getFeederDetails = catchAsync(async (req: Request, res: Response) => {
+const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
 
-    const feederId = req.params.feederId
+    const areaId = req.params.areaId
 
-    const result = await FeederService.getFeederDetails(feederId as string)
+    const result = await AreaService.getAreaDetails(areaId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Feeder Details Retrieved Successfully",
+        message: " Area Details Retrieved Successfully",
         data: result,
 
     });
 });
 
 
-export const FeederController = {
-    createFeeder,
-    getAllFeeder,
-    getFeederDetails
+export const AreaController = {
+    createArea,
+    getAllArea,
+    getAreaDetails
 }
