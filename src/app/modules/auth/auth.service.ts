@@ -106,7 +106,7 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 		where: { email },
 	});
 
-	
+
 
 	if (isUserExist && isUserExist.emailVerified === true) throw new AppError(httpStatus.BAD_REQUEST, "User already verified,Please login now");
 
@@ -152,15 +152,15 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 				}
 			})
 		}
-	
+
 
 		return user
 	})
-		await redisClient.del(userRegisterKey);
+	await redisClient.del(userRegisterKey);
 
 
 
-//ewlcome emil startshere here
+	//ewlcome emil startshere here
 
 	const templatePath = path.join(
 		process.cwd(),
@@ -236,20 +236,20 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 
 //login user with email pass
 
-const loginUser=async(payload:ILoginUserPayload)=>{
-		const { password } = payload;
+const loginUser = async (payload: ILoginUserPayload) => {
+	const { password } = payload;
 	const email = payload.email.trim().toLowerCase();
 
-	const user=await prisma.user.findUnique({
-		where:{
+	const user = await prisma.user.findUnique({
+		where: {
 			email
 		}
 	})
 
-if(!user)  throw new AppError(httpStatus.NOT_FOUND,"User havent register yet,register first")
+	if (!user) throw new AppError(httpStatus.NOT_FOUND, "User havent register yet,register first")
 
 
-if(user.status==="BAN") throw new AppError(httpStatus.BAD_REQUEST,"User is banned")
+	if (user.status === "BAN") throw new AppError(httpStatus.BAD_REQUEST, "User is banned")
 
 
 
@@ -259,7 +259,7 @@ if(user.status==="BAN") throw new AppError(httpStatus.BAD_REQUEST,"User is banne
 	);
 
 
-if(!isPasswordMatched) throw new AppError(httpStatus.UNAUTHORIZED,"Invalid credentials try again")
+	if (!isPasswordMatched) throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials try again")
 
 
 
@@ -271,7 +271,7 @@ if(!isPasswordMatched) throw new AppError(httpStatus.UNAUTHORIZED,"Invalid crede
 	}
 
 
-const accessToken = jwtUtils.createToken(
+	const accessToken = jwtUtils.createToken(
 		jwtPayload,
 		config.jwt_access_secret,
 		config.jwt_access_expires_in as SignOptions,
@@ -284,10 +284,10 @@ const accessToken = jwtUtils.createToken(
 	);
 
 
-return {
-	accessToken,
-	refreshToken
-}
+	return {
+		accessToken,
+		refreshToken
+	}
 
 
 }
@@ -315,7 +315,7 @@ const refreshToken = async (token: string) => {
 		where: { id: data.userId },
 	});
 
-	if (!user  || user.status !== "ACTIVE") {
+	if (!user || user.status !== "ACTIVE") {
 		throw new AppError(httpStatus.UNAUTHORIZED, "User is inactive or not found");
 	}
 
@@ -349,190 +349,190 @@ const refreshToken = async (token: string) => {
 //google login
 
 const googleLogin = async (payload: IGoogleLoginPayload) => {
-  let googleIdTokenPayload: TokenPayload | null | undefined = null;
+	let googleIdTokenPayload: TokenPayload | null | undefined = null;
 
-  // 1. Verify Google ID token
-  try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: payload.idToken,
-      audience: config.google_client_id,
-    });
+	// 1. Verify Google ID token
+	try {
+		const ticket = await googleClient.verifyIdToken({
+			idToken: payload.idToken,
+			audience: config.google_client_id,
+		});
 
-    googleIdTokenPayload = ticket.getPayload();
-  } catch (error) {
-    console.log("Google login id token failed", error);
+		googleIdTokenPayload = ticket.getPayload();
+	} catch (error) {
+		console.log("Google login id token failed", error);
 
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "Invalid or expired Google ID token"
-    );
-  }
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Invalid or expired Google ID token"
+		);
+	}
 
-  if (!googleIdTokenPayload) {
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "Invalid or expired Google ID token"
-    );
-  }
+	if (!googleIdTokenPayload) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			"Invalid or expired Google ID token"
+		);
+	}
 
-  if (!googleIdTokenPayload.email) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Email not found in Google account"
-    );
-  }
+	if (!googleIdTokenPayload.email) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Email not found in Google account"
+		);
+	}
 
-  if (!googleIdTokenPayload.name) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Name not found in Google account"
-    );
-  }
+	if (!googleIdTokenPayload.name) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Name not found in Google account"
+		);
+	}
 
-  const email = googleIdTokenPayload.email.trim().toLowerCase();
-  const googleId = googleIdTokenPayload.sub;
+	const email = googleIdTokenPayload.email.trim().toLowerCase();
+	const googleId = googleIdTokenPayload.sub;
 
-  // 2. First check existing Google user
-  let user = await prisma.user.findUnique({
-    where: {
-      googleId,
-    },
-  });
+	// 2. First check existing Google user
+	let user = await prisma.user.findUnique({
+		where: {
+			googleId,
+		},
+	});
 
-  // 3. Existing Google user
-  if (user) {
-    if (user.status === UserStatus.BAN) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "User is banned"
-      );
-    }
+	// 3. Existing Google user
+	if (user) {
+		if (user.status === UserStatus.BAN) {
+			throw new AppError(
+				httpStatus.FORBIDDEN,
+				"User is banned"
+			);
+		}
 
-   
-  }
 
-  // 4. If Google user not found, check email
-  if (!user) {
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+	}
 
-    // 5. Same email exists as credential user
-    if (existingUser) {
-      if (!existingUser.emailVerified) {
-        throw new AppError(
-          httpStatus.FORBIDDEN,
-          "Email is not verified"
-        );
-      }
+	// 4. If Google user not found, check email
+	if (!user) {
+		const existingUser = await prisma.user.findUnique({
+			where: {
+				email,
+			},
+		});
 
-      if (existingUser.status === UserStatus.BAN) {
-        throw new AppError(
-          httpStatus.FORBIDDEN,
-          "User is banned"
-        );
-      }
+		// 5. Same email exists as credential user
+		if (existingUser) {
+			if (!existingUser.emailVerified) {
+				throw new AppError(
+					httpStatus.FORBIDDEN,
+					"Email is not verified"
+				);
+			}
 
-      // Link Google account with existing user
-      user = await prisma.user.update({
-        where: {
-          id: existingUser.id,
-        },
-        data: {
-          googleId,
-        },
-      });
-    }
-  }
+			if (existingUser.status === UserStatus.BAN) {
+				throw new AppError(
+					httpStatus.FORBIDDEN,
+					"User is banned"
+				);
+			}
 
-  // 6. Completely new Google user
-  if (!user) {
-    // New user registration needs role
-    if (!payload.role) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Role is required for new Google registration"
-      );
-    }
+			// Link Google account with existing user
+			user = await prisma.user.update({
+				where: {
+					id: existingUser.id,
+				},
+				data: {
+					googleId,
+				},
+			});
+		}
+	}
 
-    // Public Google registration should not allow ADMIN
-    if (
-      payload.role !== Role.CUSTOMER &&
-      payload.role !== Role.TECHNICIAN
-    ) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Invalid registration role"
-      );
-    }
+	// 6. Completely new Google user
+	if (!user) {
+		// New user registration needs role
+		if (!payload.role) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"Role is required for new Google registration"
+			);
+		}
 
-    user = await prisma.$transaction(async (tx) => {
-      const createdUser = await tx.user.create({
-        data: {
-          name: googleIdTokenPayload!.name!,
-          email,
-          profileImage: googleIdTokenPayload!.picture,
-          role: payload.role!,
-          googleId,
-          authProvider: AuthProvider.GOOGLE,
-          emailVerified: true,
-        },
-      
-      });
+		// Public Google registration should not allow ADMIN
+		if (
+			payload.role !== Role.CUSTOMER &&
+			payload.role !== Role.TECHNICIAN
+		) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"Invalid registration role"
+			);
+		}
 
-      if (createdUser.role === Role.TECHNICIAN) {
-        await tx.technicianProfile.create({
-          data: {
-            userId: createdUser.id,
-          },
-        });
-      }
+		user = await prisma.$transaction(async (tx) => {
+			const createdUser = await tx.user.create({
+				data: {
+					name: googleIdTokenPayload!.name!,
+					email,
+					profileImage: googleIdTokenPayload!.picture,
+					role: payload.role!,
+					googleId,
+					authProvider: AuthProvider.GOOGLE,
+					emailVerified: true,
+				},
 
-      return createdUser;
-    });
-  }
+			});
 
-  // 7. Final safety check
-  if (!user) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "User not found"
-    );
-  }
+			if (createdUser.role === Role.TECHNICIAN) {
+				await tx.technicianProfile.create({
+					data: {
+						userId: createdUser.id,
+					},
+				});
+			}
 
-  if (user.status === UserStatus.BAN) {
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "User is banned"
-    );
-  }
+			return createdUser;
+		});
+	}
 
-  // 8. Generate JWT payload
-  const jwtPayload = {
-    userId: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-  };
+	// 7. Final safety check
+	if (!user) {
+		throw new AppError(
+			httpStatus.NOT_FOUND,
+			"User not found"
+		);
+	}
 
-  const accessToken = jwtUtils.createToken(
-    jwtPayload,
-    config.jwt_access_secret,
-    config.jwt_access_expires_in as SignOptions
-  );
+	if (user.status === UserStatus.BAN) {
+		throw new AppError(
+			httpStatus.FORBIDDEN,
+			"User is banned"
+		);
+	}
 
-  const refreshToken = jwtUtils.createToken(
-    jwtPayload,
-    config.jwt_refresh_secret,
-    config.jwt_refresh_expires_in as SignOptions
-  );
+	// 8. Generate JWT payload
+	const jwtPayload = {
+		userId: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
+	};
 
-  return {
-    accessToken,
-    refreshToken,
-  };
+	const accessToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_access_secret,
+		config.jwt_access_expires_in as SignOptions
+	);
+
+	const refreshToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_refresh_secret,
+		config.jwt_refresh_expires_in as SignOptions
+	);
+
+	return {
+		accessToken,
+		refreshToken,
+	};
 };
 
 
@@ -543,7 +543,7 @@ const getMe = async (user: IRequestUser) => {
 			id: user.userId,
 		},
 		include: {
-			technicianProfile:true
+			technicianProfile: true
 		},
 		omit: {
 			password: true,
@@ -560,67 +560,70 @@ const getMe = async (user: IRequestUser) => {
 
 //update user profile service
 
-const updateUserProfileInDb=async(payload:IUpadteUserProfile, profileImage: Express.Multer.File | null,userId:string)=>{
+const updateUserProfileInDb = async (payload: IUpadteUserProfile, profileImage: Express.Multer.File | null, userId: string) => {
 
-  let profileImageUrl: string | null = null;
-  let profileImagePublicId: string | null = null;
+	let profileImageUrl: string | null = null;
+	let profileImagePublicId: string | null = null;
 
-//profile image upload
+	//profile image upload
 
-  if (profileImage) {
-    const uploadResult = await new Promise<UploadApiResponse>(
-      (resolve, reject) => {
-        cloudinary.uploader
-          .upload_stream(
-            {
-              resource_type: "image",
-            },
-            (error, result) => {
-              if (error) {
-                return reject(error);
-              }
+	if (profileImage) {
+		const uploadResult = await new Promise<UploadApiResponse>(
+			(resolve, reject) => {
+				cloudinary.uploader
+					.upload_stream(
+						{
+							resource_type: "image",
+						},
+						(error, result) => {
+							if (error) {
+								return reject(error);
+							}
 
-              if (!result) {
-                return reject(
-                  new AppError(
-                    httpStatus.INTERNAL_SERVER_ERROR,
-                    "No result returned from Cloudinary"
-                  )
-                );
-              }
+							if (!result) {
+								return reject(
+									new AppError(
+										httpStatus.INTERNAL_SERVER_ERROR,
+										"No result returned from Cloudinary"
+									)
+								);
+							}
 
-              resolve(result);
-            }
-          )
-          .end(profileImage.buffer);
-      }
-    );
+							resolve(result);
+						}
+					)
+					.end(profileImage.buffer);
+			}
+		);
 
-    profileImageUrl = uploadResult.secure_url;
-    profileImagePublicId = uploadResult.public_id;
-  }
+		profileImageUrl = uploadResult.secure_url;
+		profileImagePublicId = uploadResult.public_id;
+	}
 
 
 
-if(!payload.name) throw new AppError(httpStatus.BAD_REQUEST,"Name is required")
+	if (!payload.name) throw new AppError(httpStatus.BAD_REQUEST, "Name is required")
 
-const updateData: Prisma.UserUpdateInput = {
-  name: payload.name,
-};
+	const updateData: Prisma.UserUpdateInput = {
+		name: payload.name,
+	};
 
-if (profileImage) {
-  updateData.profileImage = profileImageUrl!;
-  updateData.profileImagePublicId = profileImagePublicId!;
-}
+	if (profileImage) {
+		updateData.profileImage = profileImageUrl!;
+		updateData.profileImagePublicId = profileImagePublicId!;
+	}
 
-const updatedUser = await prisma.user.update({
-  where: {
-    id: userId,
-  },
-  data: updateData,
-});
+	const updatedUser = await prisma.user.update({
+		where: {
+			id: userId,
+		},
+		data: updateData,
+		omit: {
+			password: true
+		}
+	});
 
-return updatedUser
+	return updatedUser
 
 }
 
