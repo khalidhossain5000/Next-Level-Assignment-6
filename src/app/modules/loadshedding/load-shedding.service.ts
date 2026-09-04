@@ -170,5 +170,6 @@ const getAllLoadSheddingSchdeule=async(query:IQuery)=>{
 }
 
 export const LoadSheddingService = {
-createLoadSheddingScheduleInDb
+createLoadSheddingScheduleInDb,
+getAllLoadSheddingSchdeule
 }

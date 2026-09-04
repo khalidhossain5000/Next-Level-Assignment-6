@@ -19,8 +19,24 @@ const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
+  
+
+
+    const result = await LoadSheddingService.getAllLoadSheddingSchdeule
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "All LoadShedding schedule Retrived successfully",
+        data: result,
+    });
+});
+
+
 
 
 export const LoadSheddingController = {
-createLoadShedding
+createLoadShedding,
+getAllLoadShedding
 }
