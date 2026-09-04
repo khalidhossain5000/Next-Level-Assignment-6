@@ -17,6 +17,39 @@ const createSubstation = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+//get all zone with pagination search filter
+const getAllSubstation = catchAsync(async (req: Request, res: Response) => {
+
+
+    const { data, meta } = await SubstationService.getAllSubstationFromDb(req.query)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "All Substation Retrieved Successfully",
+        data: data,
+        meta: meta,
+    });
+});
+
+//zone details 
+
+const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
+
+    const substationId = req.params.substationId
+
+    const result = await SubstationService.getSubstationDetails(substationId as string)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: " Zone Details Successfully",
+        data: result,
+
+    });
+});
+
+
 export const SubstationController = {
-    createSubstation
+    createSubstation,
+    getAllSubstation,
+    getSubstationDetails
 }

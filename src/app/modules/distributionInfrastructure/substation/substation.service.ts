@@ -120,5 +120,6 @@ const getSubstationDetails=async(substationId:string)=>{
 
 export const SubstationService={
     createSubstation,
-    getAllSubstationFromDb
+    getAllSubstationFromDb,
+    getSubstationDetails
 }
