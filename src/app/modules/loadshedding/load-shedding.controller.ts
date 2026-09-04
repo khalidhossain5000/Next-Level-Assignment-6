@@ -50,7 +50,7 @@ const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) =>
     });
 });
 
-
+//update load
 
 
 export const LoadSheddingController = {
