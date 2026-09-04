@@ -29,3 +29,17 @@ enum InfrastructureStatus {
 }
 
 
+enum OutagePriority {
+  HIGH
+  NORMAL
+}
+
+
+enum OutageStatus {
+  REPORTED
+  ACKNOWLEDGED
+  ASSIGNED
+  IN_PROGRESS
+  RESTORED
+  REJECTED
+}

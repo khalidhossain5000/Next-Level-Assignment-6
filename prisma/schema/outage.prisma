@@ -1,0 +1,19 @@
+model Outage {
+    id  String    @id @default(uuid())
+    cause String 
+    description String
+    priority OutagePriority @default(NORMAL)
+    reported_At DateTime @default(now())
+
+
+
+
+
+
+
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+
+
+
+}
