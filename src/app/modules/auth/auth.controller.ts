@@ -66,13 +66,16 @@ const loginUser=catchAsync(async (req: Request, res: Response) => {
 
 	const payload = req.body;
 
-	await authServices.loginUser(payload)
+	const {accessToken,refreshToken}= await authServices.loginUser(payload)
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
 		success: true,
 		message: "Login successfull",
-		data: null,
+		data: {
+			accessToken,
+			refreshToken
+		},
 	});
 })
 
