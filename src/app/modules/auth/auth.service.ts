@@ -239,7 +239,7 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 const loginUser = async (payload: ILoginUserPayload) => {
 	const { password } = payload;
 	const email = payload.email.trim().toLowerCase();
-
+console.log(payload,'in login user')
 	const user = await prisma.user.findUnique({
 		where: {
 			email

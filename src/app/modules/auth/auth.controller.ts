@@ -4,10 +4,9 @@ import httpStatus from "http-status";
 import { authServices } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { AppError } from "../../utils/AppError";
-import { IRequestUser } from "./auth.interface";
+import type { IRequestUser } from "./auth.interface";
 
 const registerUser=catchAsync(async (req: Request, res: Response) => {
-	console.log("register user hited controller", req.body);
 
 	//zod sanitization
 
@@ -63,13 +62,26 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 //login user
 
 const loginUser=catchAsync(async (req: Request, res: Response) => {
-	console.log("register patient hited controller", req.body);
+	console.log("LOGIN user LOGIN hited controller", req.body);
 
 	//zod sanitization
 
 	const payload = req.body;
 
 	const {accessToken,refreshToken}= await authServices.loginUser(payload)
+
+		res.cookie("accessToken", accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,

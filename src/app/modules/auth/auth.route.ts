@@ -23,6 +23,6 @@ router.post("/google-login", authController.googleLoginUser);
 
 router.patch("/update-profile",auth(Role.ADMIN,Role.CUSTOMER,Role.TECHNICIAN),upload.single("profileImage"),authController.updateUserProfile)
 
-router.get("/get-me",auth("CUSTOMER","CUSTOMER","TECHNICIAN"), authController.getMe);
+router.get("/get-me",auth(Role.ADMIN,Role.TECHNICIAN,Role.CUSTOMER), authController.getMe);
 
 export const AuthRoutes = router;

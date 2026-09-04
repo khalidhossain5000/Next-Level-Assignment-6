@@ -53,7 +53,7 @@ export const auth = (...requiredRoles: Role[]) => {
 				"Forbidden. You don't have permission to access this resource.",
 			);
 		}
-
+console.log(verifiedToken,"verifiedToken")
 		const user = await prisma.user.findUnique({
 			where: {
 				id: userId,
