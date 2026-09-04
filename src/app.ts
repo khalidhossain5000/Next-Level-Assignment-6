@@ -11,6 +11,7 @@ import { SubstationRoutes } from "./app/modules/distributionInfrastructure/subst
 import { FeederRoutes } from "./app/modules/distributionInfrastructure/feeder/feeder.route";
 import { AreaRoutes } from "./app/modules/distributionInfrastructure/area/area.route";
 import { OutageRoutes } from "./app/modules/outage/outage.route";
+import { LoadSheddingRoutes } from "./app/modules/loadshedding/load-shedding.route";
 const app: Application = express();
 
 //cors setup
@@ -35,24 +36,27 @@ app.get("/", (req: Request, res: Response) => {
 
 //auth related route set
 
-app.use("/api/v1/auth",AuthRoutes)
+app.use("/api/v1/auth", AuthRoutes)
 
 
 //technician profile
 
 
-app.use("/api/v1/technician",TechnicianRoutes)
+app.use("/api/v1/technician", TechnicianRoutes)
 
 
 //infrastructre routes
-app.use("/api/v1/zone",ZoneRoutes)
-app.use("/api/v1/substation",SubstationRoutes)
-app.use("/api/v1/feeder",FeederRoutes)
-app.use("/api/v1/area",AreaRoutes)
+app.use("/api/v1/zone", ZoneRoutes)
+app.use("/api/v1/substation", SubstationRoutes)
+app.use("/api/v1/feeder", FeederRoutes)
+app.use("/api/v1/area", AreaRoutes)
 
 
 //unexpected outage realted api
 app.use("/api/v1/outage", OutageRoutes)
+
+//load shedding related api
+app.use("/api/v1/load-shedding", LoadSheddingRoutes)
 
 
 app.use(globalErrorHandler);
