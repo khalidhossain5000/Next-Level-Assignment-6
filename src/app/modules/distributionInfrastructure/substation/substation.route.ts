@@ -15,7 +15,7 @@ router.get("/",SubstationController.getAllSubstation)
 
 //get details protected need lgoin
 
-router.get("/substationId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),SubstationController.getSubstationDetails)
+router.get("/:substationId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),SubstationController.getSubstationDetails)
 
 
 
