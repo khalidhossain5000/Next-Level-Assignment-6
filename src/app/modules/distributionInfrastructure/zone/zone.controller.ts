@@ -43,8 +43,25 @@ const getAllZone = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+//zone details 
+
+const getZoneDetails = catchAsync(async (req: Request, res: Response) => {
+	
+    const zoneId=req.params.zoneId
+
+	const result= await ZoneService.getZoneDetails(zoneId as string)
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: " Zone Details Successfully",
+		data: result,
+		
+	});
+});
+
 
 export const ZoneController = {
     createZone,
-    getAllZone
+    getAllZone,
+    getZoneDetails
 }

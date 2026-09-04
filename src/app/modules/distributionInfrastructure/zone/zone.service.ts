@@ -164,6 +164,10 @@ const getZoneDetails=async(zoneId:string)=>{
     const zoneDetails=await prisma.zone.findUnique({
         where:{
             id:zoneId
+        },
+        include:
+        {
+            substations:true
         }
     })
     return zoneDetails

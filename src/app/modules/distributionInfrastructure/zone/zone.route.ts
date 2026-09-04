@@ -11,6 +11,7 @@ router.post("/",auth(Role.ADMIN),upload.single("zoneImage"),ZoneController.creat
 
 //get all zone for public route
 router.get("/",ZoneController.getAllZone)
+router.get("/:zoneId",ZoneController.getZoneDetails)
 
 
 export const ZoneRoutes = router;
