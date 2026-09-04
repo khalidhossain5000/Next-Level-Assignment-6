@@ -2,7 +2,7 @@ import { prisma } from "../../../lib/prisma";
 import { AppError } from "../../../utils/AppError";
 import httpStatus from "http-status";
 import type { ICreateZonePayload } from "./zone.interface";
-import { UploadApiResponse } from "cloudinary";
+import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../../lib/cloudinary";
 
 const createZoneInDb = async (
