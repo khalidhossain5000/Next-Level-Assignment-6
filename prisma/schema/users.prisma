@@ -15,6 +15,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
   outages   Outage[]
 
   @@index([email], name: "idx_user_email")

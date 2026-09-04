@@ -49,9 +49,10 @@ app.use("/api/v1/zone",ZoneRoutes)
 app.use("/api/v1/substation",SubstationRoutes)
 app.use("/api/v1/feeder",FeederRoutes)
 app.use("/api/v1/area",AreaRoutes)
+
+
+//unexpected outage realted api
 app.use("/api/v1/outage", OutageRoutes)
-
-
 
 
 app.use(globalErrorHandler);
