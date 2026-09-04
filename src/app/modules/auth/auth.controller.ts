@@ -64,7 +64,7 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 const loginUser=catchAsync(async (req: Request, res: Response) => {
 	console.log("LOGIN user LOGIN hited controller", req.body);
 
-	//zod sanitization
+	
 
 	const payload = req.body;
 
