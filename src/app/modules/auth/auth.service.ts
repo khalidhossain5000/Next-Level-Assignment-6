@@ -347,5 +347,6 @@ const refreshToken = async (token: string) => {
 export const authServices = {
 	registerUserInDb,
 	verifyOtpAndCreateUser,
-	loginUser
+	loginUser,
+	refreshToken
 }

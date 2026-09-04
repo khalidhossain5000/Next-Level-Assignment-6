@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import { authServices } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
+import { AppError } from "../../utils/AppError";
 const registerUser=catchAsync(async (req: Request, res: Response) => {
 	console.log("register patient hited controller", req.body);
 
@@ -82,6 +83,36 @@ const loginUser=catchAsync(async (req: Request, res: Response) => {
 //refresh token to get new accesstoken
 
 
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+	if (!req.cookies.refreshToken) {
+		throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is missing");
+	}
+	const result = await authServices.refreshToken(req.cookies.refreshToken);
+	const { accessToken, refreshToken: newRefreshToken } = result;
+
+	res.cookie("accessToken", accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+	res.cookie("refreshToken", newRefreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "New tokens generated successfully",
+		data: {
+			accessToken,
+			refreshToken: newRefreshToken,
+		},
+	});
+});
 
 
 
@@ -96,5 +127,6 @@ const loginUser=catchAsync(async (req: Request, res: Response) => {
 export const authController={
     registerUser,
     verifyUserEmail,
-	loginUser
+	loginUser,
+	refreshToken
 }
