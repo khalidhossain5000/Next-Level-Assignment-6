@@ -95,23 +95,23 @@ const getAllAreaFromDb = async (query: IQuery) => {
 
 
 //substion details get protected
-const getFeederDetails = async (feederId: string) => {
-    const substationDetails = await prisma.feeder.findUnique({
+const getAreaDetails = async (areaId: string) => {
+    const areaDetails = await prisma.area.findUnique({
         where: {
-            id: feederId
+            id: areaId
         },
         include:
         {
-            areas:true,
+            feeder:true,
             substation:true,
             zone:true
         }
     })
-    return substationDetails
+    return areaDetails
 }
 
 export const AreaService = {
     createAreaInDb,
-    getAllFeederFromDb,
-    getFeederDetails
+    getAllAreaFromDb,
+    getAreaDetails
 }

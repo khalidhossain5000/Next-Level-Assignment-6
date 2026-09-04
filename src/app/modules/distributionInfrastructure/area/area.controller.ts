@@ -5,7 +5,7 @@ import { sendResponse } from "../../../utils/sendResponse";
 
 const createFeeder = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-    const result = await    FeederService.createFeederInDb(payload)
+    const result = await    (payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
