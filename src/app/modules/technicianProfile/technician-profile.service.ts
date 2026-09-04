@@ -1,6 +1,7 @@
-import { UploadApiResponse } from "cloudinary";
+import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../lib/cloudinary";
-
+import { AppError } from "../../utils/AppError";
+import httpStatus from "http-status"
 const updateTechnicicanProfileInDb=async(payload:any,	resume: Express.Multer.File | null,
 )=>{
 //s-1 upload resume
