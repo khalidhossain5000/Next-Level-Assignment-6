@@ -1,3 +1,4 @@
+import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { LoadSheddingService } from "./load-shedding.service";
@@ -11,7 +12,7 @@ const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Unexpected Outage created successfully",
+        message: "LoadShedding schedule created successfully",
         data: result,
     });
 });
