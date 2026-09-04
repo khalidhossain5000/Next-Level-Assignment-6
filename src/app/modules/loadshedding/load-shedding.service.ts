@@ -94,7 +94,11 @@ const createLoadSheddingScheduleInDb = async (
 };
 
 
+//get all load shedding schedule
 
+const getAllLoadSheddingSchdeule=async()=>{
+    
+}
 
 export const LoadSheddingService = {
 createLoadSheddingScheduleInDb
