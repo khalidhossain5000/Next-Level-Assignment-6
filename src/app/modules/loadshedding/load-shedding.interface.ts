@@ -1,5 +1,4 @@
 type LoadSheddingStatus =
-    | "PENDING"
     | "ONGOING"
     | "SCHEDULED"
     | "CANCELLED"

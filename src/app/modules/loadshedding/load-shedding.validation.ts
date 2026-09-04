@@ -9,7 +9,7 @@ const createLoadSheddingZodSchema = z
         startTime: z.coerce.date("Start time must be a valid date"),
         endTime: z.coerce.date("End time must be a valid date"),
         status: z
-            .enum(["PENDING", "ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
+            .enum([ "ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
             .optional(),
         reason: z
             .string("Reason is not a string")
