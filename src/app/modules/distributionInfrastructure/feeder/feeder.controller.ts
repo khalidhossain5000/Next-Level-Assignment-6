@@ -33,11 +33,11 @@ const getAllFeeder = catchAsync(async (req: Request, res: Response) => {
 
 //zone details 
 
-const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
+const getFeederDetails = catchAsync(async (req: Request, res: Response) => {
 
-    const substationId = req.params.substationId
+    const feederId = req.params.feederId
 
-    const result = await FeederService.getFeederDetails(substationId as string)
+    const result = await FeederService.getFeederDetails(feederId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -48,8 +48,8 @@ const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-export const SubstationController = {
+export const FeederController = {
     createFeeder,
     getAllFeeder,
-    getSubstationDetails
+    getFeederDetails
 }
