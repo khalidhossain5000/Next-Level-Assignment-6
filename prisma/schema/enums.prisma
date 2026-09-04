@@ -43,3 +43,11 @@ enum OutageStatus {
   RESTORED
   REJECTED
 }
+
+enum LoadSheddingStatus {
+  PENDING
+  ONGOING
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}

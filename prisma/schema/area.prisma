@@ -6,6 +6,7 @@ model Area {
   status    InfrastructureStatus @default(ACTIVE)
   feederId  String
   feeder    Feeder               @relation("FeederAreas", fields: [feederId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  loadSheddings LoadShedding[]    @relation("AreaLoadSheddings")
   createdAt DateTime             @default(now())
   updatedAt DateTime             @updatedAt
 
