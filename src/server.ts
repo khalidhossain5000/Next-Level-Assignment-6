@@ -3,6 +3,7 @@ import config from "./app/config";
 import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
+import { seedTesterAdmin } from "./app/utils/seed";
 
 
 
@@ -16,7 +17,7 @@ const main = async () => {
 		console.log("Connected to the database successfully.");
 		await redisClient.connect();
 		console.log("redis cnnected sucesfull");
-
+await seedTesterAdmin()
 		await transporter.verify();
 		console.log("NOdema iler connected");
 
