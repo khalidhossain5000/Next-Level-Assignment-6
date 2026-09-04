@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Area: 'Area',
   Feeder: 'Feeder',
+  LoadShedding: 'LoadShedding',
   Outage: 'Outage',
   Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
@@ -419,7 +420,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "area" | "feeder" | "outage" | "substation" | "technicianProfile" | "user" | "zone"
+    modelProps: "area" | "feeder" | "loadShedding" | "outage" | "substation" | "technicianProfile" | "user" | "zone"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -568,6 +569,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FeederCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FeederCountAggregateOutputType> | number
+        }
+      }
+    }
+    LoadShedding: {
+      payload: Prisma.$LoadSheddingPayload<ExtArgs>
+      fields: Prisma.LoadSheddingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LoadSheddingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LoadSheddingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        findFirst: {
+          args: Prisma.LoadSheddingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LoadSheddingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        findMany: {
+          args: Prisma.LoadSheddingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>[]
+        }
+        create: {
+          args: Prisma.LoadSheddingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        createMany: {
+          args: Prisma.LoadSheddingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LoadSheddingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>[]
+        }
+        delete: {
+          args: Prisma.LoadSheddingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        update: {
+          args: Prisma.LoadSheddingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        deleteMany: {
+          args: Prisma.LoadSheddingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LoadSheddingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LoadSheddingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>[]
+        }
+        upsert: {
+          args: Prisma.LoadSheddingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LoadSheddingPayload>
+        }
+        aggregate: {
+          args: Prisma.LoadSheddingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLoadShedding>
+        }
+        groupBy: {
+          args: Prisma.LoadSheddingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoadSheddingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LoadSheddingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LoadSheddingCountAggregateOutputType> | number
         }
       }
     }
@@ -1008,6 +1083,19 @@ export const FeederScalarFieldEnum = {
 export type FeederScalarFieldEnum = (typeof FeederScalarFieldEnum)[keyof typeof FeederScalarFieldEnum]
 
 
+export const LoadSheddingScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  status: 'status',
+  reason: 'reason',
+  areaId: 'areaId'
+} as const
+
+export type LoadSheddingScalarFieldEnum = (typeof LoadSheddingScalarFieldEnum)[keyof typeof LoadSheddingScalarFieldEnum]
+
+
 export const OutageScalarFieldEnum = {
   id: 'id',
   cause: 'cause',
@@ -1161,6 +1249,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LoadSheddingStatus'
+ */
+export type EnumLoadSheddingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LoadSheddingStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'LoadSheddingStatus[]'
+ */
+export type ListEnumLoadSheddingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LoadSheddingStatus[]'>
     
 
 
@@ -1449,6 +1551,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   area?: Prisma.AreaOmit
   feeder?: Prisma.FeederOmit
+  loadShedding?: Prisma.LoadSheddingOmit
   outage?: Prisma.OutageOmit
   substation?: Prisma.SubstationOmit
   technicianProfile?: Prisma.TechnicianProfileOmit

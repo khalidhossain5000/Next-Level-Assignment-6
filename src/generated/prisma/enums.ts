@@ -77,3 +77,14 @@ export const OutageStatus = {
 } as const
 
 export type OutageStatus = (typeof OutageStatus)[keyof typeof OutageStatus]
+
+
+export const LoadSheddingStatus = {
+  PENDING: 'PENDING',
+  ONGOING: 'ONGOING',
+  SCHEDULED: 'SCHEDULED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type LoadSheddingStatus = (typeof LoadSheddingStatus)[keyof typeof LoadSheddingStatus]
