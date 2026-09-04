@@ -1,5 +1,52 @@
+import { UploadApiResponse } from "cloudinary";
+import { cloudinary } from "../../lib/cloudinary";
+
 const updateTechnicicanProfileInDb=async(payload:any,	resume: Express.Multer.File | null,
 )=>{
+//s-1 upload resume
+
+const resumeUploadResult= await new Promise<UploadApiResponse>(
+		(resolve, reject) => {
+			cloudinary.uploader
+				.upload_stream(
+					{
+						resource_type: "auto",
+					},
+
+					async (error, result) => {
+						if (error) {
+							return reject(error);
+						}
+
+						if (!result) {
+							return reject(
+								new AppError(
+									httpStatus.INTERNAL_SERVER_ERROR,
+									"No result returned from Cloudinary",
+								),
+							);
+						}
+
+						resolve(result);
+					},
+				)
+				.end(resume?.buffer);
+		},
+	);
+
+	console.log({ resumeUploadResult });
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
