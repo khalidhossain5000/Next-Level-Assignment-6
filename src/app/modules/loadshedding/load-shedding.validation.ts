@@ -14,7 +14,7 @@ const createLoadSheddingZodSchema = z
         reason: z
             .string("Reason is not a string")
             .min(5, "Reason should minimum have 5 chars")
-            .max(400, "Reason should not be more than 400 chars"),
+            .max(400, "Reason should not be more than 400 chars").optional(),
         areaId: z.string("Area ID is not a string").min(1, "Area ID is required"),
     })
     .refine((data) => data.endTime > data.startTime, {

@@ -4,7 +4,7 @@ model LoadShedding {
 	startTime DateTime
 	endTime   DateTime
 	status    LoadSheddingStatus  @default(PENDING)
-	reason    String
+	reason    String?             @default("N/A")
 	areaId    String
 	area      Area               @relation("AreaLoadSheddings", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
