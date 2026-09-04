@@ -53,7 +53,43 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+
+
+
+
+//login user
+
+const loginUser=catchAsync(async (req: Request, res: Response) => {
+	console.log("register patient hited controller", req.body);
+
+	//zod sanitization
+
+	const payload = req.body;
+
+	await authServices.loginUser(payload)
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Login successfull",
+		data: null,
+	});
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const authController={
     registerUser,
-    verifyUserEmail
+    verifyUserEmail,
+	loginUser
 }

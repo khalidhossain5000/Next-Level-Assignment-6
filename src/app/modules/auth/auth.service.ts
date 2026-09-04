@@ -296,5 +296,6 @@ return {
 
 export const authServices = {
 	registerUserInDb,
-	verifyOtpAndCreateUser
+	verifyOtpAndCreateUser,
+	loginUser
 }

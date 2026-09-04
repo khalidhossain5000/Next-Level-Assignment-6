@@ -5,4 +5,5 @@ const router = Router();
 
 router.post("/register",authController.registerUser)
 router.post("/verify-email",authController.verifyUserEmail)
+router.post("/login",authController.loginUser)
 export const AuthRoutes = router;
