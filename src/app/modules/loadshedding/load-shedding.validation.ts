@@ -9,7 +9,7 @@ const createLoadSheddingZodSchema = z
         startTime: z.coerce.date("Start time must be a valid date"),
         endTime: z.coerce.date("End time must be a valid date"),
         status: z
-            .enum([ "ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
+            .enum(["ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
             .optional(),
         reason: z
             .string("Reason is not a string")
@@ -22,7 +22,46 @@ const createLoadSheddingZodSchema = z
         path: ["endTime"],
     });
 
+
+//update payload
+
+const updateLoadSheddingZodSchema = z
+    .object({
+        title: z
+            .string("Title is not a string")
+            .min(3, "Title should minimum have 3 chars")
+            .max(150, "Title should not be more than 150 chars").optional(),
+        startTime: z.coerce.date("Start time must be a valid date").optional(),
+        endTime: z.coerce.date("End time must be a valid date").optional(),
+        status: z
+            .enum(["ONGOING", "SCHEDULED", "CANCELLED", "COMPLETED"])
+            .optional(),
+        reason: z
+            .string("Reason is not a string")
+            .min(5, "Reason should minimum have 5 chars")
+            .max(400, "Reason should not be more than 400 chars").optional(),
+
+    })
+    .refine(
+        (data) =>
+            data.startTime === undefined ||
+            data.endTime === undefined ||
+            data.endTime > data.startTime,
+        {
+            message: "End time must be later than start time",
+            path: ["endTime"],
+        },
+    );
+
+
+
+
+
+
+
+
 export const loadSheddingValidation = {
     createLoadSheddingZodSchema,
+    updateLoadSheddingZodSchema
 };
 
