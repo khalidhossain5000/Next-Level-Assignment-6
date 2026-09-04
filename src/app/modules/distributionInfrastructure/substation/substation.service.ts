@@ -1,6 +1,6 @@
-import { SubstationWhereInput } from "../../../../generated/prisma/models"
-import { IQuery } from "../../../interfaces/interface"
-import { prisma } from "../../../lib/prisma"
+import type{ SubstationWhereInput } from "../../../../generated/prisma/models"
+import type{ IQuery } from "../../../interfaces/interface"
+import  { prisma } from "../../../lib/prisma"
 import type { ISubstationPayload } from "./substation.interface"
 
 const createSubstation=async(payload:ISubstationPayload)=>{
@@ -100,6 +100,22 @@ const getAllSubstationFromDb=async(query:IQuery)=>{
 
 
 
+}
+
+
+//substion details get protected
+const getSubstationDetails=async(substationId:string)=>{
+  const substationDetails = await prisma.substation.findUnique({
+        where: {
+            id: substationId
+        },
+        include:
+        {
+            feeders:true,
+            zone:true
+        }
+    })
+    return substationDetails
 }
 
 export const SubstationService={
