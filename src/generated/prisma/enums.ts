@@ -57,3 +57,23 @@ export const InfrastructureStatus = {
 } as const
 
 export type InfrastructureStatus = (typeof InfrastructureStatus)[keyof typeof InfrastructureStatus]
+
+
+export const OutagePriority = {
+  HIGH: 'HIGH',
+  NORMAL: 'NORMAL'
+} as const
+
+export type OutagePriority = (typeof OutagePriority)[keyof typeof OutagePriority]
+
+
+export const OutageStatus = {
+  REPORTED: 'REPORTED',
+  ACKNOWLEDGED: 'ACKNOWLEDGED',
+  ASSIGNED: 'ASSIGNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESTORED: 'RESTORED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type OutageStatus = (typeof OutageStatus)[keyof typeof OutageStatus]

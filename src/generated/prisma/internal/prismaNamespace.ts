@@ -399,6 +399,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Area: 'Area',
   Feeder: 'Feeder',
+  Outage: 'Outage',
   Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
   User: 'User',
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "area" | "feeder" | "substation" | "technicianProfile" | "user" | "zone"
+    modelProps: "area" | "feeder" | "outage" | "substation" | "technicianProfile" | "user" | "zone"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -567,6 +568,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.FeederCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.FeederCountAggregateOutputType> | number
+        }
+      }
+    }
+    Outage: {
+      payload: Prisma.$OutagePayload<ExtArgs>
+      fields: Prisma.OutageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OutageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OutageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        findFirst: {
+          args: Prisma.OutageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OutageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        findMany: {
+          args: Prisma.OutageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>[]
+        }
+        create: {
+          args: Prisma.OutageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        createMany: {
+          args: Prisma.OutageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OutageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>[]
+        }
+        delete: {
+          args: Prisma.OutageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        update: {
+          args: Prisma.OutageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        deleteMany: {
+          args: Prisma.OutageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OutageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OutageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>[]
+        }
+        upsert: {
+          args: Prisma.OutageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OutagePayload>
+        }
+        aggregate: {
+          args: Prisma.OutageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOutage>
+        }
+        groupBy: {
+          args: Prisma.OutageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OutageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OutageCountAggregateOutputType> | number
         }
       }
     }
@@ -933,6 +1008,25 @@ export const FeederScalarFieldEnum = {
 export type FeederScalarFieldEnum = (typeof FeederScalarFieldEnum)[keyof typeof FeederScalarFieldEnum]
 
 
+export const OutageScalarFieldEnum = {
+  id: 'id',
+  cause: 'cause',
+  description: 'description',
+  priority: 'priority',
+  reported_At: 'reported_At',
+  status: 'status',
+  acknowledgedAt: 'acknowledgedAt',
+  startedAt: 'startedAt',
+  isDeleted: 'isDeleted',
+  userId: 'userId',
+  technicianId: 'technicianId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutageScalarFieldEnum = (typeof OutageScalarFieldEnum)[keyof typeof OutageScalarFieldEnum]
+
+
 export const SubstationScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1071,6 +1165,41 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'OutagePriority'
+ */
+export type EnumOutagePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutagePriority'>
+    
+
+
+/**
+ * Reference to a field of type 'OutagePriority[]'
+ */
+export type ListEnumOutagePriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutagePriority[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OutageStatus'
+ */
+export type EnumOutageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutageStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'OutageStatus[]'
+ */
+export type ListEnumOutageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OutageStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1137,13 +1266,6 @@ export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'Role[]'
  */
 export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>
-    
-
-
-/**
- * Reference to a field of type 'Boolean'
- */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -1327,6 +1449,7 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   area?: Prisma.AreaOmit
   feeder?: Prisma.FeederOmit
+  outage?: Prisma.OutageOmit
   substation?: Prisma.SubstationOmit
   technicianProfile?: Prisma.TechnicianProfileOmit
   user?: Prisma.UserOmit

@@ -14,7 +14,7 @@ model TechnicianProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  outages Outage[]
+ 
 
   @@index([id], name: "idx_technician_id")
   @@map("TechnicianProfiles")

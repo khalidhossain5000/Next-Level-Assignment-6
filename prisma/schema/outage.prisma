@@ -10,11 +10,11 @@ model Outage {
   isDeleted      Boolean        @default(false)
   //foreign key of user to know which user reported unexpected outage
   userId         String
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user           User           @relation(  "OutageReporter",fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   //technican foregin key to know which technican is assigned to this outage
-  technicianId String
-  techician    TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  technicianId String?
+  techician    User? @relation(    "OutageTechnician",fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

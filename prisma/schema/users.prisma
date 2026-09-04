@@ -16,7 +16,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  outages   Outage[]
+  reportedOutages Outage[] @relation("OutageReporter")
+  assignedOutages Outage[] @relation("OutageTechnician")
 
   @@index([email], name: "idx_user_email")
   @@map("Users")

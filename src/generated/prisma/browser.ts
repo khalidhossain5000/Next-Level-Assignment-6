@@ -28,6 +28,11 @@ export type Area = Prisma.AreaModel
  */
 export type Feeder = Prisma.FeederModel
 /**
+ * Model Outage
+ * 
+ */
+export type Outage = Prisma.OutageModel
+/**
  * Model Substation
  * 
  */

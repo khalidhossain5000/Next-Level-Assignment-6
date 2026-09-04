@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Area: 'Area',
   Feeder: 'Feeder',
+  Outage: 'Outage',
   Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
   User: 'User',
@@ -101,6 +102,25 @@ export const FeederScalarFieldEnum = {
 } as const
 
 export type FeederScalarFieldEnum = (typeof FeederScalarFieldEnum)[keyof typeof FeederScalarFieldEnum]
+
+
+export const OutageScalarFieldEnum = {
+  id: 'id',
+  cause: 'cause',
+  description: 'description',
+  priority: 'priority',
+  reported_At: 'reported_At',
+  status: 'status',
+  acknowledgedAt: 'acknowledgedAt',
+  startedAt: 'startedAt',
+  isDeleted: 'isDeleted',
+  userId: 'userId',
+  technicianId: 'technicianId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OutageScalarFieldEnum = (typeof OutageScalarFieldEnum)[keyof typeof OutageScalarFieldEnum]
 
 
 export const SubstationScalarFieldEnum = {

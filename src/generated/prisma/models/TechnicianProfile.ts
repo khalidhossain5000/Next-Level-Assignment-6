@@ -489,10 +489,6 @@ export type EnumTechnicianStatusFieldUpdateOperationsInput = {
   set?: $Enums.TechnicianStatus
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type EnumTechnicianProfileStatusFieldUpdateOperationsInput = {
   set?: $Enums.TechnicianProfileStatus
 }
