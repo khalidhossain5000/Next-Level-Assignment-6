@@ -25,11 +25,11 @@ const createOutage = catchAsync(async (req: Request, res: Response) => {
 const getAllOutageForAdminManage = catchAsync(async (req: Request, res: Response) => {
 
 
-    const { data, meta } = await    AreaService.getAllAreaFromDb(req.query)
+    const { data, meta } = await OutageService.getAllOutageFromDb(req.query)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "All Area Retrieved Successfully",
+        message: "All Outages Retrieved Successfully",
         data: data,
         meta: meta,
     });
@@ -54,6 +54,6 @@ const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
 
 export const OutageController = {
     createOutage,
-    getAllArea,
+    getAllOutageForAdminManage,
     getAreaDetails
 }
