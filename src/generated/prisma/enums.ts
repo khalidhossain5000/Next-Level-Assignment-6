@@ -49,3 +49,11 @@ export const TechnicianProfileStatus = {
 } as const
 
 export type TechnicianProfileStatus = (typeof TechnicianProfileStatus)[keyof typeof TechnicianProfileStatus]
+
+
+export const ZoneStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type ZoneStatus = (typeof ZoneStatus)[keyof typeof ZoneStatus]

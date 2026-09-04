@@ -5,9 +5,15 @@ model Substation {
     code        String
     location    String
     status      ZoneStatus   @default(ACTIVE)
+    //foregin key making realtien with zone
     zoneId      String
     zone        Zone         @relation(fields: [zoneId], references: [id])
+
+
     feeders     Feeder[]     @relation("SubstationFeeders")
+
+
+    
     createdAt   DateTime     @default(now())
     updatedAt   DateTime     @updatedAt
 

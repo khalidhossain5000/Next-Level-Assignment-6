@@ -51,8 +51,12 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Area: 'Area',
+  Feeder: 'Feeder',
+  Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
-  User: 'User'
+  User: 'User',
+  Zone: 'Zone'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -69,6 +73,49 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const AreaScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  address: 'address',
+  status: 'status',
+  feederId: 'feederId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AreaScalarFieldEnum = (typeof AreaScalarFieldEnum)[keyof typeof AreaScalarFieldEnum]
+
+
+export const FeederScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  voltageLevel: 'voltageLevel',
+  status: 'status',
+  substationId: 'substationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeederScalarFieldEnum = (typeof FeederScalarFieldEnum)[keyof typeof FeederScalarFieldEnum]
+
+
+export const SubstationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  capacity: 'capacity',
+  code: 'code',
+  location: 'location',
+  status: 'status',
+  zoneId: 'zoneId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubstationScalarFieldEnum = (typeof SubstationScalarFieldEnum)[keyof typeof SubstationScalarFieldEnum]
 
 
 export const TechnicianProfileScalarFieldEnum = {
@@ -104,6 +151,21 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ZoneScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  status: 'status',
+  zoneImageUrl: 'zoneImageUrl',
+  zoneImagePublicId: 'zoneImagePublicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ZoneScalarFieldEnum = (typeof ZoneScalarFieldEnum)[keyof typeof ZoneScalarFieldEnum]
 
 
 export const SortOrder = {

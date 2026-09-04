@@ -472,10 +472,6 @@ export type TechnicianProfileCreateexpertiseInput = {
   set: string[]
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
 export type TechnicianProfileUpdateexpertiseInput = {
   set?: string[]
   push?: string | string[]

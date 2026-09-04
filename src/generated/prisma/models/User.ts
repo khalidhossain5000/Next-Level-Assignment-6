@@ -523,10 +523,6 @@ export type EnumUserStatusFieldUpdateOperationsInput = {
   set?: $Enums.UserStatus
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type UserCreateWithoutTechnicianProfileInput = {
   id?: string
   name: string

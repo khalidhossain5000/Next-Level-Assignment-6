@@ -397,8 +397,12 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
+  Area: 'Area',
+  Feeder: 'Feeder',
+  Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
-  User: 'User'
+  User: 'User',
+  Zone: 'Zone'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,10 +418,232 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "technicianProfile" | "user"
+    modelProps: "area" | "feeder" | "substation" | "technicianProfile" | "user" | "zone"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
+    Area: {
+      payload: Prisma.$AreaPayload<ExtArgs>
+      fields: Prisma.AreaFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AreaFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AreaFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        findFirst: {
+          args: Prisma.AreaFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AreaFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        findMany: {
+          args: Prisma.AreaFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>[]
+        }
+        create: {
+          args: Prisma.AreaCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        createMany: {
+          args: Prisma.AreaCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AreaCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>[]
+        }
+        delete: {
+          args: Prisma.AreaDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        update: {
+          args: Prisma.AreaUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        deleteMany: {
+          args: Prisma.AreaDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AreaUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AreaUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>[]
+        }
+        upsert: {
+          args: Prisma.AreaUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AreaPayload>
+        }
+        aggregate: {
+          args: Prisma.AreaAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateArea>
+        }
+        groupBy: {
+          args: Prisma.AreaGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AreaGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AreaCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AreaCountAggregateOutputType> | number
+        }
+      }
+    }
+    Feeder: {
+      payload: Prisma.$FeederPayload<ExtArgs>
+      fields: Prisma.FeederFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FeederFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FeederFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        findFirst: {
+          args: Prisma.FeederFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FeederFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        findMany: {
+          args: Prisma.FeederFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>[]
+        }
+        create: {
+          args: Prisma.FeederCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        createMany: {
+          args: Prisma.FeederCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FeederCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>[]
+        }
+        delete: {
+          args: Prisma.FeederDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        update: {
+          args: Prisma.FeederUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        deleteMany: {
+          args: Prisma.FeederDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FeederUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FeederUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>[]
+        }
+        upsert: {
+          args: Prisma.FeederUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FeederPayload>
+        }
+        aggregate: {
+          args: Prisma.FeederAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFeeder>
+        }
+        groupBy: {
+          args: Prisma.FeederGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeederGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FeederCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FeederCountAggregateOutputType> | number
+        }
+      }
+    }
+    Substation: {
+      payload: Prisma.$SubstationPayload<ExtArgs>
+      fields: Prisma.SubstationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SubstationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SubstationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        findFirst: {
+          args: Prisma.SubstationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SubstationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        findMany: {
+          args: Prisma.SubstationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>[]
+        }
+        create: {
+          args: Prisma.SubstationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        createMany: {
+          args: Prisma.SubstationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SubstationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>[]
+        }
+        delete: {
+          args: Prisma.SubstationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        update: {
+          args: Prisma.SubstationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SubstationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SubstationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SubstationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SubstationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SubstationPayload>
+        }
+        aggregate: {
+          args: Prisma.SubstationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSubstation>
+        }
+        groupBy: {
+          args: Prisma.SubstationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubstationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SubstationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SubstationCountAggregateOutputType> | number
+        }
+      }
+    }
     TechnicianProfile: {
       payload: Prisma.$TechnicianProfilePayload<ExtArgs>
       fields: Prisma.TechnicianProfileFieldRefs
@@ -566,6 +792,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Zone: {
+      payload: Prisma.$ZonePayload<ExtArgs>
+      fields: Prisma.ZoneFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ZoneFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ZoneFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        findFirst: {
+          args: Prisma.ZoneFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ZoneFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        findMany: {
+          args: Prisma.ZoneFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>[]
+        }
+        create: {
+          args: Prisma.ZoneCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        createMany: {
+          args: Prisma.ZoneCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ZoneCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>[]
+        }
+        delete: {
+          args: Prisma.ZoneDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        update: {
+          args: Prisma.ZoneUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        deleteMany: {
+          args: Prisma.ZoneDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ZoneUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ZoneUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>[]
+        }
+        upsert: {
+          args: Prisma.ZoneUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ZonePayload>
+        }
+        aggregate: {
+          args: Prisma.ZoneAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateZone>
+        }
+        groupBy: {
+          args: Prisma.ZoneGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZoneGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ZoneCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ZoneCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -605,6 +905,49 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const AreaScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  address: 'address',
+  status: 'status',
+  feederId: 'feederId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AreaScalarFieldEnum = (typeof AreaScalarFieldEnum)[keyof typeof AreaScalarFieldEnum]
+
+
+export const FeederScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  voltageLevel: 'voltageLevel',
+  status: 'status',
+  substationId: 'substationId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeederScalarFieldEnum = (typeof FeederScalarFieldEnum)[keyof typeof FeederScalarFieldEnum]
+
+
+export const SubstationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  capacity: 'capacity',
+  code: 'code',
+  location: 'location',
+  status: 'status',
+  zoneId: 'zoneId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubstationScalarFieldEnum = (typeof SubstationScalarFieldEnum)[keyof typeof SubstationScalarFieldEnum]
+
+
 export const TechnicianProfileScalarFieldEnum = {
   id: 'id',
   expertise: 'expertise',
@@ -638,6 +981,21 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ZoneScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  description: 'description',
+  status: 'status',
+  zoneImageUrl: 'zoneImageUrl',
+  zoneImagePublicId: 'zoneImagePublicId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ZoneScalarFieldEnum = (typeof ZoneScalarFieldEnum)[keyof typeof ZoneScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -681,6 +1039,34 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'String[]'
  */
 export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ZoneStatus'
+ */
+export type EnumZoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ZoneStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ZoneStatus[]'
+ */
+export type ListEnumZoneStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ZoneStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime[]'
+ */
+export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -772,20 +1158,6 @@ export type EnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'UserStatus[]'
  */
 export type ListEnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime'
- */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime[]'
- */
-export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -953,8 +1325,12 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
  */
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
+  area?: Prisma.AreaOmit
+  feeder?: Prisma.FeederOmit
+  substation?: Prisma.SubstationOmit
   technicianProfile?: Prisma.TechnicianProfileOmit
   user?: Prisma.UserOmit
+  zone?: Prisma.ZoneOmit
 }
 
 /* Types for Logging */

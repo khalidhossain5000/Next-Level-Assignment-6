@@ -4,9 +4,12 @@ model Feeder {
     code          String
     voltageLevel  String
     status        ZoneStatus   @default(ACTIVE)
+
     substationId  String
     substation    Substation   @relation("SubstationFeeders", fields: [substationId], references: [id])
+
     areas         Area[]        @relation("FeederAreas")
+    
     createdAt     DateTime     @default(now())
     updatedAt     DateTime     @updatedAt
 
