@@ -225,11 +225,11 @@ export type FeederOrderByWithRelationInput = {
 
 export type FeederWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  code?: string
   AND?: Prisma.FeederWhereInput | Prisma.FeederWhereInput[]
   OR?: Prisma.FeederWhereInput[]
   NOT?: Prisma.FeederWhereInput | Prisma.FeederWhereInput[]
   name?: Prisma.StringFilter<"Feeder"> | string
-  code?: Prisma.StringFilter<"Feeder"> | string
   voltageLevel?: Prisma.StringFilter<"Feeder"> | string
   status?: Prisma.EnumZoneStatusFilter<"Feeder"> | $Enums.ZoneStatus
   substationId?: Prisma.StringFilter<"Feeder"> | string
@@ -237,7 +237,7 @@ export type FeederWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Feeder"> | Date | string
   substation?: Prisma.XOR<Prisma.SubstationScalarRelationFilter, Prisma.SubstationWhereInput>
   areas?: Prisma.AreaListRelationFilter
-}, "id">
+}, "id" | "code">
 
 export type FeederOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

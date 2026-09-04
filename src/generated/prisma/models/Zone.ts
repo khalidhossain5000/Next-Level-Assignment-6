@@ -232,11 +232,11 @@ export type ZoneOrderByWithRelationInput = {
 
 export type ZoneWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  code?: string
   AND?: Prisma.ZoneWhereInput | Prisma.ZoneWhereInput[]
   OR?: Prisma.ZoneWhereInput[]
   NOT?: Prisma.ZoneWhereInput | Prisma.ZoneWhereInput[]
   name?: Prisma.StringFilter<"Zone"> | string
-  code?: Prisma.StringFilter<"Zone"> | string
   description?: Prisma.StringFilter<"Zone"> | string
   status?: Prisma.EnumZoneStatusFilter<"Zone"> | $Enums.ZoneStatus
   zoneImageUrl?: Prisma.StringNullableFilter<"Zone"> | string | null
@@ -244,7 +244,7 @@ export type ZoneWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Zone"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Zone"> | Date | string
   substations?: Prisma.SubstationListRelationFilter
-}, "id">
+}, "id" | "code">
 
 export type ZoneOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

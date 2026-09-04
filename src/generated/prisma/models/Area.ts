@@ -223,18 +223,18 @@ export type AreaOrderByWithRelationInput = {
 
 export type AreaWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  code?: string
   AND?: Prisma.AreaWhereInput | Prisma.AreaWhereInput[]
   OR?: Prisma.AreaWhereInput[]
   NOT?: Prisma.AreaWhereInput | Prisma.AreaWhereInput[]
   name?: Prisma.StringFilter<"Area"> | string
-  code?: Prisma.StringFilter<"Area"> | string
   address?: Prisma.StringFilter<"Area"> | string
   status?: Prisma.EnumZoneStatusFilter<"Area"> | $Enums.ZoneStatus
   feederId?: Prisma.StringFilter<"Area"> | string
   createdAt?: Prisma.DateTimeFilter<"Area"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Area"> | Date | string
   feeder?: Prisma.XOR<Prisma.FeederScalarRelationFilter, Prisma.FeederWhereInput>
-}, "id">
+}, "id" | "code">
 
 export type AreaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

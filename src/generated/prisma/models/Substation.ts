@@ -234,12 +234,12 @@ export type SubstationOrderByWithRelationInput = {
 
 export type SubstationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  code?: string
   AND?: Prisma.SubstationWhereInput | Prisma.SubstationWhereInput[]
   OR?: Prisma.SubstationWhereInput[]
   NOT?: Prisma.SubstationWhereInput | Prisma.SubstationWhereInput[]
   name?: Prisma.StringFilter<"Substation"> | string
   capacity?: Prisma.StringFilter<"Substation"> | string
-  code?: Prisma.StringFilter<"Substation"> | string
   location?: Prisma.StringFilter<"Substation"> | string
   status?: Prisma.EnumZoneStatusFilter<"Substation"> | $Enums.ZoneStatus
   zoneId?: Prisma.StringFilter<"Substation"> | string
@@ -247,7 +247,7 @@ export type SubstationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Substation"> | Date | string
   zone?: Prisma.XOR<Prisma.ZoneScalarRelationFilter, Prisma.ZoneWhereInput>
   feeders?: Prisma.FeederListRelationFilter
-}, "id">
+}, "id" | "code">
 
 export type SubstationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
