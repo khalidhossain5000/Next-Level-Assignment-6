@@ -1,4 +1,6 @@
-export const createOutageInDb=async(payload:any)=>{
+import { IOutagePayload } from "./outage.interface"
+
+export const createOutageInDb=async(payload:IOutagePayload)=>{
 
 }
 

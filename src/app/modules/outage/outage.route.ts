@@ -3,7 +3,7 @@ import { Router } from "express";
 const router = Router();
 
 //--create unexpected outage for customer
-
+// createOutageZodSchema
 //--get all unexpected outage 
 
 //-- get unexpected outage details
