@@ -24,7 +24,6 @@ import { googleClient } from "../../lib/googleAuth";
 const registerUserInDb = async (payload: IRegisterUser) => {
 	const { name, password, role } = payload
 	const email = payload.email.trim().toLowerCase();
-console.log(role,'THIS IS ROLEI N AUTH SERVICE REGISTER USER')
 	const isUserExists = await prisma.user.findUnique({
 		where: { email },
 	});
@@ -125,7 +124,6 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 	const userRegisterKey = `user-registration-data:${email}`;
 
 	const redisUserData = await redisClient.get(userRegisterKey);
-console.log(redisUserData,'THIS IS REDIS USER DATA')
 	if (!redisUserData) throw new AppError(httpStatus.BAD_REQUEST, "User data not found,Otp is expired,Please register again");
 
 	const userPayload: IRegisterUser = JSON.parse(redisUserData);

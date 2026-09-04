@@ -8,6 +8,7 @@ import { technicianProfileZodSchema } from "./technician-profile.validation";
 
 const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) => {
     const resume = req.file;
+    console.log(resume,req.body.data,'BODY AND RESUME')
     const zodValidationResult = technicianProfileZodSchema.safeParse(
         JSON.parse(req.body.data),
     );
