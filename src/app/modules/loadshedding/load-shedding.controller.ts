@@ -50,11 +50,26 @@ const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) =>
     });
 });
 
-//update load
+//update schdeule
+
+const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response) => {
+
+    const loadsheddingId = req.params.loadsheddingId
+
+    const result = await LoadSheddingService.getLoadSheddingDetails(loadsheddingId as string)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: " Loadshedding Details Successfully",
+        data: result,
+
+    });
+})
 
 
 export const LoadSheddingController = {
 createLoadShedding,
 getAllLoadShedding,
-getLoadSheddingDetails
+getLoadSheddingDetails,
+updateLoadSheddingSchedule
 }

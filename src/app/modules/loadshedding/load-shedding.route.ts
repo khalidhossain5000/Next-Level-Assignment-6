@@ -23,7 +23,7 @@ router.get("/:loadsheddingId",auth(Role.CUSTOMER),LoadSheddingController.getAllL
 
 //--update schdeule admin only
 
-router.patch("/",auth(Role.ADMIN),validateRequest(loadSheddingValidation.createLoadSheddingZodSchema),LoadSheddingController.createLoadShedding)
+router.patch("/:loadsheddingId",auth(Role.ADMIN),validateRequest(loadSheddingValidation.updateLoadSheddingZodSchema),LoadSheddingController.updateLoadSheddingSchedule)
 
 
 
