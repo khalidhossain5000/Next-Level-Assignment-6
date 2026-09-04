@@ -37,7 +37,7 @@ const getAllOutageForAdminManage = catchAsync(async (req: Request, res: Response
 
 //zone detailss
 
-const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
+const getOutageDetails = catchAsync(async (req: Request, res: Response) => {
 
     const areaId = req.params.areaId
 

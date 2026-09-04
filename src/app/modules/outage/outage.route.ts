@@ -11,6 +11,7 @@ const router = Router();
 // createOutageZodSchema
 router.post("/",auth(Role.CUSTOMER),validateRequest(outageValidation.createOutageZodSchema),OutageController.createOutage)
 //--get all unexpected outage for admin manage
+router.get("/",auth(Role.ADMIN),OutageController.getAllOutageForAdminManage)
 
 //-- get  unexpected outage details
 
