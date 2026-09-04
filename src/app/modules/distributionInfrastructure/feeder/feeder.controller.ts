@@ -1,31 +1,31 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../../../utils/catchAsync";
-import { SubstationService } from "./substation.service";
 import httpStatus from "http-status"
 import { sendResponse } from "../../../utils/sendResponse";
+import { FeederService } from "./feeder.service";
 
-const createSubstation = catchAsync(async (req: Request, res: Response) => {
+const createFeeder = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-    const result = await SubstationService.createSubstation(payload)
+    const result = await    FeederService.createFeederInDb(payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "Substation created successfully",
+        message: "Feeder created successfully",
         data: result,
     });
 });
 
 
 //get all zone with pagination search filter
-const getAllSubstation = catchAsync(async (req: Request, res: Response) => {
+const getAllFeeder = catchAsync(async (req: Request, res: Response) => {
 
 
-    const { data, meta } = await SubstationService.getAllSubstationFromDb(req.query)
+    const { data, meta } = await FeederService.getAllFeederFromDb(req.query)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "All Substation Retrieved Successfully",
+        message: "All Feeder Retrieved Successfully",
         data: data,
         meta: meta,
     });
@@ -37,11 +37,11 @@ const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
 
     const substationId = req.params.substationId
 
-    const result = await SubstationService.getSubstationDetails(substationId as string)
+    const result = await FeederService.getFeederDetails(substationId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Zone Details Successfully",
+        message: " Feeder Details Retrieved Successfully",
         data: result,
 
     });
@@ -49,7 +49,7 @@ const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
 
 
 export const SubstationController = {
-    createSubstation,
-    getAllSubstation,
+    createFeeder,
+    getAllFeeder,
     getSubstationDetails
 }
