@@ -12,7 +12,7 @@ import { transporter } from "../../lib/nodemailer";
 import config from "../../config";
 import { Role } from "../../../generated/prisma/enums";
 import { jwtUtils } from "../../utils/jwt";
-import { SignOptions } from "jsonwebtoken";
+import { JwtPayload, SignOptions } from "jsonwebtoken";
 
 
 
@@ -286,7 +286,57 @@ return {
 
 }
 
+//refresh token validation for getting new token
 
+const refreshToken = async (token: string) => {
+	const verifiedRefreshToken = jwtUtils.verifyToken(
+		token,
+		config.jwt_refresh_secret,
+	);
+
+	if (!verifiedRefreshToken.success || !verifiedRefreshToken.data) {
+		throw new AppError(
+			httpStatus.UNAUTHORIZED,
+			config.node_env === "development"
+				? verifiedRefreshToken.error
+				: "Invalid refresh token",
+		);
+	}
+
+	const data = verifiedRefreshToken.data as JwtPayload;
+
+	const user = await prisma.user.findUnique({
+		where: { id: data.userId },
+	});
+
+	if (!user  || user.status !== "ACTIVE") {
+		throw new AppError(httpStatus.UNAUTHORIZED, "User is inactive or not found");
+	}
+
+	const jwtPayload = {
+		userId: user.id,
+		name: user.name,
+		email: user.email,
+		role: user.role,
+	};
+
+	const accessToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_access_secret,
+		config.jwt_access_expires_in as SignOptions,
+	);
+
+	const refreshToken = jwtUtils.createToken(
+		jwtPayload,
+		config.jwt_refresh_secret,
+		config.jwt_refresh_expires_in as SignOptions,
+	);
+
+	return {
+		accessToken,
+		refreshToken,
+	};
+};
 
 
 
