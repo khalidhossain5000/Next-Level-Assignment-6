@@ -1,3 +1,4 @@
+import { Prisma } from "../../../generated/prisma/client";
 import { LoadSheddingStatus } from "../../../generated/prisma/enums";
 import { LoadSheddingWhereInput } from "../../../generated/prisma/models";
 import { IQuery } from "../../interfaces/interface";
@@ -186,9 +187,135 @@ const getLoadSheddingDetails = async (loadsheddingId: string) => {
 
 //update load shedding scheudle
 
-const updateSchedule=async(payload:ILoadSheddingUpdatePayload,loadsheddingId:string)=>{
+const updateSchedule = async (
+  payload: ILoadSheddingUpdatePayload,
+  loadSheddingId: string
+) => {
+  // 1. Find existing schedule
+  const existingSchedule = await prisma.loadShedding.findUnique({
+    where: {
+      id: loadSheddingId,
+    },
+  });
 
-}
+  if (!existingSchedule) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Load shedding schedule not found"
+    );
+  }
+
+  // 2. Get final values
+ 
+  const finalStartTime = payload.startTime ?? existingSchedule.startTime;
+  const finalEndTime = payload.endTime ?? existingSchedule.endTime;
+
+  // 3. Validate time range
+  if (finalStartTime >= finalEndTime) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Start time must be before end time"
+    );
+  }
+
+  // 4. Start time cannot be in the past checkh ere
+ 
+  if (
+    payload.startTime &&
+    finalStartTime < new Date()
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Load shedding schedule cannot start in the past"
+    );
+  }
+
+  // 5. Check area is still active
+  const area = await prisma.area.findUnique({
+    where: {
+      id: existingSchedule.areaId,
+    },
+    select: {
+      id: true,
+      status: true,
+    },
+  });
+
+  if (!area) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Area not found"
+    );
+  }
+
+  if (area.status !== "ACTIVE") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Cannot update schedule for an inactive area"
+    );
+  }
+
+  // 6. Check conflict with other schedules in same area or not
+  const conflictingSchedule =
+    await prisma.loadShedding.findFirst({
+      where: {
+        areaId: existingSchedule.areaId,
+
+
+        id: {
+          not: loadSheddingId,
+        },
+
+        status: {
+          not: "CANCELLED",
+        },
+
+        startTime: {
+          lt: finalEndTime,
+        },
+        endTime: {
+          gt: finalStartTime,
+        },
+      },
+    });
+
+  if (conflictingSchedule) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      "Another load shedding schedule already exists during the selected time"
+    );
+  }
+
+  // 7. Build update data
+  const updateData: Prisma.LoadSheddingUpdateInput = {};
+
+  if (payload.title !== undefined) {
+    updateData.title = payload.title;
+  }
+
+  if (payload.startTime !== undefined) {
+    updateData.startTime = payload.startTime;
+  }
+
+  if (payload.endTime !== undefined) {
+    updateData.endTime = payload.endTime;
+  }
+
+  if (payload.reason !== undefined) {
+    updateData.reason = payload.reason;
+  }
+
+
+  // 8. Update
+  const updatedSchedule = await prisma.loadShedding.update({
+    where: {
+      id: loadSheddingId,
+    },
+    data: updateData,
+  });
+
+  return updatedSchedule;
+};
 
 
 
