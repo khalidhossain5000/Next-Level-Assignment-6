@@ -21,4 +21,4 @@ router.get("/:areaId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),AreaControl
 
 
 
-export const FeederRoutes = router;
+export const AreaRoutes = router;

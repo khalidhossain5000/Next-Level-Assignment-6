@@ -10,6 +10,7 @@ import { ZoneRoutes } from "./app/modules/distributionInfrastructure/zone/zone.r
 import { SubstationRoutes } from "./app/modules/distributionInfrastructure/substation/substation.route";
 import { FeederRoutes } from "./app/modules/distributionInfrastructure/feeder/feeder.route";
 import { AreaRoutes } from "./app/modules/distributionInfrastructure/area/area.route";
+import { OutageRoutes } from "./app/modules/outage/outage.route";
 const app: Application = express();
 
 //cors setup
@@ -48,6 +49,7 @@ app.use("/api/v1/zone",ZoneRoutes)
 app.use("/api/v1/substation",SubstationRoutes)
 app.use("/api/v1/feeder",FeederRoutes)
 app.use("/api/v1/area",AreaRoutes)
+app.use("/api/v1/outage", OutageRoutes)
 
 
 
