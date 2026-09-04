@@ -4,6 +4,9 @@ import httpStatus from "http-status";
 import type { ICreateZonePayload } from "./zone.interface";
 import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../../lib/cloudinary";
+import { IQuery } from "../../../interfaces/interface";
+import { ZoneWhereInput } from "../../../../generated/prisma/models";
+import { ZoneStatus } from "../../../../generated/prisma/enums";
 
 const createZoneInDb = async (
   payload: ICreateZonePayload,
@@ -68,6 +71,79 @@ const createZoneInDb = async (
 
   return zoneResult;
 };
+
+
+
+//get all zone public route this is
+
+const getAllZoneFromDb=async(query: IQuery)=>{
+    const limit = query.limit ? Number(query.limit) : 10;
+	const page = query.page ? Number(query.page) : 1;
+	const skip = (page - 1) * limit;
+	const sortBy = query.sortBy ? query.sortBy : "createdAt";
+	const sortOrder = query.sortOrder ? query.sortOrder : "desc"
+
+
+	const andConditions: ZoneWhereInput[] = []
+
+
+	//Searching
+	if (query.searchTerm) {
+		andConditions.push({
+			OR: [
+				{ name: { contains: query.searchTerm, mode: "insensitive" } },
+				{ code: { contains: query.searchTerm, mode: "insensitive" } },
+				{
+					description: {
+						contains: query.searchTerm,
+						mode: "insensitive",
+					},
+				},
+				
+			],
+		});
+	}
+
+
+
+	//filtering
+	if (query.code) {
+		andConditions.push({
+			code: { equals: query.code, mode: "insensitive" },
+		});
+	}
+
+	if (query.status) {
+		andConditions.push({
+			status: query.status as ZoneStatus,
+		});
+	}
+
+
+const getAllZone=await prisma.zone.findMany({
+where:{
+    AND:andConditions.length >0 ? andConditions : undefined
+}
+})
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
 
 export const ZoneService = {
   createZoneInDb,
