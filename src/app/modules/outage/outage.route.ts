@@ -23,4 +23,6 @@ router.get("/",auth(Role.CUSTOMER),OutageController.getCurrentUserAddedOutages)
 //--update outage
 
 //--assign technician to solve this outage admin only
+
+
 export const OutageRoutes = router;
