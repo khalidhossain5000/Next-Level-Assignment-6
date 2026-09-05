@@ -2,11 +2,12 @@ import type { Request,Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import httpStatus from "http-status"
 import { sendResponse } from "../../utils/sendResponse";
+import { AdminService } from "./admin.service";
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 
-  const result = await authServices.getMe(user);
+  const result = await AdminService.getAllUsersFromDb()
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
