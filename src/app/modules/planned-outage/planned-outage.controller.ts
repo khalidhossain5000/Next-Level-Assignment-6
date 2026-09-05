@@ -46,17 +46,16 @@ const getPlannedOutageDetails = catchAsync(async (req: Request, res: Response) =
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Loadshedding Details Successfully",
+        message: " Planned Outage Details Retrived Successfully",
         data: result,
-
     });
 });
 
 //update schdeule
 
-const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response) => {
+const updatePlannedOutageSchedule = catchAsync(async (req: Request, res: Response) => {
 
-    const loadsheddingId = req.params.loadsheddingId
+    const plannedOutageId = req.params.plannedOutageId
     const payload = req.body
     const result = await LoadSheddingService.updateSchedule(payload, loadsheddingId as string)
     sendResponse(res, {
@@ -73,5 +72,5 @@ export const PlannedOutageController = {
     createPlannedOutage,
     getAllPlannedOutageSchdeule,
     getPlannedOutageDetails,
-    updateLoadSheddingSchedule
+    updatePlannedOutageSchedule
 }

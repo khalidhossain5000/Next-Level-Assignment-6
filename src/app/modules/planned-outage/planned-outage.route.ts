@@ -19,5 +19,5 @@ router.get("/:plannedOutageId",auth(Role.CUSTOMER),PlannedOutageController.getAl
 
 
 //-4 more update status overall will done later for admin accoridong to business logic
-
+router.patch("/:plannedOutageId",auth(Role.ADMIN),validateRequest(plannedOutageValidation.updatePlannedOutageZodSchema),PlannedOutageController.getAllPlannedOutageSchdeule)
 export const PlannedOutageRoutes = router;
