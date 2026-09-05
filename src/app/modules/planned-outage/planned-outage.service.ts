@@ -5,6 +5,8 @@ import { AppError } from "../../utils/AppError";
 
 import httpStatus from "http-status"
 import type { IPlannedOutagePayload } from "./planned-outage.interface";
+import type { PlannedOutageWhereInput } from "../../../generated/prisma/models";
+import type { PlannedOutageStatus } from "../../../generated/prisma/enums";
 
 //create planned outage
 
@@ -110,7 +112,7 @@ const getAllPlannedOutage = async (query: IQuery) => {
     const sortOrder = query.sortOrder ? query.sortOrder : "desc"
 
 
-    const andConditions: LoadSheddingWhereInput[] = []
+    const andConditions: PlannedOutageWhereInput[] = []
 
 
     //Searching
@@ -124,6 +126,12 @@ const getAllPlannedOutage = async (query: IQuery) => {
                         mode: "insensitive",
                     },
                 },
+                 {
+                    description: {
+                        contains: query.searchTerm,
+                        mode: "insensitive",
+                    },
+                },
 
             ],
         });
@@ -133,12 +141,12 @@ const getAllPlannedOutage = async (query: IQuery) => {
 
     if (query.status) {
         andConditions.push({
-            status: query.status as LoadSheddingStatus,
+            status: query.status as PlannedOutageStatus,
         });
     }
 
 
-    const allLoadsheddingSchdeule = await prisma.loadShedding.findMany({
+    const allPlannedOutageSchedule = await prisma.plannedOutage.findMany({
         where: {
             AND: andConditions.length > 0 ? andConditions : undefined
         },
@@ -153,7 +161,7 @@ const getAllPlannedOutage = async (query: IQuery) => {
         }
     })
 
-    const totalLoadSheddingCount = await prisma.loadShedding.count({
+    const totalPlannedOutageCount = await prisma.plannedOutage.count({
         where: {
             AND: andConditions
         }
@@ -161,19 +169,19 @@ const getAllPlannedOutage = async (query: IQuery) => {
 
 
     return {
-        data: allLoadsheddingSchdeule,
+        data: allPlannedOutageSchedule,
         meta: {
             page,
             limit,
-            total: totalLoadSheddingCount,
-            totalPages: Math.ceil(totalLoadSheddingCount / limit)
+            total: totalPlannedOutageCount,
+            totalPages: Math.ceil(totalPlannedOutageCount / limit)
         }
     }
 
 }
 
 
-
+//get planned outage details
 const getLoadSheddingDetails = async (loadsheddingId: string) => {
     const getDetails = await prisma.loadShedding.findUniqueOrThrow({
         where: {

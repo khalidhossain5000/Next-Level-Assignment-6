@@ -12,6 +12,7 @@ const router = Router();
 router.post("/",auth(Role.ADMIN),validateRequest(plannedOutageValidation.createPlannedOutageZodSchema),PlannedOutageController.createPlannedOutage)
 //-2 get all planned outage public can view
 
+router.get("/",PlannedOutageController.getAllPlannedOutageSchdeule)
 
 //-3 get planned outage details customer only
 

@@ -20,16 +20,16 @@ const createPlannedOutage = catchAsync(async (req: Request, res: Response) => {
 
 //get all planned outage
 
-const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
+const getAllPlannedOutageSchdeule = catchAsync(async (req: Request, res: Response) => {
 
 
 
-    const result = await LoadSheddingService.getAllLoadSheddingSchdeule(req.query)
+    const result = await PlannedOutageService.getAllPlannedOutage(req.query)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: "All LoadShedding schedule Retrived successfully",
+        message: "All Planned Outage schedule Retrived successfully",
         data: result,
     });
 });
@@ -37,7 +37,7 @@ const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
 
 //details
 
-const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) => {
+const getPlannedOut = catchAsync(async (req: Request, res: Response) => {
 
     const loadsheddingId = req.params.loadsheddingId
 
@@ -70,7 +70,7 @@ const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response
 
 export const PlannedOutageController = {
     createPlannedOutage,
-    getAllLoadShedding,
+    getAllPlannedOutageSchdeule,
     getLoadSheddingDetails,
     updateLoadSheddingSchedule
 }
