@@ -12,6 +12,8 @@ import { FeederRoutes } from "./app/modules/distributionInfrastructure/feeder/fe
 import { AreaRoutes } from "./app/modules/distributionInfrastructure/area/area.route";
 import { OutageRoutes } from "./app/modules/outage/outage.route";
 import { LoadSheddingRoutes } from "./app/modules/loadshedding/load-shedding.route";
+import { PaymentRoutes } from "./app/modules/payment/payment.route";
+import { PlannedOutageRoutes } from "./app/modules/planned-outage/planned-outage.route";
 const app: Application = express();
 
 //cors setup
@@ -57,6 +59,12 @@ app.use("/api/v1/outage", OutageRoutes)
 
 //load shedding related api
 app.use("/api/v1/load-shedding", LoadSheddingRoutes)
+
+//payment related api
+app.use("/api/v1/payment", PaymentRoutes)
+
+//planned outage related api
+app.use("/api/v1/planned-outage", PlannedOutageRoutes)
 
 
 app.use(globalErrorHandler);
