@@ -77,7 +77,28 @@ const assignTechnicianToReportedOutage = catchAsync(
 
 //outage status udpate  controller
 
-const updateOutageStatus=
+const updateOutageStatus = catchAsync(
+  async (req: Request, res: Response) => {
+    const { outageId } = req.params;
+    const { status } = req.body;
+    const userId=req.user?.userId;
+    const userRrole=req.user?.role
+    const result = await outageService.updateOutageStatusInDb(
+      outageId,
+      status,
+     userId,
+     userRrole
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Outage status updated successfully",
+      data: result,
+    });
+  }
+);
+
 
 export const OutageController = {
     createOutage,
