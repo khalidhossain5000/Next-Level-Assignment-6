@@ -26,4 +26,13 @@ router.get("/",auth(Role.CUSTOMER),OutageController.getCurrentUserAddedOutages)
 router.patch("/:outageId/assign-technician",auth(Role.ADMIN),OutageController.assignTechnicianToReportedOutage)
 
 
+//update outage status accoding to flow
+router.patch(
+  "/:outageId/status",
+  auth(Role.ADMIN, Role.TECHNICIAN),
+  outageController.updateOutageStatus
+);
+
+
+
 export const OutageRoutes = router;
