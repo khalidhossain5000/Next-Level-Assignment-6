@@ -23,6 +23,7 @@ router.get("/",auth(Role.CUSTOMER),OutageController.getCurrentUserAddedOutages)
 //--update outage
 
 //--assign technician to solve this outage admin only
+router.patch("/:outageId/assign-technician",auth(Role.ADMIN),OutageController.assignTechnicianToReportedOutage)
 
 
 export const OutageRoutes = router;

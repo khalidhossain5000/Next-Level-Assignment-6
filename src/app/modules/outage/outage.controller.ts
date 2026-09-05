@@ -54,11 +54,29 @@ const getCurrentUserAddedOutages = catchAsync(async (req: Request, res: Response
     });
 });
 
+const assignTechnicianToReportedOutage = catchAsync(
+  async (req: Request, res: Response) => {
+    const { outageId } = req.params;
+    const { technicianId } = req.body;
 
+    const result = await OutageService.assignTechnician(
+      outageId as string,
+      technicianId
+    );
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Technician assigned successfully",
+      data: result,
+    });
+  }
+);
 
 export const OutageController = {
     createOutage,
     getAllOutageForAdminManage,
-    getCurrentUserAddedOutages
+    getCurrentUserAddedOutages,
+    assignTechnicianToReportedOutage
     
 }

@@ -73,7 +73,7 @@ export const OutageStatus = {
   ASSIGNED: 'ASSIGNED',
   IN_PROGRESS: 'IN_PROGRESS',
   RESTORED: 'RESTORED',
-  REJECTED: 'REJECTED'
+  CANCELLED: 'CANCELLED'
 } as const
 
 export type OutageStatus = (typeof OutageStatus)[keyof typeof OutageStatus]

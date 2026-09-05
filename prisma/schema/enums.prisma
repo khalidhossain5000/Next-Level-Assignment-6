@@ -41,7 +41,7 @@ enum OutageStatus {
   ASSIGNED
   IN_PROGRESS
   RESTORED
-  REJECTED
+  CANCELLED
 }
 
 enum LoadSheddingStatus {

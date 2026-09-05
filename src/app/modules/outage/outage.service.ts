@@ -1,9 +1,10 @@
 import { OutageStatus } from "../../../generated/prisma/enums"
-import { OutageWhereInput } from "../../../generated/prisma/models"
-import { IQuery } from "../../interfaces/interface"
+import type { OutageWhereInput } from "../../../generated/prisma/models"
+import type { IQuery } from "../../interfaces/interface"
 import { prisma } from "../../lib/prisma"
-import { IOutagePayload } from "./outage.interface"
-
+import { AppError } from "../../utils/AppError"
+import type { IOutagePayload } from "./outage.interface"
+import httpStatus from "http-status"
 export const createOutageInDb = async (payload: IOutagePayload, userId: string) => {
 
     const { cause, description, priority } = payload
@@ -115,12 +116,57 @@ return currentUserOutages
 
 
 
+//assign technician service
 
 
+const assignTechnician=async(outageId:string,technicianId:string)=>{
+    //s-1 check if reported outage exist or not
+    const ifOutageExist=await prisma.outage.findUnique({
+        where:{
+            id:outageId
+        }
+    })
+    if (!ifOutageExist) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Outage not found"
+    );
+  }
+
+
+//s-2 check if outage is already cancelled or resolved
+
+if(ifOutageExist.status===OutageStatus.RESTORED || ifOutageExist.status===OutageStatus.CANCELLED)  {
+  throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Technician cannot be assigned to a restored or cancelled outage"
+    );
+}
+
+
+//s-3 now need to if given techcian id is exist and has techncian user role
+
+
+const technica
+
+
+
+
+
+
+
+
+
+
+
+
+}
+  
 
 
 export const OutageService = {
     createOutageInDb,
     getAllOutageFromDb,
-    getCurrentUserAddedAllOutagesFromDb
+    getCurrentUserAddedAllOutagesFromDb,
+    assignTechnician
 }
