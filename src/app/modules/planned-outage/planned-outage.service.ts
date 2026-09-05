@@ -4,9 +4,10 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 
 import httpStatus from "http-status"
-import type { IPlannedOutagePayload } from "./planned-outage.interface";
+import type { IPlannedOutagePayload, IPlannedOutageUpdatePayload } from "./planned-outage.interface";
 import type { PlannedOutageWhereInput } from "../../../generated/prisma/models";
 import type { PlannedOutageStatus } from "../../../generated/prisma/enums";
+import { Prisma } from "../../../generated/prisma/client";
 
 //create planned outage
 
@@ -200,21 +201,21 @@ const plannedOutageDetails = async (plannedOutageId: string) => {
 
 //update load shedding scheudle
 
-const updateSchedule = async (
-  payload: ILoadSheddingUpdatePayload,
-  loadSheddingId: string
+const updatePlannedOutage = async (
+  payload: IPlannedOutageUpdatePayload,
+  planeedOutageId: string
 ) => {
-  // 1. Find existing schedule
-  const existingSchedule = await prisma.loadShedding.findUnique({
+  // 1. Find existing schedule if exist
+  const existingSchedule = await prisma.plannedOutage.findUnique({
     where: {
-      id: loadSheddingId,
+      id: planeedOutageId,
     },
   });
 
   if (!existingSchedule) {
     throw new AppError(
       httpStatus.NOT_FOUND,
-      "Load shedding schedule not found"
+      "Planned Outage schedule not found"
     );
   }
 
@@ -270,13 +271,13 @@ const updateSchedule = async (
 
   // 6. Check conflict with other schedules in same area or not
   const conflictingSchedule =
-    await prisma.loadShedding.findFirst({
+    await prisma.plannedOutage.findFirst({
       where: {
         areaId: existingSchedule.areaId,
 
 
         id: {
-          not: loadSheddingId,
+          not: planeedOutageId,
         },
 
         status: {
@@ -295,12 +296,12 @@ const updateSchedule = async (
   if (conflictingSchedule) {
     throw new AppError(
       httpStatus.CONFLICT,
-      "Another load shedding schedule already exists during the selected time"
+      "Another Planned Outage schedule already exists during the selected time"
     );
   }
 
   // 7. Build update data
-  const updateData: Prisma.LoadSheddingUpdateInput = {};
+  const updateData: Prisma.PlannedOutageUpdateInput = {};
 
   if (payload.title !== undefined) {
     updateData.title = payload.title;
@@ -320,9 +321,9 @@ const updateSchedule = async (
 
 
   // 8. Update
-  const updatedSchedule = await prisma.loadShedding.update({
+  const updatedSchedule = await prisma.plannedOutage.update({
     where: {
-      id: loadSheddingId,
+      id: planeedOutageId,
     },
     data: updateData,
   });
@@ -336,5 +337,5 @@ export const PlannedOutageService = {
     createPlannedOutageInDb,
     getAllPlannedOutage,
     plannedOutageDetails,
-    updateSchedule
+    updatePlannedOutage
 }

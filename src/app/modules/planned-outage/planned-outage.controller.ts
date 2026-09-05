@@ -57,11 +57,11 @@ const updatePlannedOutageSchedule = catchAsync(async (req: Request, res: Respons
 
     const plannedOutageId = req.params.plannedOutageId
     const payload = req.body
-    const result = await LoadSheddingService.updateSchedule(payload, loadsheddingId as string)
+    const result = await PlannedOutageService.updatePlannedOutage(payload, plannedOutageId as string)
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Loadshedding Details Successfully",
+        message: " planned Outage Updated Successfully",
         data: result,
 
     });
