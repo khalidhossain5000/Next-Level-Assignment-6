@@ -56,11 +56,11 @@ const createPlannedOutageInDb = async (
 
     // 4. Check plannedOutage  conflict in the same area
     const plannedOutageConflict =
-        await prisma.pla.findFirst({
+        await prisma.plannedOutage.findFirst({
             where: {
                 areaId,
 
-                // Ignore cancelled schedules
+                // Ignore all cancelled schedules
                 status: {
                     not: "CANCELLED",
                 },
@@ -76,21 +76,21 @@ const createPlannedOutageInDb = async (
             },
         });
 
-    if (conflictingSchedule) {
+    if (plannedOutageConflict) {
         throw new AppError(
             httpStatus.CONFLICT,
-            "A load shedding schedule already exists for this area during the selected time"
+            "A Planned Outage schedule already exists for this area during the selected time"
         );
     }
 
     // 5. Create schedule
     const createdSchedule =
-        await prisma.loadShedding.create({
+        await prisma.plannedOutage.create({
             data: {
                 title,
                 startTime,
                 endTime,
-                status,
+                description,
                 reason,
                 areaId,
             },
