@@ -11,6 +11,7 @@ model Outage {
   //foreign key of user to know which user reported unexpected outage
   userId         String
   user           User           @relation(  "OutageReporter",fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  payments       Payment[]      @relation("OutagePayments")
 
   //technican foregin key to know which technican is assigned to this outage
   technicianId String?

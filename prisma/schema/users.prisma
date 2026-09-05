@@ -18,6 +18,7 @@ model User {
   
   reportedOutages Outage[] @relation("OutageReporter")
   assignedOutages Outage[] @relation("OutageTechnician")
+  payments        Payment[] @relation("CustomerPayments")
 
   @@index([email], name: "idx_user_email")
   @@map("Users")

@@ -1,3 +1,19 @@
 model Payment {
-    
+	id             String        @id @default(uuid())
+	amount         Decimal       @db.Decimal(10, 2)
+	paymentMethod  String
+	transactionId  String        @unique
+	status         PaymentStatus @default(PENDING)
+	paidAt         DateTime?
+	customerId     String
+	customer       User          @relation("CustomerPayments", fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+	outageReportId String
+	outage         Outage        @relation("OutagePayments", fields: [outageReportId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+	createdAt      DateTime      @default(now())
+	updatedAt      DateTime      @updatedAt
+
+	@@index([customerId], name: "idx_payment_customer_id")
+	@@index([outageReportId], name: "idx_payment_outage_report_id")
+	@@index([status], name: "idx_payment_status")
+	@@map("Payments")
 }

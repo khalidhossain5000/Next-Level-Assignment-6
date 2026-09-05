@@ -58,3 +58,10 @@ enum PlannedOutageStatus {
   CANCELLED
   COMPLETED
 }
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
