@@ -1,4 +1,4 @@
-import { OutageStatus } from "../../../generated/prisma/enums"
+import { OutageStatus, Role, TechnicianProfileStatus, UserStatus } from "../../../generated/prisma/enums"
 import type { OutageWhereInput } from "../../../generated/prisma/models"
 import type { IQuery } from "../../interfaces/interface"
 import { prisma } from "../../lib/prisma"
@@ -147,7 +147,68 @@ if(ifOutageExist.status===OutageStatus.RESTORED || ifOutageExist.status===Outage
 //s-3 now need to if given techcian id is exist and has techncian user role
 
 
-const technica
+const technician = await prisma.user.findUnique({
+    where:{
+        id:technicianId
+    },
+    include:{
+        technicianProfile:true
+    }
+})
+
+  if (!technician) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Technician not found"
+    );
+  }
+
+
+
+
+  if (technician.role !== Role.TECHNICIAN) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Selected user is not a technician"
+    );
+  }
+
+  //s-4 techncinan account must be active not banned
+
+    if (technician.status === UserStatus.BAN) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "This technician is banned"
+    );
+  }
+
+//s-5 technican profile must exist --> 
+
+  if (!technician.technicianProfile) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Technician profile not found"
+    );
+  }
+
+
+  // 6. Technician profile must be approved
+  if (
+    technician.technicianProfile.technicianvProfileVerificationStatus !==
+    TechnicianProfileStatus.APPROVED
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Technician profile is not approved"
+    );
+  }
+
+
+//s-7 technican must be availble to assign
+
+
+
+
 
 
 
