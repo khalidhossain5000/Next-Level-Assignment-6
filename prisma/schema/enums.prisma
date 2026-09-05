@@ -51,3 +51,10 @@ enum LoadSheddingStatus {
   CANCELLED
   COMPLETED
 }
+
+enum PlannedOutageStatus {
+  SCHEDULED
+  ONGOING
+  CANCELLED
+  COMPLETED
+}
