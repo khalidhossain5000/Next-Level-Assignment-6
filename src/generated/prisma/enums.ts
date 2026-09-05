@@ -28,6 +28,7 @@ export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 export const TechnicianStatus = {
   AVAILABLE: 'AVAILABLE',
+  BUSY: 'BUSY',
   UNAVAILABLE: 'UNAVAILABLE'
 } as const
 

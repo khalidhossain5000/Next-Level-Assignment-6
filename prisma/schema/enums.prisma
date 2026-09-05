@@ -11,6 +11,7 @@ enum UserStatus {
 
 enum TechnicianStatus {
   AVAILABLE
+  BUSY
   UNAVAILABLE
 }
 
