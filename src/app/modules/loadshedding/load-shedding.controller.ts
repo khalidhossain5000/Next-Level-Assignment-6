@@ -6,8 +6,6 @@ import httpStatus from "http-status"
 
 const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-
-
     const result = await LoadSheddingService.createLoadSheddingScheduleInDb(payload)
 
     sendResponse(res, {

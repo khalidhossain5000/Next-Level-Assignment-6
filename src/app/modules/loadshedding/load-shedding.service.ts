@@ -317,12 +317,6 @@ const updateSchedule = async (
   return updatedSchedule;
 };
 
-
-
-
-
-
-
 export const LoadSheddingService = {
     createLoadSheddingScheduleInDb,
     getAllLoadSheddingSchdeule,
