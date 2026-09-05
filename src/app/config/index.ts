@@ -42,5 +42,7 @@ export default {
 	cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
 
 	ssl_commerz_store_id:process.env.SSL_COMMERZ_STORE_ID!,
-	ssl_commerz_store_pass:process.env.SSL_COMMERZ_STORE_PASSWORD!
+	ssl_commerz_store_pass:process.env.SSL_COMMERZ_STORE_PASSWORD!,
+
+	outage_priority_payment_fee:process.env.PRIORITY_RESTORATION_FEE
 };

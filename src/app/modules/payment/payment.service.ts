@@ -2,10 +2,10 @@
 
 import axios from "axios";
 
-import configuration from "../../config";
 import { prisma } from "../../lib/prisma";
 import httpStatus from "http-status";
 import { PaymentStatus, Role } from "../../../generated/prisma/enums";
+import config from "../../config";
 
 const createPaymentInDb = async (
   outageReportId: string,
@@ -55,18 +55,18 @@ const createPaymentInDb = async (
       message: "You already paid for this outage report Wait for admin tech further step.",
     };
 
-  //intialied paymetn
+  // initiating payment here
   const paymentData = {
-    store_id: configuration.ssl_commerz_store_id,
-    store_passwd: configuration.ssl_commerz_store_password,
-    total_amount: rentalRequest.totalAmount,
+    store_id: config.ssl_commerz_store_id,
+    store_passwd: config.ssl_commerz_store_pass,
+    total_amount: config.outage_priority_payment_fee,
     currency: "BDT",
     tran_id: transId,
-    success_url: `${configuration.app_url}/api/payments/confirm?rentalRequestId=${rentalRequestId}&tranId=${transId}&status=success`,
-    fail_url: `${configuration.app_url}/api/payments/confirm?rentalRequestId=${rentalRequestId}&tranId=${transId}&status=fail`,
-    cancel_url: `${configuration.app_url}/api/payments/confirm?rentalRequestId=${rentalRequestId}&tranId=${transId}&status=cancel`,
-    cus_name: `${user.firstName} ${user.lastName}`,
-    cus_email: user.email,
+    success_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=success`,
+    fail_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=fail`,
+    cancel_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=cancel`,
+    cus_name: `${customer.name}`,
+    cus_email: customer.email,
     cus_add1: "N/A",
     cus_add2: "N/A",
     cus_city: "N/A",
@@ -90,13 +90,22 @@ const createPaymentInDb = async (
     data: {
       transactionId: transId,
       provider: "SSL_Commerz",
-      totalAmount: rentalRequest.totalAmount,
-      status: PaymentStatus.PENDING,
-      rentalRequestId,
+      amount: config.outage_priority_payment_fee as string,
+      customerId,
+      outageReportId
     },
   });
   return { paymentGatewayUrl: data.GatewayPageURL };
 };
+
+
+
+
+
+
+
+
+
 
 //payment configm and verify payment that the payment is successfully done
 const verifySslCommerzPayment = async (

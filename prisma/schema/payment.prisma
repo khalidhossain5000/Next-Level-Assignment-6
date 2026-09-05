@@ -1,7 +1,7 @@
 model Payment {
 	id             String        @id @default(uuid())
 	amount         Decimal       @db.Decimal(10, 2)
-	paymentMethod  String
+	provider       String
 	transactionId  String        @unique
 	status         PaymentStatus @default(PENDING)
 	paidAt         DateTime?

@@ -1268,7 +1268,7 @@ export type OutageScalarFieldEnum = (typeof OutageScalarFieldEnum)[keyof typeof 
 export const PaymentScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
-  paymentMethod: 'paymentMethod',
+  provider: 'provider',
   transactionId: 'transactionId',
   status: 'status',
   paidAt: 'paidAt',
