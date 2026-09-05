@@ -302,7 +302,14 @@ const updateOutageStatusInDb = async (
     );
   }
 
+//s-2 need to check if requested status is already current status of the outage or not
 
+  if (outage.status === status) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Outage is already ${status}`
+    );
+  }
 
 
 
