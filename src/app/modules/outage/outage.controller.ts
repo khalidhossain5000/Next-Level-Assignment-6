@@ -73,10 +73,17 @@ const assignTechnicianToReportedOutage = catchAsync(
   }
 );
 
+
+
+//outage status udpate  controller
+
+const updateOutageStatus=
+
 export const OutageController = {
     createOutage,
     getAllOutageForAdminManage,
     getCurrentUserAddedOutages,
-    assignTechnicianToReportedOutage
+    assignTechnicianToReportedOutage,
+    updateOutageStatus
     
 }
