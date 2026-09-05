@@ -14,6 +14,7 @@ import { OutageRoutes } from "./app/modules/outage/outage.route";
 import { LoadSheddingRoutes } from "./app/modules/loadshedding/load-shedding.route";
 import { PaymentRoutes } from "./app/modules/payment/payment.route";
 import { PlannedOutageRoutes } from "./app/modules/planned-outage/planned-outage.route";
+import { AdminRoutes } from "./app/modules/admin/admin.route";
 const app: Application = express();
 
 //cors setup
@@ -65,6 +66,9 @@ app.use("/api/v1/payment", PaymentRoutes)
 
 //planned outage related api
 app.use("/api/v1/planned-outage", PlannedOutageRoutes)
+
+//admin related api
+app.use("/api/v1/admin", AdminRoutes)
 
 
 app.use(globalErrorHandler);
