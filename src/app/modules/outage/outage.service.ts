@@ -225,52 +225,6 @@ const assignTechnician = async (outageId: string, technicianId: string) => {
   return transactionResult;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //update outage status in db
 
 const updateOutageStatusInDb = async (
@@ -279,44 +233,35 @@ const updateOutageStatusInDb = async (
   userId: string,
   userRole: Role
 ) => {
+  //main goal to udpate status of the outage accoridng to flow
 
-    //main goal to udpate status of the outage accoridng to flow 
+  //s-1 findoutage if it is exist
 
-    //s-1 findoutage if it is exist
-
-    const outage=await prisma.outage.findUnique({
-        where:{
-            id:outageId
-        },
+  const outage = await prisma.outage.findUnique({
+    where: {
+      id: outageId,
+    },
     select: {
       id: true,
       status: true,
       technicianId: true,
     },
-    })
+  });
 
   if (!outage) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Outage not found"
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
   }
 
-//s-2 need to check if requested status is already current status of the outage or not
+  //s-2 need to check if requested status is already current status of the outage or not
 
   if (outage.status === status) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      `Outage is already ${status}`
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, `Outage is already ${status}`);
   }
 
-
-//s-3 REPORTED AND ACKNOWLEDGE only admin can update this status
+  //s-3 REPORTED AND ACKNOWLEDGE only admin can update this status
 
   if (status === OutageStatus.ACKNOWLEDGED) {
-
-        if (userRole !== Role.ADMIN) {
+    if (userRole !== Role.ADMIN) {
       throw new AppError(
         httpStatus.FORBIDDEN,
         "Only admin can acknowledge an outage"
@@ -330,9 +275,6 @@ const updateOutageStatusInDb = async (
       );
     }
 
-
-
-
     const updatedOutage = await prisma.outage.update({
       where: {
         id: outageId,
@@ -344,14 +286,11 @@ const updateOutageStatusInDb = async (
     });
 
     return updatedOutage;
-
   }
 
-
-//s-4 now from assigned to in progess only technican can do
+  //s-4 now from assigned to in progess only technican can do
 
   if (status === OutageStatus.IN_PROGRESS) {
-
     if (userRole !== Role.TECHNICIAN) {
       throw new AppError(
         httpStatus.FORBIDDEN,
@@ -359,15 +298,14 @@ const updateOutageStatusInDb = async (
       );
     }
 
-
-        if (outage.status !== OutageStatus.ASSIGNED) {
+    if (outage.status !== OutageStatus.ASSIGNED) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "Only an assigned outage can be moved to in progress"
       );
     }
-//can not update other assigned task need to be his own
-        if (outage.technicianId !== userId) {
+    //can not update other assigned task need to be his own
+    if (outage.technicianId !== userId) {
       throw new AppError(
         httpStatus.FORBIDDEN,
         "You are not assigned to this outage"
@@ -388,10 +326,8 @@ const updateOutageStatusInDb = async (
 
   // 5. IN_PROGRESS -> RESTORED only technican can update as useall
 
-
   if (status === OutageStatus.RESTORED) {
-
-   if (userRole !== Role.TECHNICIAN) {
+    if (userRole !== Role.TECHNICIAN) {
       throw new AppError(
         httpStatus.FORBIDDEN,
         "Only technician can restore an outage"
@@ -411,7 +347,7 @@ const updateOutageStatusInDb = async (
         "You are not assigned to this outage"
       );
     }
-const transactionResult = await prisma.$transaction(async (tx) => {
+    const transactionResult = await prisma.$transaction(async (tx) => {
       const updatedOutage = await tx.outage.update({
         where: {
           id: outageId,
@@ -435,33 +371,18 @@ const transactionResult = await prisma.$transaction(async (tx) => {
     });
 
     return transactionResult;
-
-
   }
   // 6. Any unsupported status transition
   throw new AppError(
     httpStatus.BAD_REQUEST,
     `Invalid outage status transition to ${status}`
   );
-
-
-
 };
-
-
-
-
-
-
-
-
-
-
 
 export const OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
   assignTechnician,
-  updateOutageStatusInDb
+  updateOutageStatusInDb,
 };
