@@ -182,10 +182,13 @@ const getAllPlannedOutage = async (query: IQuery) => {
 
 
 //get planned outage details
-const getLoadSheddingDetails = async (loadsheddingId: string) => {
-    const getDetails = await prisma.loadShedding.findUniqueOrThrow({
+const plannedOutageDetails = async (plannedOutageId: string) => {
+    const getDetails = await prisma.plannedOutage.findUniqueOrThrow({
         where: {
-            id: loadsheddingId
+            id: plannedOutageId
+        },
+        include:{
+            area:true
         }
     })
     return getDetails
@@ -332,6 +335,6 @@ const updateSchedule = async (
 export const PlannedOutageService = {
     createPlannedOutageInDb,
     getAllPlannedOutage,
-    getLoadSheddingDetails,
+    plannedOutageDetails,
     updateSchedule
 }

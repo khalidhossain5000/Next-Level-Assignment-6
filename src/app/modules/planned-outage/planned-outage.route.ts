@@ -15,6 +15,7 @@ router.post("/",auth(Role.ADMIN),validateRequest(plannedOutageValidation.createP
 router.get("/",PlannedOutageController.getAllPlannedOutageSchdeule)
 
 //-3 get planned outage details customer only
+router.get("/:plannedOutageId",auth(Role.CUSTOMER),PlannedOutageController.getAllPlannedOutageSchdeule)
 
 
 //-4 more update status overall will done later for admin accoridong to business logic
