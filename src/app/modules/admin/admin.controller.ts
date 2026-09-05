@@ -54,9 +54,26 @@ const getAllTechnicanUserData = catchAsync(async (req: Request, res: Response) =
 
 
 
+//get all payment record
+
+
+const getAllPaymentRecord = catchAsync(async (req: Request, res: Response) => {
+
+
+  const result = await AdminService.getAllTechnicanProfileFromDb()
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All Payment record Data fetched successfully",
+    data: result,
+  });
+});
+
+
 
 export const AdminController ={
     getAllUsers,
     updateUserStatus,
-    getAllTechnicanUserData
+    getAllTechnicanUserData,
+    getAllPaymentRecord
 }

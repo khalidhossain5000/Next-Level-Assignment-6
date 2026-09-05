@@ -16,9 +16,7 @@ router.patch("/users/:userId",auth(Role.ADMIN),AdminController.updateUserStatus)
 
 router.get("/technician",auth(Role.ADMIN),AdminController.getAllTechnicanUserData)
 
-// -- assign technican to outage post i guess
 
-router.post("/users",auth(Role.ADMIN))
 
 // -- analytics overall report data
 
@@ -27,7 +25,7 @@ router.get("/users",auth(Role.ADMIN))
 
 // -- get all payment record with search filter pagination
 
-router.get("/users",auth(Role.ADMIN))
+router.get("/payment-record",auth(Role.ADMIN))
 
 
 
