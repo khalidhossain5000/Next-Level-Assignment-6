@@ -82,12 +82,12 @@ const updateOutageStatus = catchAsync(
     const { outageId } = req.params;
     const { status } = req.body;
     const userId=req.user?.userId;
-    const userRrole=req.user?.role
-    const result = await outageService.updateOutageStatusInDb(
-      outageId,
+    const userRole=req.user?.role
+    const result = await OutageService.updateOutageStatusInDb(
+      outageId as string,
       status,
-     userId,
-     userRrole
+     userId as string,
+     userRole as string
     );
 
     sendResponse(res, {

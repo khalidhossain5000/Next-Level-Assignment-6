@@ -225,9 +225,188 @@ const assignTechnician = async (outageId: string, technicianId: string) => {
   return transactionResult;
 };
 
+
+
+
+
+
+
+
+
+
+//update outage status in db
+
+const updateOutageStatusInDb = async (
+  outageId: string,
+  status: OutageStatus,
+  userId: string,
+  userRole: Role
+) => {
+  // 1. Find outage
+  const outage = await prisma.outage.findUnique({
+    where: {
+      id: outageId,
+    },
+    select: {
+      id: true,
+      status: true,
+      technicianId: true,
+    },
+  });
+
+  if (!outage) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Outage not found"
+    );
+  }
+
+  // 2. Check if already in requested status
+  if (outage.status === status) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `Outage is already ${status}`
+    );
+  }
+
+  // 3. REPORTED -> ACKNOWLEDGED
+  // Only ADMIN can acknowledge
+  if (status === OutageStatus.ACKNOWLEDGED) {
+    if (userRole !== Role.ADMIN) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Only admin can acknowledge an outage"
+      );
+    }
+
+    if (outage.status !== OutageStatus.REPORTED) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Only a reported outage can be acknowledged"
+      );
+    }
+
+    const updatedOutage = await prisma.outage.update({
+      where: {
+        id: outageId,
+      },
+      data: {
+        status: OutageStatus.ACKNOWLEDGED,
+        acknowledgedAt: new Date(),
+      },
+    });
+
+    return updatedOutage;
+  }
+
+  // 4. ASSIGNED -> IN_PROGRESS
+  // Only assigned TECHNICIAN can start the work
+  if (status === OutageStatus.IN_PROGRESS) {
+    if (userRole !== Role.TECHNICIAN) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Only technician can start outage work"
+      );
+    }
+
+    if (outage.status !== OutageStatus.ASSIGNED) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Only an assigned outage can be moved to in progress"
+      );
+    }
+
+    if (outage.technicianId !== userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not assigned to this outage"
+      );
+    }
+
+    const updatedOutage = await prisma.outage.update({
+      where: {
+        id: outageId,
+      },
+      data: {
+        status: OutageStatus.IN_PROGRESS,
+        startedAt: new Date(),
+      },
+    });
+
+    return updatedOutage;
+  }
+
+  // 5. IN_PROGRESS -> RESTORED
+  // Only assigned TECHNICIAN can restore
+  if (status === OutageStatus.RESTORED) {
+    if (userRole !== Role.TECHNICIAN) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "Only technician can restore an outage"
+      );
+    }
+
+    if (outage.status !== OutageStatus.IN_PROGRESS) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Only an in-progress outage can be restored"
+      );
+    }
+
+    if (outage.technicianId !== userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not assigned to this outage"
+      );
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const updatedOutage = await tx.outage.update({
+        where: {
+          id: outageId,
+        },
+        data: {
+          status: OutageStatus.RESTORED,
+          restoredAt: new Date(),
+        },
+      });
+
+      await tx.technicianProfile.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          availability: TechnicianStatus.AVAILABLE,
+        },
+      });
+
+      return updatedOutage;
+    });
+
+    return result;
+  }
+
+  // 6. Any unsupported status transition
+  throw new AppError(
+    httpStatus.BAD_REQUEST,
+    `Invalid outage status transition to ${status}`
+  );
+};
+
+
+
+
+
+
+
+
+
+
+
 export const OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
   assignTechnician,
+  updateOutageStatusInDb
 };
