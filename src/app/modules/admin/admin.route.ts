@@ -10,7 +10,7 @@ router.get("/users",auth(Role.ADMIN),AdminController.getAllUsers)
 
 // -- update users status like ban unban
 
-router.patch("/users",auth(Role.ADMIN))
+router.patch("/users/:userId",auth(Role.ADMIN),AdminController.updateUserStatus)
 
 // -- get all technician to manage and assign them to outage
 

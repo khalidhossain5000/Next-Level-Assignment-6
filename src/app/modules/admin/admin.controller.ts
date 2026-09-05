@@ -16,10 +16,26 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//update status ban or unban
 
 
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+
+    const status=req.body
+    const targetUserId=req.user?.userId
+
+  const result = await AdminService.updateUserStatus(targetUserId as string,status)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User status updated successfully",
+    data: result,
+  });
+});
 
 
 export const AdminController ={
-    getAllUsers
+    getAllUsers,
+    updateUserStatus
 }
