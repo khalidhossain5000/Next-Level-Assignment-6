@@ -4,6 +4,7 @@ import httpStatus from "http-status"
 import { OutageService } from "./outage.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { Role } from "../../../generated/prisma/enums";
 
 const createOutage = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
@@ -87,7 +88,7 @@ const updateOutageStatus = catchAsync(
       outageId as string,
       status,
      userId as string,
-     userRole as string
+     userRole as Role
     );
 
     sendResponse(res, {
