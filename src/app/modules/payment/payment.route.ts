@@ -15,11 +15,11 @@ router.post("/confirm",paymentController.verifySslCommerzPayment)
 
 
 //get payment users history
-router.get("/",auth(Role.CUSTOMER),paymentController.getUsersPaymentHistory)
+router.get("/",auth(Role.CUSTOMER),paymentController.getCustomersPaymentHistory)
 
 
 //get payment details
-router.get("/:id",auth(Role.CUSTOMER,Role.ADMIN),paymentController.getPaymentDetails)
+router.get("/:paymentId",auth(Role.CUSTOMER,Role.ADMIN),paymentController.getPaymentDetails)
 
 
 export const PaymentRoutes = router;

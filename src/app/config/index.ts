@@ -44,5 +44,7 @@ export default {
 	ssl_commerz_store_id:process.env.SSL_COMMERZ_STORE_ID!,
 	ssl_commerz_store_pass:process.env.SSL_COMMERZ_STORE_PASSWORD!,
 
-	outage_priority_payment_fee:process.env.PRIORITY_RESTORATION_FEE
+	outage_priority_payment_fee:process.env.PRIORITY_RESTORATION_FEE,
+
+	payment_result_redirect_base_url:process.env.PAYMENT_RESULT_REDIRECT_BASE_URL
 };
