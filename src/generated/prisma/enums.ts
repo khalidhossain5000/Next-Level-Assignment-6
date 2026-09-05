@@ -102,7 +102,7 @@ export type PlannedOutageStatus = (typeof PlannedOutageStatus)[keyof typeof Plan
 
 export const PaymentStatus = {
   PENDING: 'PENDING',
-  SUCCESS: 'SUCCESS',
+  COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
   CANCELLED: 'CANCELLED'
 } as const

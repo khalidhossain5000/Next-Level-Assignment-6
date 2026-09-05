@@ -1,55 +1,58 @@
-//intiate payment
+//intiate payment and create payment
 
 import axios from "axios";
-import {
-  PaymentStatus,
-  PropertyStatus,
-  RentalRequestStatus,
-} from "../../../generated/prisma/enums";
+
 import configuration from "../../config";
 import { prisma } from "../../lib/prisma";
-import httpStatus from "http-status"
+import httpStatus from "http-status";
+import { PaymentStatus, Role } from "../../../generated/prisma/enums";
 
-
-const createPaymentInDb = async (rentalRequestId: string, tenantId: string) => {
+const createPaymentInDb = async (
+  outageReportId: string,
+  customerId: string
+) => {
   // console.log(tenantId,'tenatn id from paymetn service')
-  const transId = `TRNX_ID_${Date.now()}`;
+  const transId = `TRX_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-
-
-  //fetch user
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: tenantId } });
-  //payment will be done if rental request stasus is approved
-  const rentalRequest = await prisma.rentalRequest.findUniqueOrThrow({
-    where: { id: rentalRequestId },
+  //fetch customer who requested to pay
+  const customer = await prisma.user.findUniqueOrThrow({
+    where: 
+    { id: customerId,
+      role: Role.CUSTOMER
+     },
   });
-  // checking ownership if this reuqst done by logged in user
-  if (rentalRequest.tenantId !== tenantId)
+  //payment will be done if rental request stasus is approved
+  const outageReport = await prisma.outage.findUniqueOrThrow({
+    where: {
+      id: outageReportId,
+    },
+    include:{
+        user:true
+    }
+  });
+  // checking ownership if this outage is added and  by current logged in user
+  if (outageReport.userId !== customer.id)
     throw {
       statusCode: httpStatus.FORBIDDEN,
-        name: "Forbidden",
-      message: "You are not allowed to pay for this rental request.Pay your own",
+      name: "Forbidden",
+      message:
+        "You are not allowed to pay for this Outage since this is not you added.Pay for your own",
     };
 
-  //if rent req approved or not
-  if (rentalRequest.status !== RentalRequestStatus.APPROVED)
-    throw {
-      statusCode: httpStatus.FORBIDDEN,
-        name: "Forbidden",
-      message:
-        "Rental Request is not approved yet ,contact landlord or support",
-    };
+    //checking if same current user already paid for this outage or not
+ 
   const existingPayment = await prisma.payment.findFirst({
     where: {
-      rentalRequestId,
+      outageReportId,
+      customerId,
       status: PaymentStatus.COMPLETED,
     },
   });
   if (existingPayment)
     throw {
       statusCode: httpStatus.CONFLICT,
-        name: "Conflict error",
-      message: "Payment has already been completed for this rental request.",
+      name: "Conflict error",
+      message: "You already paid for this outage report Wait for admin tech further step.",
     };
 
   //intialied paymetn
@@ -79,7 +82,7 @@ const createPaymentInDb = async (rentalRequestId: string, tenantId: string) => {
     paymentData,
     {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    },
+    }
   );
   const data = res.data;
 
@@ -99,15 +102,14 @@ const createPaymentInDb = async (rentalRequestId: string, tenantId: string) => {
 const verifySslCommerzPayment = async (
   transId: string,
   status: string,
-  val_id: string,
+  val_id: string
 ) => {
-
   const response = await axios.post(
     `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${configuration.ssl_commerz_store_id}&store_passwd=${configuration.ssl_commerz_store_password}&format=json
 `,
     {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    },
+    }
   );
 
   const paymentData = response.data;
@@ -181,7 +183,7 @@ const paymentHistoryFromDb = async (tenantId: string) => {
       rentalRequest: true,
     },
   });
-  console.log(result,'this is result')
+  console.log(result, "this is result");
   return result;
 };
 
