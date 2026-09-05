@@ -401,6 +401,8 @@ export const ModelName = {
   Feeder: 'Feeder',
   LoadShedding: 'LoadShedding',
   Outage: 'Outage',
+  Payment: 'Payment',
+  PlannedOutage: 'PlannedOutage',
   Substation: 'Substation',
   TechnicianProfile: 'TechnicianProfile',
   User: 'User',
@@ -420,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "area" | "feeder" | "loadShedding" | "outage" | "substation" | "technicianProfile" | "user" | "zone"
+    modelProps: "area" | "feeder" | "loadShedding" | "outage" | "payment" | "plannedOutage" | "substation" | "technicianProfile" | "user" | "zone"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -717,6 +719,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OutageCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OutageCountAggregateOutputType> | number
+        }
+      }
+    }
+    Payment: {
+      payload: Prisma.$PaymentPayload<ExtArgs>
+      fields: Prisma.PaymentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PaymentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PaymentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        findFirst: {
+          args: Prisma.PaymentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PaymentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        findMany: {
+          args: Prisma.PaymentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        create: {
+          args: Prisma.PaymentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        createMany: {
+          args: Prisma.PaymentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PaymentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        delete: {
+          args: Prisma.PaymentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        update: {
+          args: Prisma.PaymentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        deleteMany: {
+          args: Prisma.PaymentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PaymentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PaymentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>[]
+        }
+        upsert: {
+          args: Prisma.PaymentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PaymentPayload>
+        }
+        aggregate: {
+          args: Prisma.PaymentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePayment>
+        }
+        groupBy: {
+          args: Prisma.PaymentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PaymentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    PlannedOutage: {
+      payload: Prisma.$PlannedOutagePayload<ExtArgs>
+      fields: Prisma.PlannedOutageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PlannedOutageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PlannedOutageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        findFirst: {
+          args: Prisma.PlannedOutageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PlannedOutageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        findMany: {
+          args: Prisma.PlannedOutageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>[]
+        }
+        create: {
+          args: Prisma.PlannedOutageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        createMany: {
+          args: Prisma.PlannedOutageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PlannedOutageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>[]
+        }
+        delete: {
+          args: Prisma.PlannedOutageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        update: {
+          args: Prisma.PlannedOutageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        deleteMany: {
+          args: Prisma.PlannedOutageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PlannedOutageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PlannedOutageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>[]
+        }
+        upsert: {
+          args: Prisma.PlannedOutageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PlannedOutagePayload>
+        }
+        aggregate: {
+          args: Prisma.PlannedOutageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePlannedOutage>
+        }
+        groupBy: {
+          args: Prisma.PlannedOutageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlannedOutageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PlannedOutageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PlannedOutageCountAggregateOutputType> | number
         }
       }
     }
@@ -1115,6 +1265,38 @@ export const OutageScalarFieldEnum = {
 export type OutageScalarFieldEnum = (typeof OutageScalarFieldEnum)[keyof typeof OutageScalarFieldEnum]
 
 
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  amount: 'amount',
+  paymentMethod: 'paymentMethod',
+  transactionId: 'transactionId',
+  status: 'status',
+  paidAt: 'paidAt',
+  customerId: 'customerId',
+  outageReportId: 'outageReportId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const PlannedOutageScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  reason: 'reason',
+  description: 'description',
+  status: 'status',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  areaId: 'areaId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlannedOutageScalarFieldEnum = (typeof PlannedOutageScalarFieldEnum)[keyof typeof PlannedOutageScalarFieldEnum]
+
+
 export const SubstationScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1298,6 +1480,48 @@ export type ListEnumOutageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentStatus'
+ */
+export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentStatus[]'
+ */
+export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PlannedOutageStatus'
+ */
+export type EnumPlannedOutageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlannedOutageStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PlannedOutageStatus[]'
+ */
+export type ListEnumPlannedOutageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PlannedOutageStatus[]'>
     
 
 
@@ -1553,6 +1777,8 @@ export type GlobalOmitConfig = {
   feeder?: Prisma.FeederOmit
   loadShedding?: Prisma.LoadSheddingOmit
   outage?: Prisma.OutageOmit
+  payment?: Prisma.PaymentOmit
+  plannedOutage?: Prisma.PlannedOutageOmit
   substation?: Prisma.SubstationOmit
   technicianProfile?: Prisma.TechnicianProfileOmit
   user?: Prisma.UserOmit

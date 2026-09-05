@@ -3,10 +3,12 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 
 import httpStatus from "http-status"
+import { PlannedOutageService } from "./planned-outage.service";
 
 const createPlannedOutage = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
 
+    const result=await PlannedOutageService.createPlannedOutageInDb(payload)
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -16,6 +18,7 @@ const createPlannedOutage = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+//get all planned outage
 
 const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
 

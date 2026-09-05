@@ -1,15 +1,17 @@
-import { Prisma } from "../../../generated/prisma/client";
-import { LoadSheddingStatus } from "../../../generated/prisma/enums";
-import { LoadSheddingWhereInput } from "../../../generated/prisma/models";
-import { IQuery } from "../../interfaces/interface";
+
+import type { IQuery } from "../../interfaces/interface";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ILoadSheddingPayload, ILoadSheddingUpdatePayload } from "./load-shedding.interface"
+
 import httpStatus from "http-status"
-const createLoadSheddingScheduleInDb = async (
-    payload: ILoadSheddingPayload
+import type { IPlannedOutagePayload } from "./planned-outage.interface";
+
+//create planned outage
+
+const createPlannedOutageInDb = async (
+    payload: IPlannedOutagePayload
 ) => {
-    const { title, startTime, endTime, status, reason, areaId } = payload;
+    const {title,areaId,description,endTime,reason,startTime} = payload;
 
     // 1. Validate time range
     if (startTime >= endTime) {
@@ -27,7 +29,7 @@ const createLoadSheddingScheduleInDb = async (
         );
     }
 
-    // 3. Check area exists and is active
+    // 3. need to if Check area exists and is active
     const area = await prisma.area.findUnique({
         where: {
             id: areaId,
@@ -52,9 +54,9 @@ const createLoadSheddingScheduleInDb = async (
         );
     }
 
-    // 4. Check schedule conflict in the same area
-    const conflictingSchedule =
-        await prisma.loadShedding.findFirst({
+    // 4. Check plannedOutage  conflict in the same area
+    const plannedOutageConflict =
+        await prisma.pla.findFirst({
             where: {
                 areaId,
 
@@ -98,9 +100,9 @@ const createLoadSheddingScheduleInDb = async (
 };
 
 
-//get all load shedding schedule
+//get all get All Planned Outage schedule
 
-const getAllLoadSheddingSchdeule = async (query: IQuery) => {
+const getAllPlannedOutage = async (query: IQuery) => {
     const limit = query.limit ? Number(query.limit) : 10;
     const page = query.page ? Number(query.page) : 1;
     const skip = (page - 1) * limit;
@@ -317,9 +319,11 @@ const updateSchedule = async (
   return updatedSchedule;
 };
 
-export const LoadSheddingService = {
-    createLoadSheddingScheduleInDb,
-    getAllLoadSheddingSchdeule,
+
+
+export const PlannedOutageService = {
+    createPlannedOutageInDb,
+    getAllPlannedOutage,
     getLoadSheddingDetails,
     updateSchedule
 }

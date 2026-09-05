@@ -247,6 +247,7 @@ export type OutageWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Outage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Outage"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  payments?: Prisma.PaymentListRelationFilter
   techician?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
@@ -265,6 +266,7 @@ export type OutageOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
   techician?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -286,6 +288,7 @@ export type OutageWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Outage"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Outage"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  payments?: Prisma.PaymentListRelationFilter
   techician?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
@@ -340,6 +343,7 @@ export type OutageCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutReportedOutagesInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOutageInput
   techician?: Prisma.UserCreateNestedOneWithoutAssignedOutagesInput
 }
 
@@ -357,6 +361,7 @@ export type OutageUncheckedCreateInput = {
   technicianId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOutageInput
 }
 
 export type OutageUpdateInput = {
@@ -372,6 +377,7 @@ export type OutageUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutReportedOutagesNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOutageNestedInput
   techician?: Prisma.UserUpdateOneWithoutAssignedOutagesNestedInput
 }
 
@@ -389,6 +395,7 @@ export type OutageUncheckedUpdateInput = {
   technicianId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOutageNestedInput
 }
 
 export type OutageCreateManyInput = {
@@ -485,6 +492,11 @@ export type OutageMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type OutageScalarRelationFilter = {
+  is?: Prisma.OutageWhereInput
+  isNot?: Prisma.OutageWhereInput
+}
+
 export type OutageListRelationFilter = {
   every?: Prisma.OutageWhereInput
   some?: Prisma.OutageWhereInput
@@ -509,6 +521,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type OutageCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.OutageCreateWithoutPaymentsInput, Prisma.OutageUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.OutageCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.OutageWhereUniqueInput
+}
+
+export type OutageUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.OutageCreateWithoutPaymentsInput, Prisma.OutageUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.OutageCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.OutageUpsertWithoutPaymentsInput
+  connect?: Prisma.OutageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OutageUpdateToOneWithWhereWithoutPaymentsInput, Prisma.OutageUpdateWithoutPaymentsInput>, Prisma.OutageUncheckedUpdateWithoutPaymentsInput>
 }
 
 export type OutageCreateNestedManyWithoutUserInput = {
@@ -595,6 +621,86 @@ export type OutageUncheckedUpdateManyWithoutTechicianNestedInput = {
   deleteMany?: Prisma.OutageScalarWhereInput | Prisma.OutageScalarWhereInput[]
 }
 
+export type OutageCreateWithoutPaymentsInput = {
+  id?: string
+  cause: string
+  description: string
+  priority?: $Enums.OutagePriority
+  reported_At?: Date | string
+  status?: $Enums.OutageStatus
+  acknowledgedAt?: Date | string | null
+  startedAt?: Date | string | null
+  isDeleted?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutReportedOutagesInput
+  techician?: Prisma.UserCreateNestedOneWithoutAssignedOutagesInput
+}
+
+export type OutageUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  cause: string
+  description: string
+  priority?: $Enums.OutagePriority
+  reported_At?: Date | string
+  status?: $Enums.OutageStatus
+  acknowledgedAt?: Date | string | null
+  startedAt?: Date | string | null
+  isDeleted?: boolean
+  userId: string
+  technicianId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type OutageCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.OutageWhereUniqueInput
+  create: Prisma.XOR<Prisma.OutageCreateWithoutPaymentsInput, Prisma.OutageUncheckedCreateWithoutPaymentsInput>
+}
+
+export type OutageUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.OutageUpdateWithoutPaymentsInput, Prisma.OutageUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.OutageCreateWithoutPaymentsInput, Prisma.OutageUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.OutageWhereInput
+}
+
+export type OutageUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.OutageWhereInput
+  data: Prisma.XOR<Prisma.OutageUpdateWithoutPaymentsInput, Prisma.OutageUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type OutageUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  cause?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.EnumOutagePriorityFieldUpdateOperationsInput | $Enums.OutagePriority
+  reported_At?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOutageStatusFieldUpdateOperationsInput | $Enums.OutageStatus
+  acknowledgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutReportedOutagesNestedInput
+  techician?: Prisma.UserUpdateOneWithoutAssignedOutagesNestedInput
+}
+
+export type OutageUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  cause?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  priority?: Prisma.EnumOutagePriorityFieldUpdateOperationsInput | $Enums.OutagePriority
+  reported_At?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumOutageStatusFieldUpdateOperationsInput | $Enums.OutageStatus
+  acknowledgedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  technicianId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type OutageCreateWithoutUserInput = {
   id?: string
   cause: string
@@ -607,6 +713,7 @@ export type OutageCreateWithoutUserInput = {
   isDeleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentCreateNestedManyWithoutOutageInput
   techician?: Prisma.UserCreateNestedOneWithoutAssignedOutagesInput
 }
 
@@ -623,6 +730,7 @@ export type OutageUncheckedCreateWithoutUserInput = {
   technicianId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOutageInput
 }
 
 export type OutageCreateOrConnectWithoutUserInput = {
@@ -648,6 +756,7 @@ export type OutageCreateWithoutTechicianInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutReportedOutagesInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutOutageInput
 }
 
 export type OutageUncheckedCreateWithoutTechicianInput = {
@@ -663,6 +772,7 @@ export type OutageUncheckedCreateWithoutTechicianInput = {
   userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutOutageInput
 }
 
 export type OutageCreateOrConnectWithoutTechicianInput = {
@@ -768,6 +878,7 @@ export type OutageUpdateWithoutUserInput = {
   isDeleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUpdateManyWithoutOutageNestedInput
   techician?: Prisma.UserUpdateOneWithoutAssignedOutagesNestedInput
 }
 
@@ -784,6 +895,7 @@ export type OutageUncheckedUpdateWithoutUserInput = {
   technicianId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOutageNestedInput
 }
 
 export type OutageUncheckedUpdateManyWithoutUserInput = {
@@ -814,6 +926,7 @@ export type OutageUpdateWithoutTechicianInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutReportedOutagesNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutOutageNestedInput
 }
 
 export type OutageUncheckedUpdateWithoutTechicianInput = {
@@ -829,6 +942,7 @@ export type OutageUncheckedUpdateWithoutTechicianInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutOutageNestedInput
 }
 
 export type OutageUncheckedUpdateManyWithoutTechicianInput = {
@@ -847,6 +961,35 @@ export type OutageUncheckedUpdateManyWithoutTechicianInput = {
 }
 
 
+/**
+ * Count Type OutageCountOutputType
+ */
+
+export type OutageCountOutputType = {
+  payments: number
+}
+
+export type OutageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  payments?: boolean | OutageCountOutputTypeCountPaymentsArgs
+}
+
+/**
+ * OutageCountOutputType without action
+ */
+export type OutageCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the OutageCountOutputType
+   */
+  select?: Prisma.OutageCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * OutageCountOutputType without action
+ */
+export type OutageCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
 
 export type OutageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -863,7 +1006,9 @@ export type OutageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  payments?: boolean | Prisma.Outage$paymentsArgs<ExtArgs>
   techician?: boolean | Prisma.Outage$techicianArgs<ExtArgs>
+  _count?: boolean | Prisma.OutageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["outage"]>
 
 export type OutageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -921,7 +1066,9 @@ export type OutageSelectScalar = {
 export type OutageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "cause" | "description" | "priority" | "reported_At" | "status" | "acknowledgedAt" | "startedAt" | "isDeleted" | "userId" | "technicianId" | "createdAt" | "updatedAt", ExtArgs["result"]["outage"]>
 export type OutageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  payments?: boolean | Prisma.Outage$paymentsArgs<ExtArgs>
   techician?: boolean | Prisma.Outage$techicianArgs<ExtArgs>
+  _count?: boolean | Prisma.OutageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OutageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -936,6 +1083,7 @@ export type $OutagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   name: "Outage"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
     techician: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1347,6 +1495,7 @@ readonly fields: OutageFieldRefs;
 export interface Prisma__OutageClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  payments<T extends Prisma.Outage$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Outage$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   techician<T extends Prisma.Outage$techicianArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Outage$techicianArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1788,6 +1937,30 @@ export type OutageDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Outages to delete.
    */
   limit?: number
+}
+
+/**
+ * Outage.payments
+ */
+export type Outage$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
 }
 
 /**

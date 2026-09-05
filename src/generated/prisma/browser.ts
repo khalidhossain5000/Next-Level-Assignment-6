@@ -38,6 +38,16 @@ export type LoadShedding = Prisma.LoadSheddingModel
  */
 export type Outage = Prisma.OutageModel
 /**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model PlannedOutage
+ * 
+ */
+export type PlannedOutage = Prisma.PlannedOutageModel
+/**
  * Model Substation
  * 
  */
