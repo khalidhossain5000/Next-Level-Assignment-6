@@ -30,7 +30,7 @@ router.patch("/:outageId/assign-technician",auth(Role.ADMIN),OutageController.as
 router.patch(
   "/:outageId/status",
   auth(Role.ADMIN, Role.TECHNICIAN),
-  outageController.updateOutageStatus
+  OutageController.updateOutageStatus
 );
 
 
