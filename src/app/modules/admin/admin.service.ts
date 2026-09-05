@@ -4,7 +4,15 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status"
 
 const getAllUsersFromDb=async()=>{
-    const result=await prisma.user.findMany()
+    const result=await prisma.user.findMany({
+        omit:{
+            password:true
+        },
+        include:{
+            reportedOutages:true,
+            payments:true
+        }
+    })
 
     return result
 }
@@ -66,7 +74,36 @@ const updateUserStatus = async (
 };
 
 
+//get all technician data
+
+
+const getAllTechnicanProfileFromDb=async()=>{
+    const result=await prisma.user.findMany({
+        where:{
+            role:Role.TECHNICIAN
+        },
+         omit:{
+                password:true
+            },
+        include:{
+           
+            technicianProfile:true,
+            assignedOutages:true,
+
+        }
+    })
+
+    return result
+}
+
+
+
+
+
+
+
 export const AdminService = {
     getAllUsersFromDb,
-    updateUserStatus
+    updateUserStatus,
+    getAllTechnicanProfileFromDb
 }

@@ -14,7 +14,7 @@ router.patch("/users/:userId",auth(Role.ADMIN),AdminController.updateUserStatus)
 
 // -- get all technician to manage and assign them to outage
 
-router.get("/users",auth(Role.ADMIN))
+router.get("/technician",auth(Role.ADMIN),AdminController.getAllTechnicanUserData)
 
 // -- assign technican to outage post i guess
 

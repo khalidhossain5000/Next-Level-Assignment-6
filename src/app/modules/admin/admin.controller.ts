@@ -35,7 +35,28 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 
+
+
+
+//get all technicain profiel
+
+const getAllTechnicanUserData = catchAsync(async (req: Request, res: Response) => {
+
+
+  const result = await AdminService.getAllTechnicanProfileFromDb()
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All Technician Users Data fetched successfully",
+    data: result,
+  });
+});
+
+
+
+
 export const AdminController ={
     getAllUsers,
-    updateUserStatus
+    updateUserStatus,
+    getAllTechnicanUserData
 }
