@@ -3,7 +3,7 @@ import { cloudinary } from "../../lib/cloudinary";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status"
 import { prisma } from "../../lib/prisma";
-import type { ITechcianProfileUploadPayload } from "./technician-profile.interface";
+import type { ITechcianProfileUploadPayload, ITechProfileApproval } from "./technician-profile.interface";
 
 const updateTechnicicanProfileInDb = async (payload: ITechcianProfileUploadPayload, resume: Express.Multer.File | null,
  technicianUserId: string)=> {
@@ -76,7 +76,7 @@ return updatedTechnicianProfile
 
 
 
-const technicianProfileApprovalInDb=async(technicianId:string)=>{
+const technicianProfileApprovalInDb=async(payload:ITechProfileApproval)=>{
 //s-1 check if technican profile is exist or not
 
 const techProfile=await prisma.technicianProfile.findUnique({
