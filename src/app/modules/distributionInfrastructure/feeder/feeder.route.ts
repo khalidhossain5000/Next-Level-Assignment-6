@@ -14,9 +14,8 @@ router.post("/",auth(Role.ADMIN),validateRequest(feederValidation.createFeederZo
 //get all substion public
 router.get("/",FeederController.getAllFeeder)
 
-//get details protected need lgoin
 
-router.get("/:feederId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),FeederController.getFeederDetails)
+router.get("/:feederId",FeederController.getFeederDetails)
 
 
 
