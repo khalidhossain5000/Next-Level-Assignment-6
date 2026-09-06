@@ -1,7 +1,9 @@
 import type{ SubstationWhereInput } from "../../../../generated/prisma/models"
 import type{ IQuery } from "../../../interfaces/interface"
 import  { prisma } from "../../../lib/prisma"
-import type { ISubstationPayload } from "./substation.interface"
+import type { ISubstationPayload, IUpdateSubstationPayload } from "./substation.interface"
+import { AppError } from "../../../utils/AppError"
+import httpStatus from "http-status"
 
 const createSubstation=async(payload:ISubstationPayload)=>{
     const {name,code,capacity,location,zoneId} =payload
@@ -118,8 +120,51 @@ const getSubstationDetails=async(substationId:string)=>{
     return substationDetails
 }
 
+const updateSubstation = async (
+    substationId: string,
+    payload: IUpdateSubstationPayload,
+) => {
+    const existingSubstation = await prisma.substation.findUnique({
+        where: { id: substationId },
+    });
+
+    if (!existingSubstation) {
+        throw new AppError(httpStatus.NOT_FOUND, "Substation not found");
+    }
+
+    if (payload.code && payload.code !== existingSubstation.code) {
+        const substationWithSameCode = await prisma.substation.findUnique({
+            where: { code: payload.code },
+        });
+
+        if (substationWithSameCode) {
+            throw new AppError(httpStatus.CONFLICT, "Substation code already exists");
+        }
+    }
+
+    if (payload.zoneId && payload.zoneId !== existingSubstation.zoneId) {
+        const zone = await prisma.zone.findUnique({
+            where: { id: payload.zoneId },
+        });
+
+        if (!zone) {
+            throw new AppError(httpStatus.NOT_FOUND, "Zone not found");
+        }
+    }
+
+    return prisma.substation.update({
+        where: { id: substationId },
+        data: payload,
+        include: {
+            zone: true,
+            feeders: true,
+        },
+    });
+};
+
 export const SubstationService={
     createSubstation,
     getAllSubstationFromDb,
-    getSubstationDetails
+    getSubstationDetails,
+    updateSubstation,
 }

@@ -9,7 +9,7 @@ const router = Router();
 //create zone
 router.post("/",auth(Role.ADMIN),upload.single("zoneImage"),ZoneController.createZone)
 
-//update zone details or replace its image
+//update zone details or update its image
 router.patch("/:zoneId",auth(Role.ADMIN),upload.single("zoneImage"),ZoneController.updateZone)
 
 //get all zone for public route

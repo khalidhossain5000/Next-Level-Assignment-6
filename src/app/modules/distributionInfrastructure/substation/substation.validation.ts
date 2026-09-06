@@ -8,7 +8,19 @@ import z from "zod";
     zoneId:z.string("Not a string")
 })
 
+const updateSubstationZodSchema = z.object({
+    name: z.string("Name is not a string").min(5, "Name should minimum have 5 char").max(100, "Name should not be more than 100 chars").optional(),
+    code: z.string("Not a string").min(5, "Code should minimum have 5 char").max(10, "Max 10 chars").optional(),
+    capacity: z.string("Not a string").min(5, "capacity should minimum have 5 char").max(50, "Max 50 chars").optional(),
+    location:z.string("Not a string").min(5, "Location should minimum have 5 char").max(60, "Max 60 chars").optional(),
+    zoneId:z.string("Not a string").min(1, "Zone ID is required").optional(),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+}).refine((payload) => Object.keys(payload).length > 0, {
+    message: "At least one substation field is required for update",
+});
+
 export const substationValidation ={
-    createSubstationZodSchema
+    createSubstationZodSchema,
+    updateSubstationZodSchema,
 }
 

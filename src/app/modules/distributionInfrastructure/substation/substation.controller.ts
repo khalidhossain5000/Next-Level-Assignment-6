@@ -47,9 +47,25 @@ const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateSubstation = catchAsync(async (req: Request, res: Response) => {
+    const substationId = req.params.substationId as string;
+    const result = await SubstationService.updateSubstation(
+        substationId,
+        req.body,
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Substation updated successfully",
+        data: result,
+    });
+});
+
 
 export const SubstationController = {
     createSubstation,
     getAllSubstation,
-    getSubstationDetails
+    getSubstationDetails,
+    updateSubstation,
 }

@@ -6,5 +6,14 @@ export interface ISubstationPayload{
     capacity:string;
     location:string;
     zoneId:string;
-    status:InfrastructureStatus;
+    status?:InfrastructureStatus;
+}
+
+export interface IUpdateSubstationPayload {
+    name?: string;
+    code?: string;
+    capacity?: string;
+    location?: string;
+    zoneId?: string;
+    status?: InfrastructureStatus;
 }
