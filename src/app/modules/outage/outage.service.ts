@@ -257,12 +257,19 @@ const updateOutageStatusInDb = async (
       id: true,
       status: true,
       technicianId: true,
+      isDeleted:true
     },
   });
 
   if (!outage) {
     throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
   }
+//is outage deleted
+
+  if (outage.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "Outage is deleted");
+  }
+
 
   //s-2 need to check if requested status is already current status of the outage or not
 
