@@ -18,7 +18,7 @@ router.get("/",LoadSheddingController.getAllLoadShedding)
 //--details load shedding protected for custoerm
 
 
-router.get("/:loadsheddingId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),LoadSheddingController.getAllLoadShedding)
+router.get("/:loadsheddingId",auth(Role.CUSTOMER,Role.TECHNICIAN,Role.ADMIN),LoadSheddingController.getLoadSheddingDetails)
 
 
 //--update schdeule admin only

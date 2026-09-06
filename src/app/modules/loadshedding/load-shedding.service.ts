@@ -176,6 +176,9 @@ const getLoadSheddingDetails = async (loadsheddingId: string) => {
     const getDetails = await prisma.loadShedding.findUniqueOrThrow({
         where: {
             id: loadsheddingId
+        },
+        include:{
+          area:true
         }
     })
     return getDetails

@@ -42,7 +42,7 @@ const getLoadSheddingDetails = catchAsync(async (req: Request, res: Response) =>
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Loadshedding Details Successfully",
+        message: " Load shedding Details Retrived Successfully",
         data: result,
 
     });

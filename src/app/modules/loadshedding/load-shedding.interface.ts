@@ -1,8 +1,4 @@
-type LoadSheddingStatus =
-    | "ONGOING"
-    | "SCHEDULED"
-    | "CANCELLED"
-    | "COMPLETED";
+
 
 export interface ILoadSheddingPayload {
     title: string;
