@@ -9,7 +9,7 @@ import httpStatus from "http-status"
 const createLoadSheddingScheduleInDb = async (
     payload: ILoadSheddingPayload
 ) => {
-    const { title, startTime, endTime, status, reason, areaId } = payload;
+    const { title, startTime, endTime, reason, areaId } = payload;
 
     // 1. Validate time range
     if (startTime >= endTime) {
@@ -88,7 +88,6 @@ const createLoadSheddingScheduleInDb = async (
                 title,
                 startTime,
                 endTime,
-                status,
                 reason,
                 areaId,
             },
