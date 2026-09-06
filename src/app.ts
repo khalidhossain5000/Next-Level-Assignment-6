@@ -32,10 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-//default get
-app.get("/", (req: Request, res: Response) => {
-  res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
-});
+
 
 //auth related route set
 
@@ -69,6 +66,11 @@ app.use("/api/v1/planned-outage", PlannedOutageRoutes)
 
 //admin related api
 app.use("/api/v1/admin", AdminRoutes)
+
+//default get
+app.get("/", (req: Request, res: Response) => {
+  res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
+});
 
 
 app.use(globalErrorHandler);

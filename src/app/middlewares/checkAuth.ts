@@ -38,6 +38,7 @@ export const auth = (...requiredRoles: Role[]) => {
 				"You are not logged in. Please log in to access this resource.",
 			);
 		}
+		console.log('AUTH MIDDLEWARE IS HITTED OVER HERE')
 
 		const verifiedToken = jwtUtils.verifyToken(token, config.jwt_access_secret);
 
@@ -46,14 +47,13 @@ export const auth = (...requiredRoles: Role[]) => {
 		}
 
 		const { email, name, userId, role } = verifiedToken.data as JwtPayload;
-
+		
 		if (requiredRoles.length && !requiredRoles.includes(role)) {
 			throw new AppError(
 				httpStatus.FORBIDDEN,
 				"Forbidden. You don't have permission to access this resource.",
 			);
 		}
-console.log(verifiedToken,"verifiedToken")
 		const user = await prisma.user.findUnique({
 			where: {
 				id: userId,
