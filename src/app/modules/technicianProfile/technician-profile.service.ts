@@ -81,7 +81,7 @@ const technicianProfileApprovalInDb=async(payload:ITechProfileApproval)=>{
 
 const techProfile=await prisma.technicianProfile.findUnique({
     where:{
-        id:technicianId
+        id:payload.technicianId
     }
 })
 
@@ -92,7 +92,7 @@ if(!techProfile){
 }
 
 
-if(techProfile.technicianvProfileVerificationStatus===status){
+if(techProfile.technicianvProfileVerificationStatus===payload.status){
         throw new AppError(httpStatus.CONFLICT,`Technican profile is already ${status}`)
 
 }
