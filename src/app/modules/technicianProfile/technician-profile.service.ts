@@ -4,6 +4,7 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status"
 import { prisma } from "../../lib/prisma";
 import type { ITechcianProfileUploadPayload, ITechProfileApproval } from "./technician-profile.interface";
+import { TechnicianProfileStatus } from "../../../generated/prisma/enums";
 
 const updateTechnicicanProfileInDb = async (payload: ITechcianProfileUploadPayload, resume: Express.Multer.File | null,
  technicianUserId: string)=> {
@@ -92,12 +93,27 @@ if(!techProfile){
 }
 
 
-if(techProfile.technicianvProfileVerificationStatus===payload.status){
-        throw new AppError(httpStatus.CONFLICT,`Technican profile is already ${status}`)
+//can not reject a approved profile
+
+if(payload.status===TechnicianProfileStatus.REJECTED && techProfile.technicianvProfileVerificationStatus===TechnicianProfileStatus.APPROVED){
+            throw new AppError(httpStatus.BAD_REQUEST,`Technican profile is approved cant reject it again`)
 
 }
 
 
+if(payload.status===TechnicianProfileStatus.PENDING && (techProfile.technicianvProfileVerificationStatus===TechnicianProfileStatus.APPROVED || techProfile.technicianvProfileVerificationStatus===TechnicianProfileStatus.REJECTED ) ){
+            throw new AppError(httpStatus.BAD_REQUEST,`Technican profile is approved OR REJECTED CANT MAKE IT PENDING`)
+
+}
+
+
+
+if(techProfile.technicianvProfileVerificationStatus===payload.status){
+        throw new AppError(httpStatus.CONFLICT,`Technican profile is already ${payload.status}`)
+
+}
+
+//update the status
 
 
 
