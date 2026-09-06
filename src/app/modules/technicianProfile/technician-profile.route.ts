@@ -17,7 +17,7 @@ router.patch("/", auth(Role.TECHNICIAN), upload.single("resume"),TechnicianProfi
 //APPROVE TECH PROFILE UPDATE API FOR ADMIN ONLY
 
 
-router.patch("/:tecnicianId/update-status",auth(Role.ADMIN),TechnicianProfileController.profileApproval)
+router.patch("/update-status",auth(Role.ADMIN),TechnicianProfileController.profileApproval)
 
 
 
