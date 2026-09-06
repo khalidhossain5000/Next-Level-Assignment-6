@@ -402,7 +402,13 @@ const deleteOutageFromDb=async(outageId:string,requestedUserId:string)=>{
   }
 
 
-
+//can not delte other outage 
+  if (outage.userId !== requestedUserId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to delete this outage"
+    );
+  }
 
 
 
