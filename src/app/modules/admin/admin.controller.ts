@@ -59,7 +59,7 @@ const getAllTechnicanUserData = catchAsync(async (req: Request, res: Response) =
 const getAllPaymentRecord = catchAsync(async (req: Request, res: Response) => {
 
 
-  const result = await AdminService.getAllTechnicanProfileFromDb()
+  const result = await AdminService.getAllPaymentRecord(req.query)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

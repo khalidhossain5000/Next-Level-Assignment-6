@@ -12,7 +12,7 @@ router.get("/users",auth(Role.ADMIN),AdminController.getAllUsers)
 
 router.patch("/users/:userId",auth(Role.ADMIN),AdminController.updateUserStatus)
 
-// -- get all technician to manage and assign them to outage
+// -- get all technician to manage 
 
 router.get("/technician",auth(Role.ADMIN),AdminController.getAllTechnicanUserData)
 
@@ -25,7 +25,7 @@ router.get("/users",auth(Role.ADMIN))
 
 // -- get all payment record with search filter pagination
 
-router.get("/payment-record",auth(Role.ADMIN))
+router.get("/payment-record",auth(Role.ADMIN),AdminController.getAllPaymentRecord)
 
 
 
