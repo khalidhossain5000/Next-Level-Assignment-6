@@ -410,7 +410,21 @@ const deleteOutageFromDb=async(outageId:string,requestedUserId:string)=>{
     );
   }
 
+//if already deleted
+  if (outage.isDeleted) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Outage is already deleted");
+  }
 
+  const deletedOutage = await prisma.outage.update({
+    where: {
+      id: outageId,
+    },
+    data: {
+      isDeleted: true,
+    },
+  });
+
+  return deletedOutage;
 
 
 
