@@ -123,6 +123,14 @@ const assignTechnician = async (outageId: string, technicianId: string) => {
   if (!ifOutageExist) {
     throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
   }
+//is outage deleted
+
+  if (ifOutageExist.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "Outage is deleted");
+  }
+
+
+
 
   //s-2 check if outage is already cancelled or resolved
 
