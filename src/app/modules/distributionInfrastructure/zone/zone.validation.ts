@@ -7,5 +7,10 @@ export const createZoneZodSchema = z.object({
     status: z.enum(["ACTIVE", "INACTIVE"]),
 })
 
+export const updateZoneZodSchema = createZoneZodSchema.partial().refine(
+    (payload) => Object.keys(payload).length > 0,
+    "At least one zone field is required for update",
+)
+
 
 

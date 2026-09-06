@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma";
 import { AppError } from "../../../utils/AppError";
 import httpStatus from "http-status";
-import type { ICreateZonePayload } from "./zone.interface";
+import type { ICreateZonePayload, IUpdateZonePayload } from "./zone.interface";
 import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../../lib/cloudinary";
 import type { IQuery } from "../../../interfaces/interface";
@@ -173,11 +173,76 @@ const getZoneDetails = async (zoneId: string) => {
     return zoneDetails
 }
 
+const updateZoneInDb = async (
+    zoneId: string,
+    payload: IUpdateZonePayload,
+    zoneImageFile?: Express.Multer.File,
+) => {
+    const existingZone = await prisma.zone.findUnique({
+        where: { id: zoneId },
+    });
+
+    if (!existingZone) {
+        throw new AppError(httpStatus.NOT_FOUND, "Zone not found");
+    }
+
+    if (payload.code && payload.code !== existingZone.code) {
+        const zoneWithSameCode = await prisma.zone.findUnique({
+            where: { code: payload.code },
+        });
+
+        if (zoneWithSameCode) {
+            throw new AppError(httpStatus.CONFLICT, "Zone code already exists");
+        }
+    }
+
+    const data: {
+        name?: string;
+        code?: string;
+        description?: string;
+        status?: InfrastructureStatus;
+        zoneImageUrl?: string;
+        zoneImagePublicId?: string;
+    } = { ...payload };
+
+    if (zoneImageFile) {
+        const zoneImageUploadResult = await new Promise<UploadApiResponse>(
+            (resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { resource_type: "image" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        if (!result) {
+                            return reject(
+                                new AppError(
+                                    httpStatus.INTERNAL_SERVER_ERROR,
+                                    "No result returned from Cloudinary",
+                                ),
+                            );
+                        }
+                        resolve(result);
+                    },
+                ).end(zoneImageFile.buffer);
+            },
+        );
+
+        data.zoneImageUrl = zoneImageUploadResult.secure_url;
+        data.zoneImagePublicId = zoneImageUploadResult.public_id;
+    }
+
+    return prisma.zone.update({
+        where: { id: zoneId },
+        data,
+        include: { substations: true },
+    });
+};
+
 
 
 
 export const ZoneService = {
     createZoneInDb,
     getAllZoneFromDb,
-    getZoneDetails
+    getZoneDetails,
+    updateZoneInDb,
 };

@@ -4,7 +4,7 @@ import { sendResponse } from "../../../utils/sendResponse";
 import httpStatus from "http-status"
 import { ZoneService } from "./zone.service";
 import { AppError } from "../../../utils/AppError";
-import { createZoneZodSchema } from "./zone.validation";
+import { createZoneZodSchema, updateZoneZodSchema } from "./zone.validation";
 
 const createZone = catchAsync(async (req: Request, res: Response) => {
     const zoneImageFile = req.file as Express.Multer.File | undefined
@@ -59,9 +59,38 @@ const getZoneDetails = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateZone = catchAsync(async (req: Request, res: Response) => {
+    const zoneId = req.params.zoneId as string;
+    const zoneImageFile = req.file as Express.Multer.File | undefined;
+    const zodValidationResult = updateZoneZodSchema.safeParse(
+        JSON.parse(req.body.data),
+    );
+
+    if (!zodValidationResult.success) {
+        throw new AppError(
+            httpStatus.BAD_REQUEST,
+            zodValidationResult.error.issues[0].message,
+        );
+    }
+
+    const result = await ZoneService.updateZoneInDb(
+        zoneId,
+        zodValidationResult.data,
+        zoneImageFile,
+    );
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Zone updated successfully",
+        data: result,
+    });
+});
+
 
 export const ZoneController = {
     createZone,
     getAllZone,
-    getZoneDetails
+    getZoneDetails,
+    updateZone,
 }
