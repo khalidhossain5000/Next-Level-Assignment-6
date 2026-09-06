@@ -23,9 +23,8 @@ const registerUser = catchAsync(async (req: Request, res: Response) => {
 
 //verify otp and send accesstoken refresh token
 const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
-  console.log("user  hited controller", req.body);
 
-  //zod sanitization
+
 
   const payload = req.body;
 
@@ -48,7 +47,7 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Patient registered successfully",
+    message: "User registered successfully",
     data: { accessToken, refreshToken, createdUser },
   });
 });
@@ -78,7 +77,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Login successfull",
+    message: "User Login successfull",
     data: {
       accessToken,
       refreshToken,
