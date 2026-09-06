@@ -132,6 +132,7 @@ export const OutageScalarFieldEnum = {
   isDeleted: 'isDeleted',
   userId: 'userId',
   technicianId: 'technicianId',
+  areaId: 'areaId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

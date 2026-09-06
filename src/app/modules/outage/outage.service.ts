@@ -15,13 +15,12 @@ export const createOutageInDb = async (
   payload: IOutagePayload,
   userId: string
 ) => {
-  const { cause, description, priority } = payload;
+  const { cause, description } = payload;
 
   const outageCreatedResult = await prisma.outage.create({
     data: {
       cause,
       description,
-      priority,
       userId,
     },
   });

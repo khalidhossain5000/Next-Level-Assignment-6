@@ -7,6 +7,7 @@ import { catchAsync } from "../utils/catchAsync";
 export const validateRequest = (zodSchema: z.ZodObject) => {
 	return catchAsync((req: Request, res: Response, next: NextFunction) => {
 		const payload = req.body ?? {};
+		console.log(payload,'this is payload in validate resuques')
 
 		const result = zodSchema.safeParse(payload);
 

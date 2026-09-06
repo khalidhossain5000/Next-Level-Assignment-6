@@ -4,11 +4,10 @@ import httpStatus from "http-status"
 import { OutageService } from "./outage.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { Role } from "../../../generated/prisma/enums";
+import type { Role } from "../../../generated/prisma/enums";
 
 const createOutage = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
-
     const userId=req.user?.userId
 
     const result = await OutageService.createOutageInDb(payload,userId as string)
