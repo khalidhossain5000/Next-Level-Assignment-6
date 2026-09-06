@@ -1,4 +1,3 @@
-import type { InfrastructureStatus } from "../../../../generated/prisma/enums";
 
 export interface IFeederInterface{
     name:string;
@@ -6,5 +5,4 @@ export interface IFeederInterface{
     voltageLevel:string;
    
     substationId:string;
-    status:InfrastructureStatus;
 }
