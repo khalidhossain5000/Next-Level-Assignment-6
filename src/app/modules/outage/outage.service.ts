@@ -100,6 +100,7 @@ const getCurrentUserAddedAllOutagesFromDb = async (userId: string) => {
   const currentUserOutages = await prisma.outage.findMany({
     where: {
       userId,
+      isDeleted: false,
     },
     include: {
       techician: true,
