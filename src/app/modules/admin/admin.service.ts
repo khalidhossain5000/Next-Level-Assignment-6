@@ -65,7 +65,7 @@ const updateUserStatus = async (
       id: userId,
     },
     data: {
-      status,
+     status: status,
     },
     omit: {
       password: true,
