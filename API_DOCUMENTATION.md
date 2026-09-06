@@ -3,7 +3,7 @@
 ## Overview
 
 - Base path: `/api/v1`
-- Total route endpoints: **44**
+- Total route endpoints: **45**
 - Authentication: protected endpoints accept an access token from the `accessToken` cookie or an `Authorization` header.
 - Access labels: `Public`, `Customer only`, `Technician only`, `Admin only`, or the listed role combination.
 
@@ -38,51 +38,52 @@
 ## 5. Feeder APIs
 
 17. `POST /api/v1/feeder` - Create a distribution feeder. **Admin only**
-18. `GET /api/v1/feeder` - Get all feeders. **Public**
-19. `GET /api/v1/feeder/:feederId` - Get details of a specific feeder. **Public**
+18. `PATCH /api/v1/feeder/:feederId` - Update a distribution feeder. **Admin only**
+19. `GET /api/v1/feeder` - Get all feeders. **Public**
+20. `GET /api/v1/feeder/:feederId` - Get details of a specific feeder. **Public**
 
 ## 6. Area APIs
 
-20. `POST /api/v1/area` - Create a distribution area. **Admin only**
-21. `GET /api/v1/area` - Get all distribution areas. **Public**
-22. `GET /api/v1/area/:areaId` - Get details of a specific area. **Admin, Customer, or Technician**
+21. `POST /api/v1/area` - Create a distribution area. **Admin only**
+22. `GET /api/v1/area` - Get all distribution areas. **Public**
+23. `GET /api/v1/area/:areaId` - Get details of a specific area. **Admin, Customer, or Technician**
 
 ## 7. Unexpected Outage APIs
 
-23. `POST /api/v1/outage` - Report an unexpected power outage. **Customer only**
-24. `GET /api/v1/outage` - Get all reported outages for administrative management. **Admin only**
-25. `GET /api/v1/outage` - Get outages reported by the authenticated customer. **Customer only**
-26. `PATCH /api/v1/outage/:outageId/assign-technician` - Assign a technician to a reported outage. **Admin only**
-27. `PATCH /api/v1/outage/:outageId/status` - Update an outage's status according to the workflow. **Admin or Technician**
+24. `POST /api/v1/outage` - Report an unexpected power outage. **Customer only**
+25. `GET /api/v1/outage` - Get all reported outages for administrative management. **Admin only**
+26. `GET /api/v1/outage` - Get outages reported by the authenticated customer. **Customer only**
+27. `PATCH /api/v1/outage/:outageId/assign-technician` - Assign a technician to a reported outage. **Admin only**
+28. `PATCH /api/v1/outage/:outageId/status` - Update an outage's status according to the workflow. **Admin or Technician**
 
 ## 8. Load Shedding APIs
 
-28. `POST /api/v1/load-shedding` - Create a load-shedding schedule. **Admin only**
-29. `GET /api/v1/load-shedding` - Get all load-shedding schedules. **Public**
-30. `GET /api/v1/load-shedding/:loadsheddingId` - Get details of a load-shedding schedule. **Admin, Customer, or Technician**
-31. `PATCH /api/v1/load-shedding/:loadsheddingId` - Update a load-shedding schedule. **Admin only**
+29. `POST /api/v1/load-shedding` - Create a load-shedding schedule. **Admin only**
+30. `GET /api/v1/load-shedding` - Get all load-shedding schedules. **Public**
+31. `GET /api/v1/load-shedding/:loadsheddingId` - Get details of a load-shedding schedule. **Admin, Customer, or Technician**
+32. `PATCH /api/v1/load-shedding/:loadsheddingId` - Update a load-shedding schedule. **Admin only**
 
 ## 9. Payment APIs
 
-32. `POST /api/v1/payment/create` - Create a payment for the authenticated customer. **Customer only**
-33. `POST /api/v1/payment/confirm` - Confirm and verify an SSLCommerz payment. **Public**
-34. `GET /api/v1/payment` - Get the authenticated customer's payment history. **Customer only**
-35. `GET /api/v1/payment/:paymentId` - Get payment details. **Admin or Customer**
+33. `POST /api/v1/payment/create` - Create a payment for the authenticated customer. **Customer only**
+34. `POST /api/v1/payment/confirm` - Confirm and verify an SSLCommerz payment. **Public**
+35. `GET /api/v1/payment` - Get the authenticated customer's payment history. **Customer only**
+36. `GET /api/v1/payment/:paymentId` - Get payment details. **Admin or Customer**
 
 ## 10. Planned Outage APIs
 
-36. `POST /api/v1/planned-outage` - Create a planned outage schedule. **Admin only**
-37. `GET /api/v1/planned-outage` - Get all planned outage schedules. **Public**
-38. `GET /api/v1/planned-outage/:plannedOutageId` - Get details of a planned outage. **Customer only**
-39. `PATCH /api/v1/planned-outage/:plannedOutageId` - Update a planned outage schedule. **Admin only**
+37. `POST /api/v1/planned-outage` - Create a planned outage schedule. **Admin only**
+38. `GET /api/v1/planned-outage` - Get all planned outage schedules. **Public**
+39. `GET /api/v1/planned-outage/:plannedOutageId` - Get details of a planned outage. **Customer only**
+40. `PATCH /api/v1/planned-outage/:plannedOutageId` - Update a planned outage schedule. **Admin only**
 
 ## 11. Admin APIs
 
-40. `GET /api/v1/admin/users` - Get users with search and filtering for administration. **Admin only**
-41. `PATCH /api/v1/admin/users/:userId` - Update a user's status, such as banning or unbanning the user. **Admin only**
-42. `GET /api/v1/admin/technician` - Get technician users for management and outage assignment. **Admin only**
-43. `GET /api/v1/admin/users` - Reserved analytics or overall user-report endpoint registration. **Admin only**
-44. `GET /api/v1/admin/payment-record` - Get payment records with search and pagination for administration. **Admin only**
+41. `GET /api/v1/admin/users` - Get users with search and filtering for administration. **Admin only**
+42. `PATCH /api/v1/admin/users/:userId` - Update a user's status, such as banning or unbanning the user. **Admin only**
+43. `GET /api/v1/admin/technician` - Get technician users for management and outage assignment. **Admin only**
+44. `GET /api/v1/admin/users` - Reserved analytics or overall user-report endpoint registration. **Admin only**
+45. `GET /api/v1/admin/payment-record` - Get payment records with search and pagination for administration. **Admin only**
 
 ## Count Summary
 
@@ -92,14 +93,14 @@
 | Technician Profile | 1 |
 | Zone | 4 |
 | Substation | 4 |
-| Feeder | 3 |
+| Feeder | 4 |
 | Area | 3 |
 | Unexpected Outage | 5 |
 | Load Shedding | 4 |
 | Payment | 4 |
 | Planned Outage | 4 |
 | Admin | 5 |
-| **Total** | **44** |
+| **Total** | **45** |
 
 ## Notes
 
