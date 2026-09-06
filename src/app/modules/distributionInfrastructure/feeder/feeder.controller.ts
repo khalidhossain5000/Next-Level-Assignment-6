@@ -47,9 +47,22 @@ const getFeederDetails = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateFeeder = catchAsync(async (req: Request, res: Response) => {
+    const feederId = req.params.feederId as string;
+    const result = await FeederService.updateFeeder(feederId, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Feeder updated successfully",
+        data: result,
+    });
+});
+
 
 export const FeederController = {
     createFeeder,
     getAllFeeder,
-    getFeederDetails
+    getFeederDetails,
+    updateFeeder,
 }

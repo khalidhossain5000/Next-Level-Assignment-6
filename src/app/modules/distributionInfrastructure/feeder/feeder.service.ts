@@ -1,10 +1,12 @@
 import type { FeederWhereInput } from "../../../../generated/prisma/models"
 import type { IQuery } from "../../../interfaces/interface"
 import { prisma } from "../../../lib/prisma"
-import type { IFeederInterface } from "./feeder.interface"
+import type { IFeederInterface, IUpdateFeederPayload } from "./feeder.interface"
+import { AppError } from "../../../utils/AppError"
+import httpStatus from "http-status"
 
 const createFeederInDb = async (payload: IFeederInterface) => {
-    const { name, code, voltageLevel,substationId} = payload
+    const { name, code, voltageLevel, substationId } = payload
 
 
     const createdSubstationResult = await prisma.feeder.create({
@@ -13,12 +15,12 @@ const createFeederInDb = async (payload: IFeederInterface) => {
             voltageLevel,
             code,
             substationId
-            
+
 
         },
         include: {
-           substation:true,
-           areas:true
+            substation: true,
+            areas: true
         }
     })
     return createdSubstationResult
@@ -68,9 +70,9 @@ const getAllFeederFromDb = async (query: IQuery) => {
             [sortBy]: sortOrder
         },
         include: {
-      areas:true,
-            substation:true,
-            zone:true
+            areas: true,
+            substation: true,
+            zone: true
         }
     })
 
@@ -105,16 +107,59 @@ const getFeederDetails = async (feederId: string) => {
         },
         include:
         {
-            areas:true,
-            substation:true,
-            zone:true
+            areas: true,
+            substation: true,
+            zone: true
         }
     })
     return substationDetails
 }
 
+const updateFeeder = async (
+    feederId: string,
+    payload: IUpdateFeederPayload,
+) => {
+    const existingFeeder = await prisma.feeder.findUnique({
+        where: { id: feederId },
+    });
+
+    if (!existingFeeder) {
+        throw new AppError(httpStatus.NOT_FOUND, "Feeder not found");
+    }
+
+    if (payload.code && payload.code !== existingFeeder.code) {
+        const feederWithSameCode = await prisma.feeder.findUnique({
+            where: { code: payload.code },
+        });
+
+        if (feederWithSameCode) {
+            throw new AppError(httpStatus.CONFLICT, "Feeder code already exists");
+        }
+    }
+
+    if (payload.substationId && payload.substationId !== existingFeeder.substationId) {
+        const substation = await prisma.substation.findUnique({
+            where: { id: payload.substationId },
+        });
+
+        if (!substation) {
+            throw new AppError(httpStatus.NOT_FOUND, "Substation not found");
+        }
+    }
+
+    return prisma.feeder.update({
+        where: { id: feederId },
+        data: payload,
+        include: {
+            substation: true,
+            areas: true,
+        },
+    });
+};
+
 export const FeederService = {
     createFeederInDb,
     getAllFeederFromDb,
-    getFeederDetails
+    getFeederDetails,
+    updateFeeder,
 }

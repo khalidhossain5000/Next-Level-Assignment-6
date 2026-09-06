@@ -7,7 +7,16 @@ import z from "zod";
     substationId:z.string("Not a string")
 })
 
+const updateFeederZodSchema = z.object({
+    name: z.string("Name is not a string").min(5, "Name should minimum have 5 char").max(100, "Name should not be more than 100 chars").optional(),
+    code: z.string("Not a string").min(5, "Code should minimum have 5 char").max(10, "Max 10 chars").optional(),
+    voltageLevel: z.string("Not a string").min(5, "Voltage level should minimum have 5 chars").max(50, "Max 50 chars").optional(),
+    substationId: z.string("Not a string").min(1, "Substation ID is required").optional(),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
+})
+
 export const feederValidation ={
-    createFeederZodSchema
+    createFeederZodSchema,
+    updateFeederZodSchema,
 }
 

@@ -10,6 +10,9 @@ const router = Router();
 
 router.post("/",auth(Role.ADMIN),validateRequest(feederValidation.createFeederZodSchema),FeederController.createFeeder)
 
+//update feeder details
+router.patch("/:feederId",auth(Role.ADMIN),validateRequest(feederValidation.updateFeederZodSchema),FeederController.updateFeeder)
+
 
 //get all substion public
 router.get("/",FeederController.getAllFeeder)
