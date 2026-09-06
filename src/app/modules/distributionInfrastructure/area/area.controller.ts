@@ -47,9 +47,22 @@ const getAreaDetails = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateArea = catchAsync(async (req: Request, res: Response) => {
+    const areaId = req.params.areaId as string;
+    const result = await AreaService.updateArea(areaId, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Area updated successfully",
+        data: result,
+    });
+});
+
 
 export const AreaController = {
     createArea,
     getAllArea,
-    getAreaDetails
+    getAreaDetails,
+    updateArea,
 }

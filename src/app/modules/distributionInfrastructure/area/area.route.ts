@@ -11,6 +11,9 @@ const router = Router();
 
 router.post("/",auth(Role.ADMIN),validateRequest(areaValidation.createAreaZodSchema),AreaController.createArea)
 
+//update area details
+router.patch("/:areaId",auth(Role.ADMIN),validateRequest(areaValidation.updateAreaZodSchema),AreaController.updateArea)
+
 
 //get all substion public
 router.get("/",AreaController.getAllArea)

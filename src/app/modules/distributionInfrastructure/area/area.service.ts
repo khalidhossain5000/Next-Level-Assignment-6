@@ -1,10 +1,12 @@
 import type { AreaWhereInput, FeederWhereInput } from "../../../../generated/prisma/models"
 import type { IQuery } from "../../../interfaces/interface"
 import { prisma } from "../../../lib/prisma"
-import type { IAreaInterface } from "./area.interface"
+import type { IAreaInterface, IUpdateAreaPayload } from "./area.interface"
+import { AppError } from "../../../utils/AppError"
+import httpStatus from "http-status"
 
 const createAreaInDb = async (payload: IAreaInterface) => {
-    const { name, code, address,feederId} = payload
+    const { name, code, address, feederId } = payload
 
 
     const createdAreaResult = await prisma.area.create({
@@ -13,10 +15,10 @@ const createAreaInDb = async (payload: IAreaInterface) => {
             address,
             code,
             feederId
-            
+
 
         }
-       
+
     })
     return createdAreaResult
 
@@ -65,9 +67,9 @@ const getAllAreaFromDb = async (query: IQuery) => {
             [sortBy]: sortOrder
         },
         include: {
-           feeder:true,
-            substation:true,
-            zone:true
+            feeder: true,
+            substation: true,
+            zone: true
         }
     })
 
@@ -102,16 +104,58 @@ const getAreaDetails = async (areaId: string) => {
         },
         include:
         {
-            feeder:true,
-            substation:true,
-            zone:true
+            feeder: true,
+            substation: true,
+            zone: true
         }
     })
     return areaDetails
 }
 
+const updateArea = async (
+    areaId: string,
+    payload: IUpdateAreaPayload,
+) => {
+    const existingArea = await prisma.area.findUnique({
+        where: { id: areaId },
+    });
+
+    if (!existingArea) {
+        throw new AppError(httpStatus.NOT_FOUND, "Area not found");
+    }
+
+    if (payload.code && payload.code !== existingArea.code) {
+        const areaWithSameCode = await prisma.area.findUnique({
+            where: { code: payload.code },
+        });
+
+        if (areaWithSameCode) {
+            throw new AppError(httpStatus.CONFLICT, "Area code already exists");
+        }
+    }
+
+    if (payload.feederId && payload.feederId !== existingArea.feederId) {
+        const feeder = await prisma.feeder.findUnique({
+            where: { id: payload.feederId },
+        });
+
+        if (!feeder) {
+            throw new AppError(httpStatus.NOT_FOUND, "Feeder not found");
+        }
+    }
+
+    return prisma.area.update({
+        where: { id: areaId },
+        data: payload,
+        include: {
+            feeder: true,
+        },
+    });
+};
+
 export const AreaService = {
     createAreaInDb,
     getAllAreaFromDb,
-    getAreaDetails
+    getAreaDetails,
+    updateArea,
 }
