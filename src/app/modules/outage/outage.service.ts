@@ -38,7 +38,9 @@ const getAllOutageFromDb = async (query: IQuery) => {
   const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
   const andConditions: OutageWhereInput[] = [];
-
+andConditions.push({
+  isDeleted: false,
+});
   //Searching
   if (query.searchTerm) {
     andConditions.push({
