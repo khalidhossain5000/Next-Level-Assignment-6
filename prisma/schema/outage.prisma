@@ -8,6 +8,9 @@ model Outage {
   acknowledgedAt DateTime?
   startedAt      DateTime?
   isDeleted      Boolean        @default(false)
+
+
+
   //foreign key of user to know which user reported unexpected outage
   userId         String
   user           User           @relation(  "OutageReporter",fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)

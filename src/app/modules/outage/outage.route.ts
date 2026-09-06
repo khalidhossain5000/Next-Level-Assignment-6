@@ -33,6 +33,8 @@ router.patch(
   OutageController.updateOutageStatus
 );
 
+//delete outage
 
+router.delete("/:outageId",auth(Role.ADMIN,Role.TECHNICIAN,Role.CUSTOMER))
 
 export const OutageRoutes = router;
