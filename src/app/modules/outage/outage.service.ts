@@ -389,6 +389,17 @@ const updateOutageStatusInDb = async (
 
 const deleteOutageFromDb=async(outageId:string,requestedUserId:string)=>{
 
+//--check if outage exist or not
+
+  const outage = await prisma.outage.findUnique({
+    where: {
+      id: outageId,
+    },
+  });
+
+  if (!outage) {
+    throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
+  }
 
 
 
@@ -399,7 +410,6 @@ const deleteOutageFromDb=async(outageId:string,requestedUserId:string)=>{
 
 
 
-  
 }
 
 
