@@ -206,7 +206,8 @@ const assignTechnician = async (outageId: string, technicianId: string) => {
       },
       data: {
         technicianId,
-        status: OutageStatus.ASSIGNED,
+        status: OutageStatus.ASSIGNED
+
       },
     });
 
