@@ -76,7 +76,9 @@ return updatedTechnicianProfile
 
 
 
-const tec
+const technicianProfileApprovalInDb=async(technicianId:string)=>{
+
+}
 
 
 
@@ -88,5 +90,6 @@ const tec
 
 
 export const TechnicianProfileService = {
-    updateTechnicicanProfileInDb
+    updateTechnicicanProfileInDb,
+    technicianProfileApprovalInDb
 }
