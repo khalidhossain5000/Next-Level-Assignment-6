@@ -1,10 +1,9 @@
-import  { PaymentStatus, Role } from "../../../generated/prisma/enums";
-import type { PaymentWhereInput } from "../../../generated/prisma/models";
-import type { IQuery } from "../../interfaces/interface";
+import  { PaymentStatus, Role, UserStatus } from "../../../generated/prisma/enums";
+import { PaymentWhereInput } from "../../../generated/prisma/models";
+import { IQuery } from "../../interfaces/interface";
 import { prisma } from "../../lib/prisma"
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status"
-import type { IUpdateStatusPayload } from "./admin.interface";
 
 const getAllUsersFromDb=async()=>{
     const result=await prisma.user.findMany({
@@ -24,11 +23,12 @@ const getAllUsersFromDb=async()=>{
 
 
 const updateUserStatus = async (
-  payload:IUpdateStatusPayload
+  userId: string,
+  status: UserStatus
 ) => {
   const targetUser = await prisma.user.findUnique({
     where: {
-      id: payload.targetUserId,
+      id: userId,
     },
     select: {
       id: true,
@@ -53,19 +53,19 @@ const updateUserStatus = async (
   }
 
   // Already in requested status
-  if (targetUser.status === payload.status) {
+  if (targetUser.status === status) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
-      `User is already ${ payload.status}`
+      `User is already ${status}`
     );
   }
 
   const updatedUser = await prisma.user.update({
     where: {
-      id: payload.targetUserId,
+      id: userId,
     },
     data: {
-      status:payload.status,
+      status,
     },
     omit: {
       password: true,

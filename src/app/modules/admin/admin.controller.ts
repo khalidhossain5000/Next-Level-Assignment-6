@@ -21,10 +21,10 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
 
-    const payload=req.body
-    
+    const status=req.body
+    const targetUserId=req.params.userId
 
-  const result = await AdminService.updateUserStatus(payload)
+  const result = await AdminService.updateUserStatus(targetUserId as string,status)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
