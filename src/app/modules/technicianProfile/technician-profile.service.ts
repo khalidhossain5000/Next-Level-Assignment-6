@@ -76,6 +76,17 @@ return updatedTechnicianProfile
 
 
 
+const tec
+
+
+
+
+
+
+
+
+
+
 export const TechnicianProfileService = {
     updateTechnicicanProfileInDb
 }
