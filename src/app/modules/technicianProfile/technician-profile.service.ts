@@ -115,9 +115,16 @@ if(techProfile.technicianvProfileVerificationStatus===payload.status){
 
 //update the status
 
+const updatedResult=await prisma.technicianProfile.update({
+    where:{
+        id:payload.technicianId
+    },
+    data:{
+        technicianvProfileVerificationStatus:payload.status
+    }
+})
 
-
-
+return updatedResult
 
 
 }
