@@ -63,9 +63,9 @@ const createPaymentInDb = async (
         total_amount: config.outage_priority_payment_fee,
         currency: "BDT",
         tran_id: transId,
-        success_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=success`,
-        fail_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=fail`,
-        cancel_url: `${config.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=cancel`,
+        success_url: `${config.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=success`,
+        fail_url: `${config.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=fail`,
+        cancel_url: `${config.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=cancel`,
         cus_name: `${customer.name}`,
         cus_email: customer.email,
         cus_add1: "N/A",
@@ -143,6 +143,7 @@ const verifySslCommerzPayment = async (
                 },
                 data: {
                     status: PaymentStatus.COMPLETED,
+                    paidAt:new Date()
                 },
             });
 
