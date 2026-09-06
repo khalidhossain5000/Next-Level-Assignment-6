@@ -18,11 +18,6 @@ router.get("/technician",auth(Role.ADMIN),AdminController.getAllTechnicanUserDat
 
 
 
-// -- analytics overall report data
-
-router.get("/users",auth(Role.ADMIN))
-
-
 // -- get all payment record with search filter pagination
 
 router.get("/payment-record",auth(Role.ADMIN),AdminController.getAllPaymentRecord)
