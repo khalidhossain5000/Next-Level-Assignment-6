@@ -4,3 +4,6 @@ export interface ITechcianProfileUploadPayload{
     bio:string;
 
 }
+
+
+export i

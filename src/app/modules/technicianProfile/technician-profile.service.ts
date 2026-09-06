@@ -77,6 +77,32 @@ return updatedTechnicianProfile
 
 
 const technicianProfileApprovalInDb=async(technicianId:string)=>{
+//s-1 check if technican profile is exist or not
+
+const techProfile=await prisma.technicianProfile.findUnique({
+    where:{
+        id:technicianId
+    }
+})
+
+
+
+if(!techProfile){
+    throw new AppError(httpStatus.NOT_FOUND,"Technican profile is not exist")
+}
+
+
+if(techProfile.technicianvProfileVerificationStatus===status){
+        throw new AppError(httpStatus.CONFLICT,`Technican profile is already ${status}`)
+
+}
+
+
+
+
+
+
+
 
 }
 

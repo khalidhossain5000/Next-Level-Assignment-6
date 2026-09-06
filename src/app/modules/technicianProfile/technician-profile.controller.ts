@@ -43,9 +43,9 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
 //update technican profile status like approve or reject by the admin
 
 const profileApproval = catchAsync(async (req: Request, res: Response) => {
-   const technicianId=req.body
-
-const result=await TechnicianProfileService.technicianProfileApprovalInDb(technicianId)
+   const payload=req.body
+   
+const result=await TechnicianProfileService.technicianProfileApprovalInDb(payload)
 
 
     sendResponse(res, {
