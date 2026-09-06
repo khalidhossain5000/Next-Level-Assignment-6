@@ -1240,7 +1240,9 @@ export const LoadSheddingScalarFieldEnum = {
   endTime: 'endTime',
   status: 'status',
   reason: 'reason',
-  areaId: 'areaId'
+  areaId: 'areaId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type LoadSheddingScalarFieldEnum = (typeof LoadSheddingScalarFieldEnum)[keyof typeof LoadSheddingScalarFieldEnum]

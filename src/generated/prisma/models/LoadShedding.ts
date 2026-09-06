@@ -32,6 +32,8 @@ export type LoadSheddingMinAggregateOutputType = {
   status: $Enums.LoadSheddingStatus | null
   reason: string | null
   areaId: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type LoadSheddingMaxAggregateOutputType = {
@@ -42,6 +44,8 @@ export type LoadSheddingMaxAggregateOutputType = {
   status: $Enums.LoadSheddingStatus | null
   reason: string | null
   areaId: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type LoadSheddingCountAggregateOutputType = {
@@ -52,6 +56,8 @@ export type LoadSheddingCountAggregateOutputType = {
   status: number
   reason: number
   areaId: number
+  createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -64,6 +70,8 @@ export type LoadSheddingMinAggregateInputType = {
   status?: true
   reason?: true
   areaId?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type LoadSheddingMaxAggregateInputType = {
@@ -74,6 +82,8 @@ export type LoadSheddingMaxAggregateInputType = {
   status?: true
   reason?: true
   areaId?: true
+  createdAt?: true
+  updatedAt?: true
 }
 
 export type LoadSheddingCountAggregateInputType = {
@@ -84,6 +94,8 @@ export type LoadSheddingCountAggregateInputType = {
   status?: true
   reason?: true
   areaId?: true
+  createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -167,6 +179,8 @@ export type LoadSheddingGroupByOutputType = {
   status: $Enums.LoadSheddingStatus
   reason: string | null
   areaId: string
+  createdAt: Date
+  updatedAt: Date
   _count: LoadSheddingCountAggregateOutputType | null
   _min: LoadSheddingMinAggregateOutputType | null
   _max: LoadSheddingMaxAggregateOutputType | null
@@ -198,6 +212,8 @@ export type LoadSheddingWhereInput = {
   status?: Prisma.EnumLoadSheddingStatusFilter<"LoadShedding"> | $Enums.LoadSheddingStatus
   reason?: Prisma.StringNullableFilter<"LoadShedding"> | string | null
   areaId?: Prisma.StringFilter<"LoadShedding"> | string
+  createdAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
   area?: Prisma.XOR<Prisma.AreaScalarRelationFilter, Prisma.AreaWhereInput>
 }
 
@@ -209,6 +225,8 @@ export type LoadSheddingOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   area?: Prisma.AreaOrderByWithRelationInput
 }
 
@@ -223,6 +241,8 @@ export type LoadSheddingWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumLoadSheddingStatusFilter<"LoadShedding"> | $Enums.LoadSheddingStatus
   reason?: Prisma.StringNullableFilter<"LoadShedding"> | string | null
   areaId?: Prisma.StringFilter<"LoadShedding"> | string
+  createdAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
   area?: Prisma.XOR<Prisma.AreaScalarRelationFilter, Prisma.AreaWhereInput>
 }, "id">
 
@@ -234,6 +254,8 @@ export type LoadSheddingOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrderInput | Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.LoadSheddingCountOrderByAggregateInput
   _max?: Prisma.LoadSheddingMaxOrderByAggregateInput
   _min?: Prisma.LoadSheddingMinOrderByAggregateInput
@@ -250,6 +272,8 @@ export type LoadSheddingScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumLoadSheddingStatusWithAggregatesFilter<"LoadShedding"> | $Enums.LoadSheddingStatus
   reason?: Prisma.StringNullableWithAggregatesFilter<"LoadShedding"> | string | null
   areaId?: Prisma.StringWithAggregatesFilter<"LoadShedding"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"LoadShedding"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"LoadShedding"> | Date | string
 }
 
 export type LoadSheddingCreateInput = {
@@ -259,6 +283,8 @@ export type LoadSheddingCreateInput = {
   endTime: Date | string
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
   area: Prisma.AreaCreateNestedOneWithoutLoadSheddingsInput
 }
 
@@ -270,6 +296,8 @@ export type LoadSheddingUncheckedCreateInput = {
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
   areaId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LoadSheddingUpdateInput = {
@@ -279,6 +307,8 @@ export type LoadSheddingUpdateInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.AreaUpdateOneRequiredWithoutLoadSheddingsNestedInput
 }
 
@@ -290,6 +320,8 @@ export type LoadSheddingUncheckedUpdateInput = {
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoadSheddingCreateManyInput = {
@@ -300,6 +332,8 @@ export type LoadSheddingCreateManyInput = {
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
   areaId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LoadSheddingUpdateManyMutationInput = {
@@ -309,6 +343,8 @@ export type LoadSheddingUpdateManyMutationInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoadSheddingUncheckedUpdateManyInput = {
@@ -319,6 +355,8 @@ export type LoadSheddingUncheckedUpdateManyInput = {
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoadSheddingListRelationFilter = {
@@ -339,6 +377,8 @@ export type LoadSheddingCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type LoadSheddingMaxOrderByAggregateInput = {
@@ -349,6 +389,8 @@ export type LoadSheddingMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type LoadSheddingMinOrderByAggregateInput = {
@@ -359,6 +401,8 @@ export type LoadSheddingMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   reason?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type LoadSheddingCreateNestedManyWithoutAreaInput = {
@@ -418,6 +462,8 @@ export type LoadSheddingCreateWithoutAreaInput = {
   endTime: Date | string
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LoadSheddingUncheckedCreateWithoutAreaInput = {
@@ -427,6 +473,8 @@ export type LoadSheddingUncheckedCreateWithoutAreaInput = {
   endTime: Date | string
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LoadSheddingCreateOrConnectWithoutAreaInput = {
@@ -466,6 +514,8 @@ export type LoadSheddingScalarWhereInput = {
   status?: Prisma.EnumLoadSheddingStatusFilter<"LoadShedding"> | $Enums.LoadSheddingStatus
   reason?: Prisma.StringNullableFilter<"LoadShedding"> | string | null
   areaId?: Prisma.StringFilter<"LoadShedding"> | string
+  createdAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LoadShedding"> | Date | string
 }
 
 export type LoadSheddingCreateManyAreaInput = {
@@ -475,6 +525,8 @@ export type LoadSheddingCreateManyAreaInput = {
   endTime: Date | string
   status?: $Enums.LoadSheddingStatus
   reason?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type LoadSheddingUpdateWithoutAreaInput = {
@@ -484,6 +536,8 @@ export type LoadSheddingUpdateWithoutAreaInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoadSheddingUncheckedUpdateWithoutAreaInput = {
@@ -493,6 +547,8 @@ export type LoadSheddingUncheckedUpdateWithoutAreaInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type LoadSheddingUncheckedUpdateManyWithoutAreaInput = {
@@ -502,6 +558,8 @@ export type LoadSheddingUncheckedUpdateManyWithoutAreaInput = {
   endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumLoadSheddingStatusFieldUpdateOperationsInput | $Enums.LoadSheddingStatus
   reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -514,6 +572,8 @@ export type LoadSheddingSelect<ExtArgs extends runtime.Types.Extensions.Internal
   status?: boolean
   reason?: boolean
   areaId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   area?: boolean | Prisma.AreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loadShedding"]>
 
@@ -525,6 +585,8 @@ export type LoadSheddingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   status?: boolean
   reason?: boolean
   areaId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   area?: boolean | Prisma.AreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loadShedding"]>
 
@@ -536,6 +598,8 @@ export type LoadSheddingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   status?: boolean
   reason?: boolean
   areaId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   area?: boolean | Prisma.AreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["loadShedding"]>
 
@@ -547,9 +611,11 @@ export type LoadSheddingSelectScalar = {
   status?: boolean
   reason?: boolean
   areaId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type LoadSheddingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "startTime" | "endTime" | "status" | "reason" | "areaId", ExtArgs["result"]["loadShedding"]>
+export type LoadSheddingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "startTime" | "endTime" | "status" | "reason" | "areaId" | "createdAt" | "updatedAt", ExtArgs["result"]["loadShedding"]>
 export type LoadSheddingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   area?: boolean | Prisma.AreaDefaultArgs<ExtArgs>
 }
@@ -573,6 +639,8 @@ export type $LoadSheddingPayload<ExtArgs extends runtime.Types.Extensions.Intern
     status: $Enums.LoadSheddingStatus
     reason: string | null
     areaId: string
+    createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["loadShedding"]>
   composites: {}
 }
@@ -1004,6 +1072,8 @@ export interface LoadSheddingFieldRefs {
   readonly status: Prisma.FieldRef<"LoadShedding", 'LoadSheddingStatus'>
   readonly reason: Prisma.FieldRef<"LoadShedding", 'String'>
   readonly areaId: Prisma.FieldRef<"LoadShedding", 'String'>
+  readonly createdAt: Prisma.FieldRef<"LoadShedding", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"LoadShedding", 'DateTime'>
 }
     
 
