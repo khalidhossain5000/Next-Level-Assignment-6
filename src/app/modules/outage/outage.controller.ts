@@ -100,11 +100,29 @@ const updateOutageStatus = catchAsync(
 );
 
 
+//delete outage
+
+const deleteOutage = catchAsync(
+  async (req: Request, res: Response) => {
+   
+    const outageId=req.params.outageId
+    const requestedUserId=req.user?.userId
+    const result=await OutageService.deleteOutageFromDb(outageId as string, requestedUserId as string)
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Outage status updated successfully",
+      data: result,
+    });
+  }
+);
+
 export const OutageController = {
     createOutage,
     getAllOutageForAdminManage,
     getCurrentUserAddedOutages,
     assignTechnicianToReportedOutage,
-    updateOutageStatus
+    updateOutageStatus,
+    deleteOutage
     
 }

@@ -380,10 +380,43 @@ const updateOutageStatusInDb = async (
   );
 };
 
+
+
+
+
+//delete outage
+
+
+const deleteOutageFromDb=async(outageId:string,requestedUserId:string)=>{
+
+
+
+
+
+
+
+
+
+
+
+  
+}
+
+
+
+
+
+
+
+
+
+
+
 export const OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
   assignTechnician,
   updateOutageStatusInDb,
+  deleteOutageFromDb
 };
