@@ -45,7 +45,7 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
 const profileApproval = catchAsync(async (req: Request, res: Response) => {
    const technicianId=req.body
 
-
+const result=await TechnicianProfileService.technicianProfileApprovalInDb(technicianId)
 
 
     sendResponse(res, {
