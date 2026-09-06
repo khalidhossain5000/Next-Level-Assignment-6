@@ -40,7 +40,7 @@ const updateTechnicianProfile = catchAsync(async (req: Request, res: Response) =
 });
 
 
-
+//
 
 
 

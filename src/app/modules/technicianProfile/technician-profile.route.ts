@@ -12,4 +12,20 @@ const router = Router();
 
 router.patch("/", auth(Role.TECHNICIAN), upload.single("resume"),TechnicianProfileController.updateTechnicianProfile)
 
+
+
+//APPROVE TECH PROFILE UPDATE API FOR ADMIN ONLY
+
+
+router.patch("/:tecnicianId/update-status",auth(Role.ADMIN))
+
+
+
+
+
+
+
+
+
+
 export const TechnicianRoutes = router;
