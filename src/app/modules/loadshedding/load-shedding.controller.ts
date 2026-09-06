@@ -19,7 +19,7 @@ const createLoadShedding = catchAsync(async (req: Request, res: Response) => {
 
 const getAllLoadShedding = catchAsync(async (req: Request, res: Response) => {
 
-
+console.log(req.query,'LOAD SHEDING CONTROLLER HITTED');
 
     const result = await LoadSheddingService.getAllLoadSheddingSchdeule(req.query)
 

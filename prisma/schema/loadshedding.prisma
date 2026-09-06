@@ -8,6 +8,16 @@ model LoadShedding {
 	areaId    String
 	area      Area               @relation("AreaLoadSheddings", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+
+
+
 	@@index([areaId], name: "idx_load_shedding_area_id")
 	@@index([status, startTime], name: "idx_load_shedding_status_start_time")
 	@@map("LoadSheddings")
