@@ -1,4 +1,4 @@
-import { Role, TechnicianProfileStatus, TechnicianStatus } from "../../generated/prisma/enums";
+import { InfrastructureStatus, Role, TechnicianProfileStatus, TechnicianStatus } from "../../generated/prisma/enums";
 import config from "../config";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
@@ -112,10 +112,6 @@ export const seedTesterTechnician = async () => {
 
 
 
-
-
-
-
 //seed default customer account
 
 export const seedTesterCustomer = async () => {
@@ -163,3 +159,90 @@ export const seedTesterCustomer = async () => {
     });
   }
 };
+
+
+
+
+
+
+//NEED TO SEED MORE DEFAULT DATA
+
+// ---- DISTRIBUTION INFRASTRUCUTRE DATA ADDING SEEDING
+
+//--SEEDING ZONE DATA
+
+export const seedZones = async () => {
+  try {
+    const zones = [
+      {
+        name: "Dhaka Zone",
+        code: "ZONE-DHK",
+        description: "Power distribution zone covering Dhaka district.",
+        status: "ACTIVE",
+      },
+      {
+        name: "Chattogram Zone",
+        code: "ZONE-CTG",
+        description: "Power distribution zone covering Chattogram district.",
+        status: "ACTIVE",
+      },
+      {
+        name: "Khulna Zone",
+        code: "ZONE-KHL",
+        description: "Power distribution zone covering Khulna district.",
+        status: "ACTIVE",
+      },
+      {
+        name: "Sylhet Zone",
+        code: "ZONE-SYL",
+        description: "Power distribution zone covering Sylhet district.",
+        status: "ACTIVE",
+      },
+      {
+        name: "Rangpur Zone",
+        code: "ZONE-RNG",
+        description: "Power distribution zone covering Rangpur district.",
+        status: "ACTIVE",
+      },
+    ];
+
+    const zoneImageUrl = "https://i.ibb.co.com/Vcxt5JRx/dogsdg.jpg";
+
+    for (const zone of zones) {
+      const existingZone = await prisma.zone.findUnique({
+        where: {
+          code: zone.code,
+        },
+      });
+
+      if (existingZone) {
+        console.log(
+          `Zone already exists with code: ${zone.code}`
+        );
+        continue;
+      }
+
+      const createdZone = await prisma.zone.create({
+        data: {
+          name: zone.name,
+          code: zone.code,
+          description: zone.description,
+          status:zone.status as InfrastructureStatus,
+          zoneImageUrl,
+		  zoneImagePublicId: `seed-${zone.code}`,
+
+        },
+      });
+
+      console.log(
+        `Zone created successfully: ${createdZone.name}`
+      );
+    }
+  } catch (error) {
+    console.log(error, "Error while seeding zones");
+  }
+};
+
+
+
+//seeding SUBSTATION
