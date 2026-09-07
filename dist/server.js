@@ -2339,6 +2339,36 @@ var getCurrentUserAddedAllOutagesFromDb = async (userId) => {
   });
   return currentUserOutages;
 };
+var getOutageDetailsFromDb = async (outageId, userId) => {
+  const outage = await prisma.outage.findUnique({
+    where: { id: outageId },
+    include: {
+      area: true,
+      techician: true,
+      user: true
+    }
+  });
+  if (!outage || outage.isDeleted) {
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage not found");
+  }
+  return outage;
+};
+var updateOutageInDb = async (outageId, userId, payload) => {
+  const outage = await prisma.outage.findUnique({
+    where: { id: outageId },
+    select: { userId: true, isDeleted: true }
+  });
+  if (!outage || outage.isDeleted) {
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage not found");
+  }
+  if (outage.userId !== userId) {
+    throw new AppError(httpStatus17.FORBIDDEN, "You are not allowed to update this outage");
+  }
+  return prisma.outage.update({
+    where: { id: outageId },
+    data: payload
+  });
+};
 var assignTechnician = async (outageId, technicianId) => {
   const ifOutageExist = await prisma.outage.findUnique({
     where: {
@@ -2573,6 +2603,8 @@ var OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
+  getOutageDetailsFromDb,
+  updateOutageInDb,
   assignTechnician,
   updateOutageStatusInDb,
   deleteOutageFromDb
@@ -2607,6 +2639,31 @@ var getCurrentUserAddedOutages = catchAsync(async (req, res) => {
     statusCode: httpStatus18.OK,
     success: true,
     message: "All Outages Retrieved Successfully",
+    data: result
+  });
+});
+var getOutageDetails = catchAsync(async (req, res) => {
+  const result = await OutageService.getOutageDetailsFromDb(
+    req.params.outageId,
+    req.user?.userId
+  );
+  sendResponse(res, {
+    statusCode: httpStatus18.OK,
+    success: true,
+    message: "Outage details retrieved successfully",
+    data: result
+  });
+});
+var updateOutage = catchAsync(async (req, res) => {
+  const result = await OutageService.updateOutageInDb(
+    req.params.outageId,
+    req.user?.userId,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus18.OK,
+    success: true,
+    message: "Outage updated successfully",
     data: result
   });
 });
@@ -2663,6 +2720,8 @@ var OutageController = {
   createOutage,
   getAllOutageForAdminManage,
   getCurrentUserAddedOutages,
+  getOutageDetails,
+  updateOutage,
   assignTechnicianToReportedOutage,
   updateOutageStatus,
   deleteOutage
@@ -2675,8 +2734,16 @@ var createOutageZodSchema = z7.object({
   description: z7.string("description description Not a string").min(5, "description should minimum have 5 char").max(400, "Max 400 chars"),
   areaId: z7.string("Not a string areaId")
 });
+var updateOutageZodSchema = z7.object({
+  cause: z7.string("cause Cause is not a string").min(5, "Cause should minimum have 5 char").max(50, "Cause should not be more than 50 chars").optional(),
+  description: z7.string("description description Not a string").min(5, "description should minimum have 5 char").max(400, "Max 400 chars").optional(),
+  areaId: z7.string("Not a string areaId").optional()
+}).refine((data) => Object.keys(data).length > 0, {
+  message: "At least one outage field is required"
+});
 var outageValidation = {
-  createOutageZodSchema
+  createOutageZodSchema,
+  updateOutageZodSchema
 };
 
 // src/app/modules/outage/outage.route.ts
@@ -2684,6 +2751,8 @@ var router7 = Router7();
 router7.post("/", auth(Role.CUSTOMER), validateRequest(outageValidation.createOutageZodSchema), OutageController.createOutage);
 router7.get("/", auth(Role.ADMIN), OutageController.getAllOutageForAdminManage);
 router7.get("/", auth(Role.CUSTOMER), OutageController.getCurrentUserAddedOutages);
+router7.get("/:outageId", auth(Role.ADMIN, Role.CUSTOMER), OutageController.getOutageDetails);
+router7.patch("/:outageId", auth(Role.CUSTOMER), validateRequest(outageValidation.updateOutageZodSchema), OutageController.updateOutage);
 router7.patch("/:outageId/assign-technician", auth(Role.ADMIN), OutageController.assignTechnicianToReportedOutage);
 router7.patch(
   "/:outageId/status",
