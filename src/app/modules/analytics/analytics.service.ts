@@ -1,4 +1,4 @@
-import { OutagePriority, OutageStatus, PaymentStatus } from "../../../generated/prisma/enums";
+import { OutagePriority, OutageStatus, PaymentStatus, Role } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma"
 
 const getCustomerAnalyticsReport = async (userId: string) => {
@@ -119,7 +119,88 @@ const getTechnicianAnalyticsReport = async (userId:string) => {
 
 
 
+const getAdminAnalyticsReport = async () => {
+  const totalUsers = await prisma.user.count();
 
+  const totalTechnicians = await prisma.user.count({
+    where: {
+      role: Role.TECHNICIAN,
+    },
+  });
+
+  const totalReportedOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false,
+    },
+  });
+
+  const activeOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false,
+      status: {
+        in: [
+          OutageStatus.REPORTED,
+          OutageStatus.ACKNOWLEDGED,
+          OutageStatus.ASSIGNED,
+          OutageStatus.IN_PROGRESS,
+        ],
+      },
+    },
+  });
+
+  const restoredOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false,
+      status: OutageStatus.RESTORED,
+    },
+  });
+
+  const totalRevenueResult = await prisma.payment.aggregate({
+    where: {
+      status: PaymentStatus.COMPLETED,
+    },
+    _sum: {
+      amount: true,
+    },
+  });
+
+  const totalRevenue =
+    totalRevenueResult._sum.amount?.toNumber() || 0;
+
+  const totalLoadSheddingSchedules = await prisma.loadShedding.count();
+
+  const totalPlannedOutages = await prisma.plannedOutage.count();
+
+  const outageStatus = await prisma.outage.groupBy({
+    by: ["status"],
+    where: {
+      isDeleted: false,
+    },
+    _count: {
+      _all: true,
+    },
+  });
+
+  const userStatus = await prisma.user.groupBy({
+    by: ["status"],
+    _count: {
+      _all: true,
+    },
+  });
+
+  return {
+    totalUsers,
+    totalTechnicians,
+    totalReportedOutages,
+    activeOutages,
+    restoredOutages,
+    totalRevenue,
+    totalLoadSheddingSchedules,
+    totalPlannedOutages,
+    outageStatus,
+    userStatus,
+  };
+};
 
 
 
@@ -131,5 +212,6 @@ const getTechnicianAnalyticsReport = async (userId:string) => {
 
 export const AnalyticsServices={
     getCustomerAnalyticsReport,
-    getTechnicianAnalyticsReport
+    getTechnicianAnalyticsReport,
+    getAdminAnalyticsReport
 }
