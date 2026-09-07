@@ -1,4 +1,4 @@
-import { InfrastructureStatus, Role, TechnicianProfileStatus, TechnicianStatus } from "../../generated/prisma/enums";
+import { type InfrastructureStatus, Role, TechnicianProfileStatus, TechnicianStatus } from "../../generated/prisma/enums";
 import config from "../config";
 import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
@@ -91,7 +91,7 @@ export const seedTesterTechnician = async () => {
           experience: 1,
           availability: TechnicianStatus.AVAILABLE,
           bio: "Tester technician profile",
-          technicianProfileStatus: TechnicianProfileStatus.APPROVED,
+		  technicianvProfileVerificationStatus:TechnicianProfileStatus.APPROVED,
         },
       });
 
@@ -235,7 +235,7 @@ export const seedZones = async () => {
       });
 
       console.log(
-        `Zone created successfully: ${createdZone.name}`
+        `Zone created successfully: ${createdZone}`
       );
     }
   } catch (error) {
@@ -246,3 +246,80 @@ export const seedZones = async () => {
 
 
 //seeding SUBSTATION
+
+export const seedSubstations = async () => {
+  try {
+    const substations = [
+      {
+        name: "Sylhet Central Substation",
+        code: "SS-SYL-001",
+        capacity: "50MW",
+        location: "Sylhet Sadar",
+        zoneId: "8a4732fd-cbf1-485b-8576-3480e18bf469",
+      },
+      {
+        name: "Khulna Central Substation",
+        code: "SS-KHL-001",
+        capacity: "60MW",
+        location: "Khulna Sadar",
+        zoneId: "b1269f33-e147-4d85-ba02-1790a5b69051",
+      },
+      {
+        name: "Dhaka Central Substation",
+        code: "SS-DHK-001",
+        capacity: "100MW",
+        location: "Dhaka",
+        zoneId: "b79489a4-0dd0-41d9-8314-5d834d72e514",
+      },
+      {
+        name: "Rangpur Central Substation",
+        code: "SS-RNG-001",
+        capacity: "45MW",
+        location: "Rangpur Sadar",
+        zoneId: "dbe40722-775a-4361-9c75-901a42b35ad3",
+      },
+      {
+        name: "Chattogram Central Substation",
+        code: "SS-CTG-001",
+        capacity: "90MW",
+        location: "Chattogram",
+        zoneId: "efacb5d8-e26e-4bd3-8895-b9f8e9f14756",
+      },
+    ];
+
+    for (const substation of substations) {
+      const existingSubstation = await prisma.substation.findUnique({
+        where: {
+          code: substation.code,
+        },
+      });
+
+      if (existingSubstation) {
+        console.log(
+          `Substation already exists with code: ${substation.code}`,
+        );
+        continue;
+      }
+
+      const createdSubstation = await prisma.substation.create({
+        data: {
+          name: substation.name,
+          code: substation.code,
+          capacity: substation.capacity,
+          location: substation.location,
+          zoneId: substation.zoneId,
+        },
+      });
+
+      console.log(
+        `Substation created successfully: ${createdSubstation.name}`,
+      );
+    }
+  } catch (error) {
+    console.log(error, "Error while seeding substations");
+  }
+};
+
+
+//seeding feeder
+

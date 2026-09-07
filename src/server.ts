@@ -3,7 +3,7 @@ import config from "./app/config";
 import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
-import { seedTesterAdmin } from "./app/utils/seed";
+import { seedSubstations, seedTesterAdmin, seedTesterCustomer, seedTesterTechnician, seedZones } from "./app/utils/seed";
 
 
 
@@ -17,7 +17,22 @@ const main = async () => {
 		console.log("Connected to the database successfully.");
 		await redisClient.connect();
 		console.log("redis cnnected sucesfull");
+		//default user seeding 
 		await seedTesterAdmin()
+		await seedTesterTechnician()
+		await seedTesterCustomer()
+
+		//seeding other data
+		await seedZones()
+		await seedSubstations()
+
+
+		//all seeding ends here
+
+
+
+
+
 		await transporter.verify();
 		console.log("NOdema iler connected");
 
