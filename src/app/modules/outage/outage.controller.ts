@@ -54,6 +54,35 @@ const getCurrentUserAddedOutages = catchAsync(async (req: Request, res: Response
     });
 });
 
+const getOutageDetails = catchAsync(async (req: Request, res: Response) => {
+  const result = await OutageService.getOutageDetailsFromDb(
+    req.params.outageId as string,
+    req.user?.userId as string,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Outage details retrieved successfully",
+    data: result,
+  });
+});
+
+const updateOutage = catchAsync(async (req: Request, res: Response) => {
+  const result = await OutageService.updateOutageInDb(
+    req.params.outageId as string,
+    req.user?.userId as string,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Outage updated successfully",
+    data: result,
+  });
+});
+
 const assignTechnicianToReportedOutage = catchAsync(
   async (req: Request, res: Response) => {
     const { outageId } = req.params;
@@ -121,6 +150,8 @@ export const OutageController = {
     createOutage,
     getAllOutageForAdminManage,
     getCurrentUserAddedOutages,
+    getOutageDetails,
+    updateOutage,
     assignTechnicianToReportedOutage,
     updateOutageStatus,
     deleteOutage

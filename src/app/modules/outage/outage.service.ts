@@ -9,7 +9,7 @@ import type { OutageWhereInput } from "../../../generated/prisma/models";
 import type { IQuery } from "../../interfaces/interface";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import type { IOutagePayload } from "./outage.interface";
+import type { IOutagePayload, IOutageUpdatePayload } from "./outage.interface";
 import httpStatus from "http-status";
 export const createOutageInDb = async (
   payload: IOutagePayload,
@@ -109,6 +109,52 @@ const getCurrentUserAddedAllOutagesFromDb = async (userId: string) => {
   });
 
   return currentUserOutages;
+};
+
+const getOutageDetailsFromDb = async (
+  outageId: string,
+  userId: string,
+
+) => {
+  const outage = await prisma.outage.findUnique({
+    where: { id: outageId },
+    include: {
+      area: true,
+      techician: true,
+      user: true,
+    },
+  });
+
+  if (!outage || outage.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
+  }
+
+ 
+  return outage;
+};
+
+const updateOutageInDb = async (
+  outageId: string,
+  userId: string,
+  payload: IOutageUpdatePayload,
+) => {
+  const outage = await prisma.outage.findUnique({
+    where: { id: outageId },
+    select: { userId: true, isDeleted: true },
+  });
+
+  if (!outage || outage.isDeleted) {
+    throw new AppError(httpStatus.NOT_FOUND, "Outage not found");
+  }
+
+  if (outage.userId !== userId) {
+    throw new AppError(httpStatus.FORBIDDEN, "You are not allowed to update this outage");
+  }
+
+  return prisma.outage.update({
+    where: { id: outageId },
+    data: payload,
+  });
 };
 
 //assign technician service
@@ -464,6 +510,8 @@ export const OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
+  getOutageDetailsFromDb,
+  updateOutageInDb,
   assignTechnician,
   updateOutageStatusInDb,
   deleteOutageFromDb

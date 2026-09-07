@@ -3,7 +3,7 @@
 ## Overview
 
 - Base path: `/api/v1`
-- Total route endpoints: **50**
+- Total route endpoints: **52**
 - Authentication: protected endpoints accept an access token from the `accessToken` cookie or an `Authorization` header.
 - Access labels: `Public`, `Customer only`, `Technician only`, `Admin only`, or the listed role combination.
 
@@ -55,43 +55,45 @@
 26. `POST /api/v1/outage` - Report an unexpected power outage. **Customer only**
 27. `GET /api/v1/outage` - Get all reported outages for administrative management. **Admin only**
 28. `GET /api/v1/outage` - Get outages reported by the authenticated customer. **Customer only**
-29. `PATCH /api/v1/outage/:outageId/assign-technician` - Assign a technician to a reported outage. **Admin only**
-30. `PATCH /api/v1/outage/:outageId/status` - Update an outage's status according to the workflow. **Admin or Technician**
-31. `DELETE /api/v1/outage/:outageId` - Delete an outage. **Admin, Customer, or Technician**
+29. `GET /api/v1/outage/:outageId` - Get outage details. **Admin, Customer, or Technician**
+30. `PATCH /api/v1/outage/:outageId` - Update reported outage details. Status cannot be changed here. **Customer only**
+31. `PATCH /api/v1/outage/:outageId/assign-technician` - Assign a technician to a reported outage. **Admin only**
+32. `PATCH /api/v1/outage/:outageId/status` - Update an outage's status according to the workflow. **Admin or Technician**
+33. `DELETE /api/v1/outage/:outageId` - Delete an outage. **Admin, Customer, or Technician**
 
 ## 8. Load Shedding APIs
 
-32. `POST /api/v1/load-shedding` - Create a load-shedding schedule. **Admin only**
-33. `GET /api/v1/load-shedding` - Get all load-shedding schedules. **Public**
-34. `GET /api/v1/load-shedding/:loadsheddingId` - Get details of a load-shedding schedule. **Admin, Customer, or Technician**
-35. `PATCH /api/v1/load-shedding/:loadsheddingId` - Update a load-shedding schedule. **Admin only**
+34. `POST /api/v1/load-shedding` - Create a load-shedding schedule. **Admin only**
+35. `GET /api/v1/load-shedding` - Get all load-shedding schedules. **Public**
+36. `GET /api/v1/load-shedding/:loadsheddingId` - Get details of a load-shedding schedule. **Admin, Customer, or Technician**
+37. `PATCH /api/v1/load-shedding/:loadsheddingId` - Update a load-shedding schedule. **Admin only**
 
 ## 9. Payment APIs
 
-36. `POST /api/v1/payment/create` - Create a payment for the authenticated customer. **Customer only**
-37. `POST /api/v1/payment/confirm` - Confirm and verify an SSLCommerz payment. **Public**
-38. `GET /api/v1/payment` - Get the authenticated customer's payment history. **Customer only**
-39. `GET /api/v1/payment/:paymentId` - Get payment details. **Admin or Customer**
+38. `POST /api/v1/payment/create` - Create a payment for the authenticated customer. **Customer only**
+39. `POST /api/v1/payment/confirm` - Confirm and verify an SSLCommerz payment. **Public**
+40. `GET /api/v1/payment` - Get the authenticated customer's payment history. **Customer only**
+41. `GET /api/v1/payment/:paymentId` - Get payment details. **Admin or Customer**
 
 ## 10. Planned Outage APIs
 
-40. `POST /api/v1/planned-outage` - Create a planned outage schedule. **Admin only**
-41. `GET /api/v1/planned-outage` - Get all planned outage schedules. **Public**
-42. `GET /api/v1/planned-outage/:plannedOutageId` - Get details of a planned outage. **Admin or Customer**
-43. `PATCH /api/v1/planned-outage/:plannedOutageId` - Update a planned outage schedule. **Admin only**
+42. `POST /api/v1/planned-outage` - Create a planned outage schedule. **Admin only**
+43. `GET /api/v1/planned-outage` - Get all planned outage schedules. **Public**
+44. `GET /api/v1/planned-outage/:plannedOutageId` - Get details of a planned outage. **Admin or Customer**
+45. `PATCH /api/v1/planned-outage/:plannedOutageId` - Update a planned outage schedule. **Admin only**
 
 ## 11. Admin APIs
 
-44. `GET /api/v1/admin/users` - Get users with search and filtering for administration. **Admin only**
-45. `PATCH /api/v1/admin/users/:userId` - Update a user's status, such as banning or unbanning the user. **Admin only**
-46. `GET /api/v1/admin/technician` - Get technician users for management and outage assignment. **Admin only**
-47. `GET /api/v1/admin/payment-record` - Get payment records with search and pagination for administration. **Admin only**
+46. `GET /api/v1/admin/users` - Get users with search and filtering for administration. **Admin only**
+47. `PATCH /api/v1/admin/users/:userId` - Update a user's status, such as banning or unbanning the user. **Admin only**
+48. `GET /api/v1/admin/technician` - Get technician users for management and outage assignment. **Admin only**
+49. `GET /api/v1/admin/payment-record` - Get payment records with search and pagination for administration. **Admin only**
 
 ## 12. Analytics APIs
 
-48. `GET /api/v1/analytics/patient-analytics` - Get outage and payment analytics for the authenticated customer. **Customer only**
-49. `GET /api/v1/analytics/technician-analytics` - Get outage assignment and status analytics for the authenticated technician. **Technician only**
-50. `GET /api/v1/analytics/admin-analytics` - Get platform-wide user, outage, payment, load-shedding, and planned-outage analytics. **Admin only**
+50. `GET /api/v1/analytics/patient-analytics` - Get outage and payment analytics for the authenticated customer. **Customer only**
+51. `GET /api/v1/analytics/technician-analytics` - Get outage assignment and status analytics for the authenticated technician. **Technician only**
+52. `GET /api/v1/analytics/admin-analytics` - Get platform-wide user, outage, payment, load-shedding, and planned-outage analytics. **Admin only**
 
 All analytics endpoints return a standard success response with the report in the `data` property.
 
@@ -134,13 +136,13 @@ All analytics endpoints return a standard success response with the report in th
 | Substation | 4 |
 | Feeder | 4 |
 | Area | 4 |
-| Unexpected Outage | 6 |
+| Unexpected Outage | 8 |
 | Load Shedding | 4 |
 | Payment | 4 |
 | Planned Outage | 4 |
 | Admin | 4 |
 | Analytics | 3 |
-| **Total** | **50** |
+| **Total** | **52** |
 
 ## Notes
 
