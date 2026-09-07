@@ -11,6 +11,8 @@ import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
 import type { IOutagePayload, IOutageUpdatePayload } from "./outage.interface";
 import httpStatus from "http-status";
+
+
 export const createOutageInDb = async (
   payload: IOutagePayload,
   userId: string

@@ -16,7 +16,7 @@ router.get("/", auth(Role.ADMIN), OutageController.getAllOutageForAdminManage)
 
 //--get my (currentuser addeda ll ) outage
 
-router.get("/", auth(Role.CUSTOMER), OutageController.getCurrentUserAddedOutages)
+router.get("/my-outage", auth(Role.CUSTOMER), OutageController.getCurrentUserAddedOutages)
 //--get outage details
 router.get("/:outageId", auth(Role.ADMIN, Role.CUSTOMER), OutageController.getOutageDetails)
 
