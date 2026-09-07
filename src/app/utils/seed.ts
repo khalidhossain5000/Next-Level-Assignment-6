@@ -47,3 +47,62 @@ export const seedTesterAdmin = async () => {
 		});
 	}
 };
+
+
+//seed default technician account
+
+
+
+
+
+
+
+
+
+//seed default customer account
+
+export const seedTesterCustomer = async () => {
+  try {
+    // -- Need to check user exist or not
+    const isTesterCustomer = await prisma.user.findUnique({
+      where: {
+        email: config.tester_customer_email,
+      },
+    });
+
+    if (isTesterCustomer) {
+      console.log("Tester customer already exists with this email");
+      return;
+    }
+
+    // -- User does not exist, so create new tester customer
+    const name = config.tester_customer_name;
+    const email = config.tester_customer_email;
+    const password = config.tester_customer_password;
+
+    const hashedPassword = await bcrypt.hash(
+      password as string,
+      Number(config.bcrypt_salt_rounds),
+    );
+
+    const testerCustomer = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: Role.CUSTOMER,
+        emailVerified: true,
+      },
+    });
+
+    console.log(testerCustomer, "Tester customer is created");
+  } catch (error) {
+    console.log(error, "Error while tester customer seeding");
+
+    await prisma.user.delete({
+      where: {
+        email: config.tester_customer_email,
+      },
+    });
+  }
+};
