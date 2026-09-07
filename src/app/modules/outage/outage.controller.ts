@@ -140,7 +140,7 @@ const deleteOutage = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: "Outage status updated successfully",
+      message: "Outage deleted successfully",
       data: result,
     });
   }

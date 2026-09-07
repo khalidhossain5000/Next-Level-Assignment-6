@@ -58,7 +58,7 @@ const updateLoadSheddingSchedule = catchAsync(async (req: Request, res: Response
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Loadshedding Details Successfully",
+        message: "Loadshedding schedule updated successfully",
         data: result,
 
     });

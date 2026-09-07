@@ -2750,7 +2750,7 @@ var outageValidation = {
 var router7 = Router7();
 router7.post("/", auth(Role.CUSTOMER), validateRequest(outageValidation.createOutageZodSchema), OutageController.createOutage);
 router7.get("/", auth(Role.ADMIN), OutageController.getAllOutageForAdminManage);
-router7.get("/", auth(Role.CUSTOMER), OutageController.getCurrentUserAddedOutages);
+router7.get("/my-outage", auth(Role.CUSTOMER), OutageController.getCurrentUserAddedOutages);
 router7.get("/:outageId", auth(Role.ADMIN, Role.CUSTOMER), OutageController.getOutageDetails);
 router7.patch("/:outageId", auth(Role.CUSTOMER), validateRequest(outageValidation.updateOutageZodSchema), OutageController.updateOutage);
 router7.patch("/:outageId/assign-technician", auth(Role.ADMIN), OutageController.assignTechnicianToReportedOutage);

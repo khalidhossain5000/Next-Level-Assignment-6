@@ -41,7 +41,7 @@ const getSubstationDetails = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
-        message: " Zone Details Successfully",
+        message: "Substation details retrieved successfully",
         data: result,
 
     });
