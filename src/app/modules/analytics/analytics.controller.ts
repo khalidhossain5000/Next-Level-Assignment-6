@@ -18,9 +18,9 @@ const getCustomerAnalytics = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getTechnicianAnalytics = catchAsync(async (req: Request, res: Response) => {
-    const user = req.user!;
+    const userId = req.user?.userId;
 
-    const result = await AnalyticsServices.getDoctorAnalytics(user);
+    const result = await AnalyticsServices.getTechnicianAnalyticsReport(userId as string);
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
