@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 
 export const seedTesterAdmin = async () => {
 	try {
-		console.log(config.tes)
+		
 		//1.need to check user exist or not
 		const isTesterAdmin = await prisma.user.findUnique({
 			where: {
