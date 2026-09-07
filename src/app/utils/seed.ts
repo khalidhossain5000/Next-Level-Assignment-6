@@ -389,3 +389,71 @@ export const seedFeeders = async () => {
     console.log(error, "Error while seeding feeders");
   }
 };
+
+
+
+
+//seeding area
+
+export const seedAreas = async () => {
+  try {
+    const areas = [
+      {
+        name: "Dhaka Central Area",
+        code: "AR-DHK-001",
+        address: "Dhaka Sadar, Dhaka",
+        feederId: "291b7734-90a6-40f6-b4e1-4862596eb8b2",
+      },
+      {
+        name: "Chattogram Central Area",
+        code: "AR-CTG-001",
+        address: "Chattogram Sadar, Chattogram",
+        feederId: "2d12ff14-8954-479c-90e1-36587274f625",
+      },
+      {
+        name: "Sylhet Central Area",
+        code: "AR-SYL-001",
+        address: "Sylhet Sadar, Sylhet",
+        feederId: "3ecdfcf6-b20a-4a55-a9dc-dc48d29e681b",
+      },
+      {
+        name: "Rangpur Central Area",
+        code: "AR-RNG-001",
+        address: "Rangpur Sadar, Rangpur",
+        feederId: "9a10e0be-faf4-4813-9cfa-f08e7c8004b2",
+      },
+      {
+        name: "Khulna Central Area",
+        code: "AR-KHL-001",
+        address: "Khulna Sadar, Khulna",
+        feederId: "fe4a4fd9-02e2-46bd-96f8-0efcf9bba4ba",
+      },
+    ];
+
+    for (const area of areas) {
+      const existingArea = await prisma.area.findUnique({
+        where: {
+          code: area.code,
+        },
+      });
+
+      if (existingArea) {
+        console.log(`Area already exists with code: ${area.code}`);
+        continue;
+      }
+
+      const createdArea = await prisma.area.create({
+        data: {
+          name: area.name,
+          code: area.code,
+          address: area.address,
+          feederId: area.feederId,
+        },
+      });
+
+      console.log(`Area created successfully: ${createdArea.name}`);
+    }
+  } catch (error) {
+    console.log(error, "Error while seeding areas");
+  }
+};
