@@ -3,7 +3,7 @@
 ## Overview
 
 - Base path: `/api/v1`
-- Total route endpoints: **46**
+- Total route endpoints: **49**
 - Authentication: protected endpoints accept an access token from the `accessToken` cookie or an `Authorization` header.
 - Access labels: `Public`, `Customer only`, `Technician only`, `Admin only`, or the listed role combination.
 
@@ -86,6 +86,43 @@
 45. `GET /api/v1/admin/users` - Reserved analytics or overall user-report endpoint registration. **Admin only**
 46. `GET /api/v1/admin/payment-record` - Get payment records with search and pagination for administration. **Admin only**
 
+## 12. Analytics APIs
+
+47. `GET /api/v1/analytics/patient-analytics` - Get outage and payment analytics for the authenticated customer. **Customer only**
+48. `GET /api/v1/analytics/technician-analytics` - Get outage assignment and status analytics for the authenticated technician. **Technician only**
+49. `GET /api/v1/analytics/admin-analytics` - Get platform-wide user, outage, payment, load-shedding, and planned-outage analytics. **Admin only**
+
+All analytics endpoints return a standard success response with the report in the `data` property.
+
+### Customer analytics data
+
+- `totalReportedOutages` - Total non-deleted outages reported by the customer.
+- `highPriorityOutages` - Total non-deleted high-priority outages reported by the customer.
+- `restoredOutages` - Total non-deleted outages reported by the customer that have been restored.
+- `totalSpent` - Total completed payment amount for the customer.
+- `outageStatus` - Outage counts grouped by status.
+
+### Technician analytics data
+
+- `totalAssignedOutages` - Total non-deleted outages assigned to the technician.
+- `activeOutages` - Assigned or in-progress outages assigned to the technician.
+- `restoredOutages` - Restored outages assigned to the technician.
+- `highPriorityOutages` - High-priority outages assigned to the technician.
+- `outageStatus` - Outage counts grouped by status.
+
+### Admin analytics data
+
+- `totalUsers` - Total number of users.
+- `totalTechnicians` - Total number of technician users.
+- `totalReportedOutages` - Total non-deleted outages.
+- `activeOutages` - Non-deleted outages with reported, acknowledged, assigned, or in-progress status.
+- `restoredOutages` - Total non-deleted restored outages.
+- `totalRevenue` - Total completed payment amount.
+- `totalLoadSheddingSchedules` - Total load-shedding schedules.
+- `totalPlannedOutages` - Total planned outages.
+- `outageStatus` - Outage counts grouped by status.
+- `userStatus` - User counts grouped by status.
+
 ## Count Summary
 
 | Module | Endpoint count |
@@ -101,7 +138,8 @@
 | Payment | 4 |
 | Planned Outage | 4 |
 | Admin | 5 |
-| **Total** | **46** |
+| Analytics | 3 |
+| **Total** | **49** |
 
 ## Notes
 
