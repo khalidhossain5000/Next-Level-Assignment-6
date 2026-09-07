@@ -30,7 +30,7 @@ const getTechnicianAnalytics = catchAsync(async (req: Request, res: Response) =>
 });
 
 const getAdminAnalytics = catchAsync(async (req: Request, res: Response) => {
-    const result = await AnalyticsServices.getAdminAnalytics();
+    const result = await AnalyticsServices.getAdminAnalyticsReport();
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
