@@ -23,10 +23,10 @@ const main = async () => {
 		await seedTesterCustomer()
 
 		//seeding other data
-		await seedZones()
-		await seedSubstations()
-		await seedFeeders()
-		await seedAreas()
+		// await seedZones()
+		// await seedSubstations()
+		// await seedFeeders()
+		// await seedAreas()
 
 
 		//all seeding ends here

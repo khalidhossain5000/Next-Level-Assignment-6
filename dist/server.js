@@ -27,7 +27,7 @@ var config = {
   "clientVersion": "7.10.0",
   "engineVersion": "0edf323efd1d98336f3f0a68684b56f689b900d3",
   "activeProvider": "postgresql",
-  "inlineSchema": 'model Area {\n  id             String               @id @default(uuid())\n  name           String\n  code           String               @unique @db.VarChar(10)\n  address        String\n  status         InfrastructureStatus @default(ACTIVE)\n  feederId       String\n  feeder         Feeder               @relation("FeederAreas", fields: [feederId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  loadSheddings  LoadShedding[]       @relation("AreaLoadSheddings")\n  plannedOutages PlannedOutage[]      @relation("AreaPlannedOutages")\n  createdAt      DateTime             @default(now())\n  updatedAt      DateTime             @updatedAt\n\n  @@index([name], name: "idx_area_name")\n  @@index([code], name: "idx_area_code")\n  @@index([feederId], name: "idx_area_feeder_id")\n  @@map("Areas")\n}\n\nenum Role {\n  CUSTOMER\n  TECHNICIAN\n  ADMIN\n}\n\nenum UserStatus {\n  ACTIVE\n  BAN\n}\n\nenum TechnicianStatus {\n  AVAILABLE\n  BUSY\n  UNAVAILABLE\n}\n\nenum AuthProvider {\n  GOOGLE\n  CREDENTIAL\n}\n\nenum TechnicianProfileStatus {\n  PENDING\n  APPROVED\n  REJECTED\n}\n\nenum InfrastructureStatus {\n  ACTIVE\n  INACTIVE\n}\n\nenum OutagePriority {\n  HIGH\n  NORMAL\n}\n\nenum OutageStatus {\n  REPORTED\n  ACKNOWLEDGED\n  ASSIGNED\n  IN_PROGRESS\n  RESTORED\n  CANCELLED\n}\n\nenum LoadSheddingStatus {\n  PENDING\n  ONGOING\n  SCHEDULED\n  CANCELLED\n  COMPLETED\n}\n\nenum PlannedOutageStatus {\n  SCHEDULED\n  ONGOING\n  CANCELLED\n  COMPLETED\n}\n\nenum PaymentStatus {\n  PENDING\n  COMPLETED\n  FAILED\n  CANCELLED\n}\n\nmodel Feeder {\n  id           String               @id @default(uuid())\n  name         String\n  code         String               @unique @db.VarChar(10)\n  voltageLevel String\n  status       InfrastructureStatus @default(ACTIVE)\n\n  substationId String\n  substation   Substation @relation("SubstationFeeders", fields: [substationId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  areas Area[] @relation("FeederAreas")\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([name], name: "idx_feeder_name")\n  @@index([code], name: "idx_feeder_code")\n  @@index([substationId], name: "idx_feeder_substation_id")\n  @@map("Feeders")\n}\n\nmodel LoadShedding {\n  id        String             @id @default(uuid())\n  title     String\n  startTime DateTime\n  endTime   DateTime\n  status    LoadSheddingStatus @default(SCHEDULED)\n  reason    String?            @default("N/A")\n  areaId    String\n  area      Area               @relation("AreaLoadSheddings", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@index([areaId], name: "idx_load_shedding_area_id")\n  @@index([status, startTime], name: "idx_load_shedding_status_start_time")\n  @@map("LoadSheddings")\n}\n\nmodel Outage {\n  id             String         @id @default(uuid())\n  cause          String\n  description    String\n  priority       OutagePriority @default(NORMAL)\n  reported_At    DateTime       @default(now())\n  status         OutageStatus   @default(REPORTED)\n  acknowledgedAt DateTime?\n  startedAt      DateTime?\n  isDeleted      Boolean        @default(false)\n  //foreign key of user to know which user reported unexpected outage\n  userId         String\n  user           User           @relation("OutageReporter", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  payments       Payment[]      @relation("OutagePayments")\n\n  //technican foregin key to know which technican is assigned to this outage\n  technicianId String?\n  techician    User?   @relation("OutageTechnician", fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId], name: "idx_outage_user_id")\n  @@index([technicianId], name: "idx_outage_technician_id")\n  @@index([status, createdAt], name: "idx_outage_status_created_at")\n  @@index([priority], name: "idx_outage_priority")\n  @@map("Outages")\n}\n\nmodel Payment {\n  id             String        @id @default(uuid())\n  amount         Decimal       @db.Decimal(10, 2)\n  provider       String\n  transactionId  String        @unique\n  status         PaymentStatus @default(PENDING)\n  paidAt         DateTime?\n  customerId     String\n  customer       User          @relation("CustomerPayments", fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  outageReportId String\n  outage         Outage        @relation("OutagePayments", fields: [outageReportId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  createdAt      DateTime      @default(now())\n  updatedAt      DateTime      @updatedAt\n\n  @@index([customerId], name: "idx_payment_customer_id")\n  @@index([outageReportId], name: "idx_payment_outage_report_id")\n  @@index([status], name: "idx_payment_status")\n  @@map("Payments")\n}\n\nmodel PlannedOutage {\n  id          String              @id @default(uuid())\n  title       String\n  reason      String\n  description String\n  status      PlannedOutageStatus @default(SCHEDULED)\n  startTime   DateTime\n  endTime     DateTime\n  areaId      String\n  area        Area                @relation("AreaPlannedOutages", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  createdAt   DateTime            @default(now())\n  updatedAt   DateTime            @updatedAt\n\n  @@index([areaId], name: "idx_planned_outage_area_id")\n  @@index([status, startTime], name: "idx_planned_outage_status_start_time")\n  @@index([startTime, endTime], name: "idx_planned_outage_start_end_time")\n  @@map("PlannedOutages")\n}\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Substation {\n  id       String                @id @default(uuid())\n  name     String\n  capacity String\n  code     String                @unique @db.VarChar(10)\n  location String\n  status   InfrastructureStatus? @default(ACTIVE)\n  //foregin key making realtien with zone\n  zoneId   String\n  zone     Zone                  @relation(fields: [zoneId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  feeders Feeder[] @relation("SubstationFeeders")\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([name], name: "idx_substation_name")\n  @@index([code], name: "idx_substation_code")\n  @@index([zoneId], name: "idx_substation_zone_id")\n  @@map("Substations")\n}\n\nmodel TechnicianProfile {\n  id             String           @id @default(uuid())\n  expertise      String[]         @default([])\n  experience     Int              @default(0)\n  availability   TechnicianStatus @default(AVAILABLE)\n  bio            String?\n  resume         String?\n  resumePublicId String?\n\n  technicianvProfileVerificationStatus TechnicianProfileStatus @default(PENDING)\n  rejectionReason                      String?\n\n  // Relation to User\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@index([id], name: "idx_technician_id")\n  @@map("TechnicianProfiles")\n}\n\nmodel User {\n  id                   String       @id @default(uuid())\n  name                 String\n  email                String       @unique\n  profileImage         String?      @default("https://i.ibb.co.com/mrH7HCPN/default-profile.png")\n  profileImagePublicId String       @default("")\n  googleId             String?      @unique\n  authProvider         AuthProvider @default(CREDENTIAL)\n\n  role              Role               @default(CUSTOMER)\n  emailVerified     Boolean            @default(false)\n  status            UserStatus         @default(ACTIVE)\n  password          String?\n  technicianProfile TechnicianProfile?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  reportedOutages Outage[]  @relation("OutageReporter")\n  assignedOutages Outage[]  @relation("OutageTechnician")\n  payments        Payment[] @relation("CustomerPayments")\n\n  @@index([email], name: "idx_user_email")\n  @@map("Users")\n}\n\nmodel Zone {\n  id                String               @id @default(uuid())\n  name              String\n  code              String               @unique @db.VarChar(10)\n  description       String\n  status            InfrastructureStatus @default(ACTIVE)\n  zoneImageUrl      String\n  zoneImagePublicId String\n  substations       Substation[]\n  createdAt         DateTime             @default(now())\n  updatedAt         DateTime             @updatedAt\n\n  @@index([name], name: "idx_zone_name")\n  @@index([code], name: "idx_zone_code")\n  @@map("Zones")\n}\n',
+  "inlineSchema": 'model Area {\n  id             String               @id @default(uuid())\n  name           String\n  code           String               @unique @db.VarChar(10)\n  address        String\n  status         InfrastructureStatus @default(ACTIVE)\n  feederId       String\n  feeder         Feeder               @relation("FeederAreas", fields: [feederId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  loadSheddings  LoadShedding[]       @relation("AreaLoadSheddings")\n  plannedOutages PlannedOutage[]      @relation("AreaPlannedOutages")\n  outages        Outage[]\n  createdAt      DateTime             @default(now())\n  updatedAt      DateTime             @updatedAt\n\n  @@index([name], name: "idx_area_name")\n  @@index([code], name: "idx_area_code")\n  @@index([feederId], name: "idx_area_feeder_id")\n  @@map("Areas")\n}\n\nenum Role {\n  CUSTOMER\n  TECHNICIAN\n  ADMIN\n}\n\nenum UserStatus {\n  ACTIVE\n  BAN\n}\n\nenum TechnicianStatus {\n  AVAILABLE\n  BUSY\n  UNAVAILABLE\n}\n\nenum AuthProvider {\n  GOOGLE\n  CREDENTIAL\n}\n\nenum TechnicianProfileStatus {\n  PENDING\n  APPROVED\n  REJECTED\n}\n\nenum InfrastructureStatus {\n  ACTIVE\n  INACTIVE\n}\n\nenum OutagePriority {\n  HIGH\n  NORMAL\n}\n\nenum OutageStatus {\n  REPORTED\n  ACKNOWLEDGED\n  ASSIGNED\n  IN_PROGRESS\n  RESTORED\n  CANCELLED\n}\n\nenum LoadSheddingStatus {\n  PENDING\n  ONGOING\n  SCHEDULED\n  CANCELLED\n  COMPLETED\n}\n\nenum PlannedOutageStatus {\n  SCHEDULED\n  ONGOING\n  CANCELLED\n  COMPLETED\n}\n\nenum PaymentStatus {\n  PENDING\n  COMPLETED\n  FAILED\n  CANCELLED\n}\n\nmodel Feeder {\n  id           String               @id @default(uuid())\n  name         String\n  code         String               @unique @db.VarChar(10)\n  voltageLevel String\n  status       InfrastructureStatus @default(ACTIVE)\n\n  substationId String\n  substation   Substation @relation("SubstationFeeders", fields: [substationId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  areas Area[] @relation("FeederAreas")\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([name], name: "idx_feeder_name")\n  @@index([code], name: "idx_feeder_code")\n  @@index([substationId], name: "idx_feeder_substation_id")\n  @@map("Feeders")\n}\n\nmodel LoadShedding {\n  id        String             @id @default(uuid())\n  title     String\n  startTime DateTime\n  endTime   DateTime\n  status    LoadSheddingStatus @default(SCHEDULED)\n  reason    String?            @default("N/A")\n  areaId    String\n  area      Area               @relation("AreaLoadSheddings", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([areaId], name: "idx_load_shedding_area_id")\n  @@index([status, startTime], name: "idx_load_shedding_status_start_time")\n  @@map("LoadSheddings")\n}\n\nmodel Outage {\n  id             String         @id @default(uuid())\n  cause          String\n  description    String\n  priority       OutagePriority @default(NORMAL)\n  reported_At    DateTime       @default(now())\n  status         OutageStatus   @default(REPORTED)\n  acknowledgedAt DateTime?\n  startedAt      DateTime?\n  isDeleted      Boolean        @default(false)\n  //foreign key of user to know which user reported unexpected outage\n  userId         String\n  user           User           @relation("OutageReporter", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  payments       Payment[]      @relation("OutagePayments")\n\n  //technican foregin key to know which technican is assigned to this outage\n  technicianId String?\n  techician    User?   @relation("OutageTechnician", fields: [technicianId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  //area id to sknow which are\n\n  areaId String\n\n  area Area @relation(fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([userId], name: "idx_outage_user_id")\n  @@index([technicianId], name: "idx_outage_technician_id")\n  @@index([status, createdAt], name: "idx_outage_status_created_at")\n  @@index([priority], name: "idx_outage_priority")\n  @@map("Outages")\n}\n\nmodel Payment {\n  id             String        @id @default(uuid())\n  amount         Decimal       @db.Decimal(10, 2)\n  provider       String\n  transactionId  String        @unique\n  status         PaymentStatus @default(PENDING)\n  paidAt         DateTime?\n  customerId     String\n  customer       User          @relation("CustomerPayments", fields: [customerId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  outageReportId String\n  outage         Outage        @relation("OutagePayments", fields: [outageReportId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  createdAt      DateTime      @default(now())\n  updatedAt      DateTime      @updatedAt\n\n  @@index([customerId], name: "idx_payment_customer_id")\n  @@index([outageReportId], name: "idx_payment_outage_report_id")\n  @@index([status], name: "idx_payment_status")\n  @@map("Payments")\n}\n\nmodel PlannedOutage {\n  id          String              @id @default(uuid())\n  title       String\n  reason      String\n  description String\n  status      PlannedOutageStatus @default(SCHEDULED)\n  startTime   DateTime\n  endTime     DateTime\n  areaId      String\n  area        Area                @relation("AreaPlannedOutages", fields: [areaId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  createdAt   DateTime            @default(now())\n  updatedAt   DateTime            @updatedAt\n\n  @@index([areaId], name: "idx_planned_outage_area_id")\n  @@index([status, startTime], name: "idx_planned_outage_status_start_time")\n  @@index([startTime, endTime], name: "idx_planned_outage_start_end_time")\n  @@map("PlannedOutages")\n}\n\ngenerator client {\n  provider = "prisma-client"\n  output   = "../../src/generated/prisma"\n}\n\ndatasource db {\n  provider = "postgresql"\n}\n\nmodel Substation {\n  id       String                @id @default(uuid())\n  name     String\n  capacity String\n  code     String                @unique @db.VarChar(10)\n  location String\n  status   InfrastructureStatus? @default(ACTIVE)\n  //foregin key making realtien with zone\n  zoneId   String\n  zone     Zone                  @relation(fields: [zoneId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  feeders Feeder[] @relation("SubstationFeeders")\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([name], name: "idx_substation_name")\n  @@index([code], name: "idx_substation_code")\n  @@index([zoneId], name: "idx_substation_zone_id")\n  @@map("Substations")\n}\n\nmodel TechnicianProfile {\n  id             String           @id @default(uuid())\n  expertise      String[]         @default([])\n  experience     Int              @default(0)\n  availability   TechnicianStatus @default(AVAILABLE)\n  bio            String?\n  resume         String?\n  resumePublicId String?\n\n  technicianvProfileVerificationStatus TechnicianProfileStatus @default(PENDING)\n  rejectionReason                      String?\n\n  // Relation to User\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id])\n\n  @@index([id], name: "idx_technician_id")\n  @@map("TechnicianProfiles")\n}\n\nmodel User {\n  id                   String       @id @default(uuid())\n  name                 String\n  email                String       @unique\n  profileImage         String?      @default("https://i.ibb.co.com/mrH7HCPN/default-profile.png")\n  profileImagePublicId String       @default("")\n  googleId             String?      @unique\n  authProvider         AuthProvider @default(CREDENTIAL)\n\n  role              Role               @default(CUSTOMER)\n  emailVerified     Boolean            @default(false)\n  status            UserStatus         @default(ACTIVE)\n  password          String?\n  technicianProfile TechnicianProfile?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  reportedOutages Outage[]  @relation("OutageReporter")\n  assignedOutages Outage[]  @relation("OutageTechnician")\n  payments        Payment[] @relation("CustomerPayments")\n\n  @@index([email], name: "idx_user_email")\n  @@map("Users")\n}\n\nmodel Zone {\n  id                String               @id @default(uuid())\n  name              String\n  code              String               @unique @db.VarChar(10)\n  description       String\n  status            InfrastructureStatus @default(ACTIVE)\n  zoneImageUrl      String\n  zoneImagePublicId String\n  substations       Substation[]\n  createdAt         DateTime             @default(now())\n  updatedAt         DateTime             @updatedAt\n\n  @@index([name], name: "idx_zone_name")\n  @@index([code], name: "idx_zone_code")\n  @@map("Zones")\n}\n',
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -38,10 +38,10 @@ var config = {
     "graph": ""
   }
 };
-config.runtimeDataModel = JSON.parse('{"models":{"Area":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"address","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"feederId","kind":"scalar","type":"String"},{"name":"feeder","kind":"object","type":"Feeder","relationName":"FeederAreas"},{"name":"loadSheddings","kind":"object","type":"LoadShedding","relationName":"AreaLoadSheddings"},{"name":"plannedOutages","kind":"object","type":"PlannedOutage","relationName":"AreaPlannedOutages"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Areas","schema":null},"Feeder":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"voltageLevel","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"substationId","kind":"scalar","type":"String"},{"name":"substation","kind":"object","type":"Substation","relationName":"SubstationFeeders"},{"name":"areas","kind":"object","type":"Area","relationName":"FeederAreas"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Feeders","schema":null},"LoadShedding":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"title","kind":"scalar","type":"String"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"status","kind":"enum","type":"LoadSheddingStatus"},{"name":"reason","kind":"scalar","type":"String"},{"name":"areaId","kind":"scalar","type":"String"},{"name":"area","kind":"object","type":"Area","relationName":"AreaLoadSheddings"}],"dbName":"LoadSheddings","schema":null},"Outage":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"cause","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"priority","kind":"enum","type":"OutagePriority"},{"name":"reported_At","kind":"scalar","type":"DateTime"},{"name":"status","kind":"enum","type":"OutageStatus"},{"name":"acknowledgedAt","kind":"scalar","type":"DateTime"},{"name":"startedAt","kind":"scalar","type":"DateTime"},{"name":"isDeleted","kind":"scalar","type":"Boolean"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"OutageReporter"},{"name":"payments","kind":"object","type":"Payment","relationName":"OutagePayments"},{"name":"technicianId","kind":"scalar","type":"String"},{"name":"techician","kind":"object","type":"User","relationName":"OutageTechnician"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Outages","schema":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"amount","kind":"scalar","type":"Decimal"},{"name":"provider","kind":"scalar","type":"String"},{"name":"transactionId","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"PaymentStatus"},{"name":"paidAt","kind":"scalar","type":"DateTime"},{"name":"customerId","kind":"scalar","type":"String"},{"name":"customer","kind":"object","type":"User","relationName":"CustomerPayments"},{"name":"outageReportId","kind":"scalar","type":"String"},{"name":"outage","kind":"object","type":"Outage","relationName":"OutagePayments"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Payments","schema":null},"PlannedOutage":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"title","kind":"scalar","type":"String"},{"name":"reason","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"PlannedOutageStatus"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"areaId","kind":"scalar","type":"String"},{"name":"area","kind":"object","type":"Area","relationName":"AreaPlannedOutages"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"PlannedOutages","schema":null},"Substation":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"capacity","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"location","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"zoneId","kind":"scalar","type":"String"},{"name":"zone","kind":"object","type":"Zone","relationName":"SubstationToZone"},{"name":"feeders","kind":"object","type":"Feeder","relationName":"SubstationFeeders"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Substations","schema":null},"TechnicianProfile":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expertise","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"availability","kind":"enum","type":"TechnicianStatus"},{"name":"bio","kind":"scalar","type":"String"},{"name":"resume","kind":"scalar","type":"String"},{"name":"resumePublicId","kind":"scalar","type":"String"},{"name":"technicianvProfileVerificationStatus","kind":"enum","type":"TechnicianProfileStatus"},{"name":"rejectionReason","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"TechnicianProfileToUser"}],"dbName":"TechnicianProfiles","schema":null},"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"profileImage","kind":"scalar","type":"String"},{"name":"profileImagePublicId","kind":"scalar","type":"String"},{"name":"googleId","kind":"scalar","type":"String"},{"name":"authProvider","kind":"enum","type":"AuthProvider"},{"name":"role","kind":"enum","type":"Role"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"status","kind":"enum","type":"UserStatus"},{"name":"password","kind":"scalar","type":"String"},{"name":"technicianProfile","kind":"object","type":"TechnicianProfile","relationName":"TechnicianProfileToUser"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"reportedOutages","kind":"object","type":"Outage","relationName":"OutageReporter"},{"name":"assignedOutages","kind":"object","type":"Outage","relationName":"OutageTechnician"},{"name":"payments","kind":"object","type":"Payment","relationName":"CustomerPayments"}],"dbName":"Users","schema":null},"Zone":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"zoneImageUrl","kind":"scalar","type":"String"},{"name":"zoneImagePublicId","kind":"scalar","type":"String"},{"name":"substations","kind":"object","type":"Substation","relationName":"SubstationToZone"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Zones","schema":null}},"enums":{},"types":{}}');
+config.runtimeDataModel = JSON.parse('{"models":{"Area":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"address","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"feederId","kind":"scalar","type":"String"},{"name":"feeder","kind":"object","type":"Feeder","relationName":"FeederAreas"},{"name":"loadSheddings","kind":"object","type":"LoadShedding","relationName":"AreaLoadSheddings"},{"name":"plannedOutages","kind":"object","type":"PlannedOutage","relationName":"AreaPlannedOutages"},{"name":"outages","kind":"object","type":"Outage","relationName":"AreaToOutage"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Areas","schema":null},"Feeder":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"voltageLevel","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"substationId","kind":"scalar","type":"String"},{"name":"substation","kind":"object","type":"Substation","relationName":"SubstationFeeders"},{"name":"areas","kind":"object","type":"Area","relationName":"FeederAreas"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Feeders","schema":null},"LoadShedding":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"title","kind":"scalar","type":"String"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"status","kind":"enum","type":"LoadSheddingStatus"},{"name":"reason","kind":"scalar","type":"String"},{"name":"areaId","kind":"scalar","type":"String"},{"name":"area","kind":"object","type":"Area","relationName":"AreaLoadSheddings"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"LoadSheddings","schema":null},"Outage":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"cause","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"priority","kind":"enum","type":"OutagePriority"},{"name":"reported_At","kind":"scalar","type":"DateTime"},{"name":"status","kind":"enum","type":"OutageStatus"},{"name":"acknowledgedAt","kind":"scalar","type":"DateTime"},{"name":"startedAt","kind":"scalar","type":"DateTime"},{"name":"isDeleted","kind":"scalar","type":"Boolean"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"OutageReporter"},{"name":"payments","kind":"object","type":"Payment","relationName":"OutagePayments"},{"name":"technicianId","kind":"scalar","type":"String"},{"name":"techician","kind":"object","type":"User","relationName":"OutageTechnician"},{"name":"areaId","kind":"scalar","type":"String"},{"name":"area","kind":"object","type":"Area","relationName":"AreaToOutage"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Outages","schema":null},"Payment":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"amount","kind":"scalar","type":"Decimal"},{"name":"provider","kind":"scalar","type":"String"},{"name":"transactionId","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"PaymentStatus"},{"name":"paidAt","kind":"scalar","type":"DateTime"},{"name":"customerId","kind":"scalar","type":"String"},{"name":"customer","kind":"object","type":"User","relationName":"CustomerPayments"},{"name":"outageReportId","kind":"scalar","type":"String"},{"name":"outage","kind":"object","type":"Outage","relationName":"OutagePayments"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Payments","schema":null},"PlannedOutage":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"title","kind":"scalar","type":"String"},{"name":"reason","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"PlannedOutageStatus"},{"name":"startTime","kind":"scalar","type":"DateTime"},{"name":"endTime","kind":"scalar","type":"DateTime"},{"name":"areaId","kind":"scalar","type":"String"},{"name":"area","kind":"object","type":"Area","relationName":"AreaPlannedOutages"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"PlannedOutages","schema":null},"Substation":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"capacity","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"location","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"zoneId","kind":"scalar","type":"String"},{"name":"zone","kind":"object","type":"Zone","relationName":"SubstationToZone"},{"name":"feeders","kind":"object","type":"Feeder","relationName":"SubstationFeeders"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Substations","schema":null},"TechnicianProfile":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"expertise","kind":"scalar","type":"String"},{"name":"experience","kind":"scalar","type":"Int"},{"name":"availability","kind":"enum","type":"TechnicianStatus"},{"name":"bio","kind":"scalar","type":"String"},{"name":"resume","kind":"scalar","type":"String"},{"name":"resumePublicId","kind":"scalar","type":"String"},{"name":"technicianvProfileVerificationStatus","kind":"enum","type":"TechnicianProfileStatus"},{"name":"rejectionReason","kind":"scalar","type":"String"},{"name":"userId","kind":"scalar","type":"String"},{"name":"user","kind":"object","type":"User","relationName":"TechnicianProfileToUser"}],"dbName":"TechnicianProfiles","schema":null},"User":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"email","kind":"scalar","type":"String"},{"name":"profileImage","kind":"scalar","type":"String"},{"name":"profileImagePublicId","kind":"scalar","type":"String"},{"name":"googleId","kind":"scalar","type":"String"},{"name":"authProvider","kind":"enum","type":"AuthProvider"},{"name":"role","kind":"enum","type":"Role"},{"name":"emailVerified","kind":"scalar","type":"Boolean"},{"name":"status","kind":"enum","type":"UserStatus"},{"name":"password","kind":"scalar","type":"String"},{"name":"technicianProfile","kind":"object","type":"TechnicianProfile","relationName":"TechnicianProfileToUser"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"},{"name":"reportedOutages","kind":"object","type":"Outage","relationName":"OutageReporter"},{"name":"assignedOutages","kind":"object","type":"Outage","relationName":"OutageTechnician"},{"name":"payments","kind":"object","type":"Payment","relationName":"CustomerPayments"}],"dbName":"Users","schema":null},"Zone":{"fields":[{"name":"id","kind":"scalar","type":"String"},{"name":"name","kind":"scalar","type":"String"},{"name":"code","kind":"scalar","type":"String"},{"name":"description","kind":"scalar","type":"String"},{"name":"status","kind":"enum","type":"InfrastructureStatus"},{"name":"zoneImageUrl","kind":"scalar","type":"String"},{"name":"zoneImagePublicId","kind":"scalar","type":"String"},{"name":"substations","kind":"object","type":"Substation","relationName":"SubstationToZone"},{"name":"createdAt","kind":"scalar","type":"DateTime"},{"name":"updatedAt","kind":"scalar","type":"DateTime"}],"dbName":"Zones","schema":null}},"enums":{},"types":{}}');
 config.parameterizationSchema = {
-  strings: JSON.parse('["where","orderBy","cursor","substations","_count","zone","feeders","substation","areas","feeder","area","loadSheddings","plannedOutages","Area.findUnique","Area.findUniqueOrThrow","Area.findFirst","Area.findFirstOrThrow","Area.findMany","data","Area.createOne","Area.createMany","Area.createManyAndReturn","Area.updateOne","Area.updateMany","Area.updateManyAndReturn","create","update","Area.upsertOne","Area.deleteOne","Area.deleteMany","having","_min","_max","Area.groupBy","Area.aggregate","Feeder.findUnique","Feeder.findUniqueOrThrow","Feeder.findFirst","Feeder.findFirstOrThrow","Feeder.findMany","Feeder.createOne","Feeder.createMany","Feeder.createManyAndReturn","Feeder.updateOne","Feeder.updateMany","Feeder.updateManyAndReturn","Feeder.upsertOne","Feeder.deleteOne","Feeder.deleteMany","Feeder.groupBy","Feeder.aggregate","LoadShedding.findUnique","LoadShedding.findUniqueOrThrow","LoadShedding.findFirst","LoadShedding.findFirstOrThrow","LoadShedding.findMany","LoadShedding.createOne","LoadShedding.createMany","LoadShedding.createManyAndReturn","LoadShedding.updateOne","LoadShedding.updateMany","LoadShedding.updateManyAndReturn","LoadShedding.upsertOne","LoadShedding.deleteOne","LoadShedding.deleteMany","LoadShedding.groupBy","LoadShedding.aggregate","user","technicianProfile","reportedOutages","assignedOutages","customer","outage","payments","techician","Outage.findUnique","Outage.findUniqueOrThrow","Outage.findFirst","Outage.findFirstOrThrow","Outage.findMany","Outage.createOne","Outage.createMany","Outage.createManyAndReturn","Outage.updateOne","Outage.updateMany","Outage.updateManyAndReturn","Outage.upsertOne","Outage.deleteOne","Outage.deleteMany","Outage.groupBy","Outage.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","_avg","_sum","Payment.groupBy","Payment.aggregate","PlannedOutage.findUnique","PlannedOutage.findUniqueOrThrow","PlannedOutage.findFirst","PlannedOutage.findFirstOrThrow","PlannedOutage.findMany","PlannedOutage.createOne","PlannedOutage.createMany","PlannedOutage.createManyAndReturn","PlannedOutage.updateOne","PlannedOutage.updateMany","PlannedOutage.updateManyAndReturn","PlannedOutage.upsertOne","PlannedOutage.deleteOne","PlannedOutage.deleteMany","PlannedOutage.groupBy","PlannedOutage.aggregate","Substation.findUnique","Substation.findUniqueOrThrow","Substation.findFirst","Substation.findFirstOrThrow","Substation.findMany","Substation.createOne","Substation.createMany","Substation.createManyAndReturn","Substation.updateOne","Substation.updateMany","Substation.updateManyAndReturn","Substation.upsertOne","Substation.deleteOne","Substation.deleteMany","Substation.groupBy","Substation.aggregate","TechnicianProfile.findUnique","TechnicianProfile.findUniqueOrThrow","TechnicianProfile.findFirst","TechnicianProfile.findFirstOrThrow","TechnicianProfile.findMany","TechnicianProfile.createOne","TechnicianProfile.createMany","TechnicianProfile.createManyAndReturn","TechnicianProfile.updateOne","TechnicianProfile.updateMany","TechnicianProfile.updateManyAndReturn","TechnicianProfile.upsertOne","TechnicianProfile.deleteOne","TechnicianProfile.deleteMany","TechnicianProfile.groupBy","TechnicianProfile.aggregate","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","User.upsertOne","User.deleteOne","User.deleteMany","User.groupBy","User.aggregate","Zone.findUnique","Zone.findUniqueOrThrow","Zone.findFirst","Zone.findFirstOrThrow","Zone.findMany","Zone.createOne","Zone.createMany","Zone.createManyAndReturn","Zone.updateOne","Zone.updateMany","Zone.updateManyAndReturn","Zone.upsertOne","Zone.deleteOne","Zone.deleteMany","Zone.groupBy","Zone.aggregate","AND","OR","NOT","id","name","code","description","InfrastructureStatus","status","zoneImageUrl","zoneImagePublicId","createdAt","updatedAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","every","some","none","email","profileImage","profileImagePublicId","googleId","AuthProvider","authProvider","Role","role","emailVerified","UserStatus","password","expertise","experience","TechnicianStatus","availability","bio","resume","resumePublicId","TechnicianProfileStatus","technicianvProfileVerificationStatus","rejectionReason","userId","has","hasEvery","hasSome","capacity","location","zoneId","title","reason","PlannedOutageStatus","startTime","endTime","areaId","amount","provider","transactionId","PaymentStatus","paidAt","customerId","outageReportId","cause","OutagePriority","priority","reported_At","OutageStatus","acknowledgedAt","startedAt","isDeleted","technicianId","LoadSheddingStatus","voltageLevel","substationId","address","feederId","is","isNot","connectOrCreate","upsert","createMany","set","disconnect","delete","connect","updateMany","deleteMany","increment","decrement","multiply","divide","push"]'),
-  graph: "lgVboAEOCQAA-QIAIAsAAPoCACAMAAD7AgAgvQEAAPgCADC-AQAADQAQvwEAAPgCADDAAQEAAAABwQEBAJ0CACHCAQEAAAABxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIY0CAQCdAgAhjgIBAJ0CACEBAAAAAQAgDgUAAIEDACAGAACCAwAgvQEAAP8CADC-AQAAAwAQvwEAAP8CADDAAQEAnQIAIcEBAQCdAgAhwgEBAJ0CACHFAQAAgAPFASPIAUAAnwIAIckBQACfAgAh8QEBAJ0CACHyAQEAnQIAIfMBAQCdAgAhAwUAANoEACAGAADbBAAgxQEAANQDACAOBQAAgQMAIAYAAIIDACC9AQAA_wIAML4BAAADABC_AQAA_wIAMMABAQAAAAHBAQEAnQIAIcIBAQAAAAHFAQAAgAPFASPIAUAAnwIAIckBQACfAgAh8QEBAJ0CACHyAQEAnQIAIfMBAQCdAgAhAwAAAAMAIAEAAAQAMAIAAAUAIAEAAAADACANBwAA_QIAIAgAAP4CACC9AQAA_AIAML4BAAAIABC_AQAA_AIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACeAsUBIsgBQACfAgAhyQFAAJ8CACGLAgEAnQIAIYwCAQCdAgAhAgcAANgEACAIAADZBAAgDQcAAP0CACAIAAD-AgAgvQEAAPwCADC-AQAACAAQvwEAAPwCADDAAQEAAAABwQEBAJ0CACHCAQEAAAABxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIYsCAQCdAgAhjAIBAJ0CACEDAAAACAAgAQAACQAwAgAACgAgAQAAAAgAIA4JAAD5AgAgCwAA-gIAIAwAAPsCACC9AQAA-AIAML4BAAANABC_AQAA-AIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACeAsUBIsgBQACfAgAhyQFAAJ8CACGNAgEAnQIAIY4CAQCdAgAhAwkAANUEACALAADWBAAgDAAA1wQAIAMAAAANACABAAAOADACAAABACABAAAADQAgCwoAAPUCACC9AQAA9gIAML4BAAARABC_AQAA9gIAMMABAQCdAgAhxQEAAPcCiwIi9AEBAJ0CACH1AQEAswIAIfcBQACfAgAh-AFAAJ8CACH5AQEAnQIAIQIKAADUBAAg9QEAANQDACALCgAA9QIAIL0BAAD2AgAwvgEAABEAEL8BAAD2AgAwwAEBAAAAAcUBAAD3AosCIvQBAQCdAgAh9QEBALMCACH3AUAAnwIAIfgBQACfAgAh-QEBAJ0CACEDAAAAEQAgAQAAEgAwAgAAEwAgDgoAAPUCACC9AQAA8wIAML4BAAAVABC_AQAA8wIAMMABAQCdAgAhwwEBAJ0CACHFAQAA9AL3ASLIAUAAnwIAIckBQACfAgAh9AEBAJ0CACH1AQEAnQIAIfcBQACfAgAh-AFAAJ8CACH5AQEAnQIAIQEKAADUBAAgDgoAAPUCACC9AQAA8wIAML4BAAAVABC_AQAA8wIAMMABAQAAAAHDAQEAnQIAIcUBAAD0AvcBIsgBQACfAgAhyQFAAJ8CACH0AQEAnQIAIfUBAQCdAgAh9wFAAJ8CACH4AUAAnwIAIfkBAQCdAgAhAwAAABUAIAEAABYAMAIAABcAIAEAAAARACABAAAAFQAgAQAAAAEAIAMAAAANACABAAAOADACAAABACADAAAADQAgAQAADgAwAgAAAQAgAwAAAA0AIAEAAA4AMAIAAAEAIAsJAADTBAAgCwAAzAMAIAwAAM0DACDAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBAsgBQAAAAAHJAUAAAAABjQIBAAAAAY4CAQAAAAEBEgAAHwAgCMABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQECyAFAAAAAAckBQAAAAAGNAgEAAAABjgIBAAAAAQESAAAhADABEgAAIQAwCwkAANIEACALAACuAwAgDAAArwMAIMABAQCGAwAhwQEBAIYDACHCAQEAhgMAIcUBAACHA8UBIsgBQACIAwAhyQFAAIgDACGNAgEAhgMAIY4CAQCGAwAhAgAAAAEAIBIAACQAIAjAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAhwPFASLIAUAAiAMAIckBQACIAwAhjQIBAIYDACGOAgEAhgMAIQIAAAANACASAAAmACACAAAADQAgEgAAJgAgAwAAAAEAIBkAAB8AIBoAACQAIAEAAAABACABAAAADQAgAwQAAM8EACAfAADRBAAgIAAA0AQAIAu9AQAA8gIAML4BAAAtABC_AQAA8gIAMMABAQCSAgAhwQEBAJICACHCAQEAkgIAIcUBAACTAsUBIsgBQACUAgAhyQFAAJQCACGNAgEAkgIAIY4CAQCSAgAhAwAAAA0AIAEAACwAMB4AAC0AIAMAAAANACABAAAOADACAAABACABAAAACgAgAQAAAAoAIAMAAAAIACABAAAJADACAAAKACADAAAACAAgAQAACQAwAgAACgAgAwAAAAgAIAEAAAkAMAIAAAoAIAoHAADOBAAgCAAAzwMAIMABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQECyAFAAAAAAckBQAAAAAGLAgEAAAABjAIBAAAAAQESAAA1ACAIwAEBAAAAAcEBAQAAAAHCAQEAAAABxQEAAADFAQLIAUAAAAAByQFAAAAAAYsCAQAAAAGMAgEAAAABARIAADcAMAESAAA3ADAKBwAAzQQAIAgAAKIDACDAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAhwPFASLIAUAAiAMAIckBQACIAwAhiwIBAIYDACGMAgEAhgMAIQIAAAAKACASAAA6ACAIwAEBAIYDACHBAQEAhgMAIcIBAQCGAwAhxQEAAIcDxQEiyAFAAIgDACHJAUAAiAMAIYsCAQCGAwAhjAIBAIYDACECAAAACAAgEgAAPAAgAgAAAAgAIBIAADwAIAMAAAAKACAZAAA1ACAaAAA6ACABAAAACgAgAQAAAAgAIAMEAADKBAAgHwAAzAQAICAAAMsEACALvQEAAPECADC-AQAAQwAQvwEAAPECADDAAQEAkgIAIcEBAQCSAgAhwgEBAJICACHFAQAAkwLFASLIAUAAlAIAIckBQACUAgAhiwIBAJICACGMAgEAkgIAIQMAAAAIACABAABCADAeAABDACADAAAACAAgAQAACQAwAgAACgAgAQAAABMAIAEAAAATACADAAAAEQAgAQAAEgAwAgAAEwAgAwAAABEAIAEAABIAMAIAABMAIAMAAAARACABAAASADACAAATACAICgAAyQQAIMABAQAAAAHFAQAAAIsCAvQBAQAAAAH1AQEAAAAB9wFAAAAAAfgBQAAAAAH5AQEAAAABARIAAEsAIAfAAQEAAAABxQEAAACLAgL0AQEAAAAB9QEBAAAAAfcBQAAAAAH4AUAAAAAB-QEBAAAAAQESAABNADABEgAATQAwCAoAAMgEACDAAQEAhgMAIcUBAADHA4sCIvQBAQCGAwAh9QEBAMgDACH3AUAAiAMAIfgBQACIAwAh-QEBAIYDACECAAAAEwAgEgAAUAAgB8ABAQCGAwAhxQEAAMcDiwIi9AEBAIYDACH1AQEAyAMAIfcBQACIAwAh-AFAAIgDACH5AQEAhgMAIQIAAAARACASAABSACACAAAAEQAgEgAAUgAgAwAAABMAIBkAAEsAIBoAAFAAIAEAAAATACABAAAAEQAgBAQAAMUEACAfAADHBAAgIAAAxgQAIPUBAADUAwAgCr0BAADtAgAwvgEAAFkAEL8BAADtAgAwwAEBAJICACHFAQAA7gKLAiL0AQEAkgIAIfUBAQCiAgAh9wFAAJQCACH4AUAAlAIAIfkBAQCSAgAhAwAAABEAIAEAAFgAMB4AAFkAIAMAAAARACABAAASADACAAATACATQwAAygIAIEkAALoCACBKAADsAgAgvQEAAOkCADC-AQAAYAAQvwEAAOkCADDAAQEAAAABwwEBAJ0CACHFAQAA6wKGAiLIAUAAnwIAIckBQACfAgAh7QEBAJ0CACGBAgEAnQIAIYMCAADqAoMCIoQCQACfAgAhhgJAAOcCACGHAkAA5wIAIYgCIAC2AgAhiQIBALMCACEBAAAAXAAgDkMAAMoCACC9AQAAxgIAML4BAABeABC_AQAAxgIAMMABAQCdAgAh4wEAALwCACDkAQIAxwIAIeYBAADIAuYBIucBAQCzAgAh6AEBALMCACHpAQEAswIAIesBAADJAusBIuwBAQCzAgAh7QEBAJ0CACEBAAAAXgAgE0MAAMoCACBJAAC6AgAgSgAA7AIAIL0BAADpAgAwvgEAAGAAEL8BAADpAgAwwAEBAJ0CACHDAQEAnQIAIcUBAADrAoYCIsgBQACfAgAhyQFAAJ8CACHtAQEAnQIAIYECAQCdAgAhgwIAAOoCgwIihAJAAJ8CACGGAkAA5wIAIYcCQADnAgAhiAIgALYCACGJAgEAswIAIQZDAACxBAAgSQAAqQQAIEoAALEEACCGAgAA1AMAIIcCAADUAwAgiQIAANQDACADAAAAYAAgAQAAYQAwAgAAXAAgAwAAAGAAIAEAAGEAMAIAAFwAIA9HAADKAgAgSAAA6AIAIL0BAADkAgAwvgEAAGQAEL8BAADkAgAwwAEBAJ0CACHFAQAA5gL-ASLIAUAAnwIAIckBQACfAgAh-gEQAOUCACH7AQEAnQIAIfwBAQCdAgAh_gFAAOcCACH_AQEAnQIAIYACAQCdAgAhA0cAALEEACBIAADEBAAg_gEAANQDACAPRwAAygIAIEgAAOgCACC9AQAA5AIAML4BAABkABC_AQAA5AIAMMABAQAAAAHFAQAA5gL-ASLIAUAAnwIAIckBQACfAgAh-gEQAOUCACH7AQEAnQIAIfwBAQAAAAH-AUAA5wIAIf8BAQCdAgAhgAIBAJ0CACEDAAAAZAAgAQAAZQAwAgAAZgAgAQAAAGAAIAEAAABgACABAAAAZAAgAwAAAGQAIAEAAGUAMAIAAGYAIBREAAC4AgAgRQAAuQIAIEYAALkCACBJAAC6AgAgvQEAALICADC-AQAAbAAQvwEAALICADDAAQEAnQIAIcEBAQCdAgAhxQEAALcC4gEiyAFAAJ8CACHJAUAAnwIAIdgBAQCdAgAh2QEBALMCACHaAQEAnQIAIdsBAQCzAgAh3QEAALQC3QEi3wEAALUC3wEi4AEgALYCACHiAQEAswIAIQEAAABsACABAAAAZAAgAQAAAFwAIAMAAABgACABAABhADACAABcACADAAAAYAAgAQAAYQAwAgAAXAAgAwAAAGAAIAEAAGEAMAIAAFwAIBBDAACMBAAgSQAAjQQAIEoAAJgEACDAAQEAAAABwwEBAAAAAcUBAAAAhgICyAFAAAAAAckBQAAAAAHtAQEAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAYkCAQAAAAEBEgAAcwAgDcABAQAAAAHDAQEAAAABxQEAAACGAgLIAUAAAAAByQFAAAAAAe0BAQAAAAGBAgEAAAABgwIAAACDAgKEAkAAAAABhgJAAAAAAYcCQAAAAAGIAiAAAAABiQIBAAAAAQESAAB1ADABEgAAdQAwAQAAAGwAIBBDAAD-AwAgSQAA_wMAIEoAAJYEACDAAQEAhgMAIcMBAQCGAwAhxQEAAPwDhgIiyAFAAIgDACHJAUAAiAMAIe0BAQCGAwAhgQIBAIYDACGDAgAA-wODAiKEAkAAiAMAIYYCQADsAwAhhwJAAOwDACGIAiAA2gMAIYkCAQDIAwAhAgAAAFwAIBIAAHkAIA3AAQEAhgMAIcMBAQCGAwAhxQEAAPwDhgIiyAFAAIgDACHJAUAAiAMAIe0BAQCGAwAhgQIBAIYDACGDAgAA-wODAiKEAkAAiAMAIYYCQADsAwAhhwJAAOwDACGIAiAA2gMAIYkCAQDIAwAhAgAAAGAAIBIAAHsAIAIAAABgACASAAB7ACABAAAAbAAgAwAAAFwAIBkAAHMAIBoAAHkAIAEAAABcACABAAAAYAAgBgQAAMEEACAfAADDBAAgIAAAwgQAIIYCAADUAwAghwIAANQDACCJAgAA1AMAIBC9AQAA3QIAML4BAACDAQAQvwEAAN0CADDAAQEAkgIAIcMBAQCSAgAhxQEAAN8ChgIiyAFAAJQCACHJAUAAlAIAIe0BAQCSAgAhgQIBAJICACGDAgAA3gKDAiKEAkAAlAIAIYYCQADWAgAhhwJAANYCACGIAiAApQIAIYkCAQCiAgAhAwAAAGAAIAEAAIIBADAeAACDAQAgAwAAAGAAIAEAAGEAMAIAAFwAIAEAAABmACABAAAAZgAgAwAAAGQAIAEAAGUAMAIAAGYAIAMAAABkACABAABlADACAABmACADAAAAZAAgAQAAZQAwAgAAZgAgDEcAAIoEACBIAADwAwAgwAEBAAAAAcUBAAAA_gECyAFAAAAAAckBQAAAAAH6ARAAAAAB-wEBAAAAAfwBAQAAAAH-AUAAAAAB_wEBAAAAAYACAQAAAAEBEgAAiwEAIArAAQEAAAABxQEAAAD-AQLIAUAAAAAByQFAAAAAAfoBEAAAAAH7AQEAAAAB_AEBAAAAAf4BQAAAAAH_AQEAAAABgAIBAAAAAQESAACNAQAwARIAAI0BADAMRwAAiAQAIEgAAO4DACDAAQEAhgMAIcUBAADrA_4BIsgBQACIAwAhyQFAAIgDACH6ARAA6gMAIfsBAQCGAwAh_AEBAIYDACH-AUAA7AMAIf8BAQCGAwAhgAIBAIYDACECAAAAZgAgEgAAkAEAIArAAQEAhgMAIcUBAADrA_4BIsgBQACIAwAhyQFAAIgDACH6ARAA6gMAIfsBAQCGAwAh_AEBAIYDACH-AUAA7AMAIf8BAQCGAwAhgAIBAIYDACECAAAAZAAgEgAAkgEAIAIAAABkACASAACSAQAgAwAAAGYAIBkAAIsBACAaAACQAQAgAQAAAGYAIAEAAABkACAGBAAAvAQAIB8AAL8EACAgAAC-BAAgaQAAvQQAIGoAAMAEACD-AQAA1AMAIA29AQAA0wIAML4BAACZAQAQvwEAANMCADDAAQEAkgIAIcUBAADVAv4BIsgBQACUAgAhyQFAAJQCACH6ARAA1AIAIfsBAQCSAgAh_AEBAJICACH-AUAA1gIAIf8BAQCSAgAhgAIBAJICACEDAAAAZAAgAQAAmAEAMB4AAJkBACADAAAAZAAgAQAAZQAwAgAAZgAgAQAAABcAIAEAAAAXACADAAAAFQAgAQAAFgAwAgAAFwAgAwAAABUAIAEAABYAMAIAABcAIAMAAAAVACABAAAWADACAAAXACALCgAAuwQAIMABAQAAAAHDAQEAAAABxQEAAAD3AQLIAUAAAAAByQFAAAAAAfQBAQAAAAH1AQEAAAAB9wFAAAAAAfgBQAAAAAH5AQEAAAABARIAAKEBACAKwAEBAAAAAcMBAQAAAAHFAQAAAPcBAsgBQAAAAAHJAUAAAAAB9AEBAAAAAfUBAQAAAAH3AUAAAAAB-AFAAAAAAfkBAQAAAAEBEgAAowEAMAESAACjAQAwCwoAALoEACDAAQEAhgMAIcMBAQCGAwAhxQEAALoD9wEiyAFAAIgDACHJAUAAiAMAIfQBAQCGAwAh9QEBAIYDACH3AUAAiAMAIfgBQACIAwAh-QEBAIYDACECAAAAFwAgEgAApgEAIArAAQEAhgMAIcMBAQCGAwAhxQEAALoD9wEiyAFAAIgDACHJAUAAiAMAIfQBAQCGAwAh9QEBAIYDACH3AUAAiAMAIfgBQACIAwAh-QEBAIYDACECAAAAFQAgEgAAqAEAIAIAAAAVACASAACoAQAgAwAAABcAIBkAAKEBACAaAACmAQAgAQAAABcAIAEAAAAVACADBAAAtwQAIB8AALkEACAgAAC4BAAgDb0BAADPAgAwvgEAAK8BABC_AQAAzwIAMMABAQCSAgAhwwEBAJICACHFAQAA0AL3ASLIAUAAlAIAIckBQACUAgAh9AEBAJICACH1AQEAkgIAIfcBQACUAgAh-AFAAJQCACH5AQEAkgIAIQMAAAAVACABAACuAQAwHgAArwEAIAMAAAAVACABAAAWADACAAAXACABAAAABQAgAQAAAAUAIAMAAAADACABAAAEADACAAAFACADAAAAAwAgAQAABAAwAgAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAsFAAC2BAAgBgAA0QMAIMABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQEDyAFAAAAAAckBQAAAAAHxAQEAAAAB8gEBAAAAAfMBAQAAAAEBEgAAtwEAIAnAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBA8gBQAAAAAHJAUAAAAAB8QEBAAAAAfIBAQAAAAHzAQEAAAABARIAALkBADABEgAAuQEAMAsFAAC1BAAgBgAAlgMAIMABAQCGAwAhwQEBAIYDACHCAQEAhgMAIcUBAACUA8UBI8gBQACIAwAhyQFAAIgDACHxAQEAhgMAIfIBAQCGAwAh8wEBAIYDACECAAAABQAgEgAAvAEAIAnAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAlAPFASPIAUAAiAMAIckBQACIAwAh8QEBAIYDACHyAQEAhgMAIfMBAQCGAwAhAgAAAAMAIBIAAL4BACACAAAAAwAgEgAAvgEAIAMAAAAFACAZAAC3AQAgGgAAvAEAIAEAAAAFACABAAAAAwAgBAQAALIEACAfAAC0BAAgIAAAswQAIMUBAADUAwAgDL0BAADLAgAwvgEAAMUBABC_AQAAywIAMMABAQCSAgAhwQEBAJICACHCAQEAkgIAIcUBAADMAsUBI8gBQACUAgAhyQFAAJQCACHxAQEAkgIAIfIBAQCSAgAh8wEBAJICACEDAAAAAwAgAQAAxAEAMB4AAMUBACADAAAAAwAgAQAABAAwAgAABQAgDkMAAMoCACC9AQAAxgIAML4BAABeABC_AQAAxgIAMMABAQAAAAHjAQAAvAIAIOQBAgDHAgAh5gEAAMgC5gEi5wEBALMCACHoAQEAswIAIekBAQCzAgAh6wEAAMkC6wEi7AEBALMCACHtAQEAAAABAQAAAMgBACABAAAAyAEAIAVDAACxBAAg5wEAANQDACDoAQAA1AMAIOkBAADUAwAg7AEAANQDACADAAAAXgAgAQAAywEAMAIAAMgBACADAAAAXgAgAQAAywEAMAIAAMgBACADAAAAXgAgAQAAywEAMAIAAMgBACALQwAAsAQAIMABAQAAAAHjAQAAogQAIOQBAgAAAAHmAQAAAOYBAucBAQAAAAHoAQEAAAAB6QEBAAAAAesBAAAA6wEC7AEBAAAAAe0BAQAAAAEBEgAAzwEAIArAAQEAAAAB4wEAAKIEACDkAQIAAAAB5gEAAADmAQLnAQEAAAAB6AEBAAAAAekBAQAAAAHrAQAAAOsBAuwBAQAAAAHtAQEAAAABARIAANEBADABEgAA0QEAMAtDAACvBAAgwAEBAIYDACHjAQAAngQAIOQBAgCfBAAh5gEAAKAE5gEi5wEBAMgDACHoAQEAyAMAIekBAQDIAwAh6wEAAKEE6wEi7AEBAMgDACHtAQEAhgMAIQIAAADIAQAgEgAA1AEAIArAAQEAhgMAIeMBAACeBAAg5AECAJ8EACHmAQAAoATmASLnAQEAyAMAIegBAQDIAwAh6QEBAMgDACHrAQAAoQTrASLsAQEAyAMAIe0BAQCGAwAhAgAAAF4AIBIAANYBACACAAAAXgAgEgAA1gEAIAMAAADIAQAgGQAAzwEAIBoAANQBACABAAAAyAEAIAEAAABeACAJBAAAqgQAIB8AAK0EACAgAACsBAAgaQAAqwQAIGoAAK4EACDnAQAA1AMAIOgBAADUAwAg6QEAANQDACDsAQAA1AMAIA29AQAAuwIAML4BAADdAQAQvwEAALsCADDAAQEAkgIAIeMBAAC8AgAg5AECAL0CACHmAQAAvgLmASLnAQEAogIAIegBAQCiAgAh6QEBAKICACHrAQAAvwLrASLsAQEAogIAIe0BAQCSAgAhAwAAAF4AIAEAANwBADAeAADdAQAgAwAAAF4AIAEAAMsBADACAADIAQAgFEQAALgCACBFAAC5AgAgRgAAuQIAIEkAALoCACC9AQAAsgIAML4BAABsABC_AQAAsgIAMMABAQAAAAHBAQEAnQIAIcUBAAC3AuIBIsgBQACfAgAhyQFAAJ8CACHYAQEAAAAB2QEBALMCACHaAQEAnQIAIdsBAQAAAAHdAQAAtALdASLfAQAAtQLfASLgASAAtgIAIeIBAQCzAgAhAQAAAOABACABAAAA4AEAIAdEAACnBAAgRQAAqAQAIEYAAKgEACBJAACpBAAg2QEAANQDACDbAQAA1AMAIOIBAADUAwAgAwAAAGwAIAEAAOMBADACAADgAQAgAwAAAGwAIAEAAOMBADACAADgAQAgAwAAAGwAIAEAAOMBADACAADgAQAgEUQAAKMEACBFAACkBAAgRgAApQQAIEkAAKYEACDAAQEAAAABwQEBAAAAAcUBAAAA4gECyAFAAAAAAckBQAAAAAHYAQEAAAAB2QEBAAAAAdoBAQAAAAHbAQEAAAAB3QEAAADdAQLfAQAAAN8BAuABIAAAAAHiAQEAAAABARIAAOcBACANwAEBAAAAAcEBAQAAAAHFAQAAAOIBAsgBQAAAAAHJAUAAAAAB2AEBAAAAAdkBAQAAAAHaAQEAAAAB2wEBAAAAAd0BAAAA3QEC3wEAAADfAQLgASAAAAAB4gEBAAAAAQESAADpAQAwARIAAOkBADARRAAA3AMAIEUAAN0DACBGAADeAwAgSQAA3wMAIMABAQCGAwAhwQEBAIYDACHFAQAA2wPiASLIAUAAiAMAIckBQACIAwAh2AEBAIYDACHZAQEAyAMAIdoBAQCGAwAh2wEBAMgDACHdAQAA2APdASLfAQAA2QPfASLgASAA2gMAIeIBAQDIAwAhAgAAAOABACASAADsAQAgDcABAQCGAwAhwQEBAIYDACHFAQAA2wPiASLIAUAAiAMAIckBQACIAwAh2AEBAIYDACHZAQEAyAMAIdoBAQCGAwAh2wEBAMgDACHdAQAA2APdASLfAQAA2QPfASLgASAA2gMAIeIBAQDIAwAhAgAAAGwAIBIAAO4BACACAAAAbAAgEgAA7gEAIAMAAADgAQAgGQAA5wEAIBoAAOwBACABAAAA4AEAIAEAAABsACAGBAAA1QMAIB8AANcDACAgAADWAwAg2QEAANQDACDbAQAA1AMAIOIBAADUAwAgEL0BAAChAgAwvgEAAPUBABC_AQAAoQIAMMABAQCSAgAhwQEBAJICACHFAQAApgLiASLIAUAAlAIAIckBQACUAgAh2AEBAJICACHZAQEAogIAIdoBAQCSAgAh2wEBAKICACHdAQAAowLdASLfAQAApALfASLgASAApQIAIeIBAQCiAgAhAwAAAGwAIAEAAPQBADAeAAD1AQAgAwAAAGwAIAEAAOMBADACAADgAQAgDQMAAKACACC9AQAAnAIAML4BAAD7AQAQvwEAAJwCADDAAQEAAAABwQEBAJ0CACHCAQEAAAABwwEBAJ0CACHFAQAAngLFASLGAQEAnQIAIccBAQCdAgAhyAFAAJ8CACHJAUAAnwIAIQEAAAD4AQAgAQAAAPgBACANAwAAoAIAIL0BAACcAgAwvgEAAPsBABC_AQAAnAIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcMBAQCdAgAhxQEAAJ4CxQEixgEBAJ0CACHHAQEAnQIAIcgBQACfAgAhyQFAAJ8CACEBAwAA0wMAIAMAAAD7AQAgAQAA_AEAMAIAAPgBACADAAAA-wEAIAEAAPwBADACAAD4AQAgAwAAAPsBACABAAD8AQAwAgAA-AEAIAoDAADSAwAgwAEBAAAAAcEBAQAAAAHCAQEAAAABwwEBAAAAAcUBAAAAxQECxgEBAAAAAccBAQAAAAHIAUAAAAAByQFAAAAAAQESAACAAgAgCcABAQAAAAHBAQEAAAABwgEBAAAAAcMBAQAAAAHFAQAAAMUBAsYBAQAAAAHHAQEAAAAByAFAAAAAAckBQAAAAAEBEgAAggIAMAESAACCAgAwCgMAAIkDACDAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHDAQEAhgMAIcUBAACHA8UBIsYBAQCGAwAhxwEBAIYDACHIAUAAiAMAIckBQACIAwAhAgAAAPgBACASAACFAgAgCcABAQCGAwAhwQEBAIYDACHCAQEAhgMAIcMBAQCGAwAhxQEAAIcDxQEixgEBAIYDACHHAQEAhgMAIcgBQACIAwAhyQFAAIgDACECAAAA-wEAIBIAAIcCACACAAAA-wEAIBIAAIcCACADAAAA-AEAIBkAAIACACAaAACFAgAgAQAAAPgBACABAAAA-wEAIAMEAACDAwAgHwAAhQMAICAAAIQDACAMvQEAAJECADC-AQAAjgIAEL8BAACRAgAwwAEBAJICACHBAQEAkgIAIcIBAQCSAgAhwwEBAJICACHFAQAAkwLFASLGAQEAkgIAIccBAQCSAgAhyAFAAJQCACHJAUAAlAIAIQMAAAD7AQAgAQAAjQIAMB4AAI4CACADAAAA-wEAIAEAAPwBADACAAD4AQAgDL0BAACRAgAwvgEAAI4CABC_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_AQAAxgIAMMABAQCdAgAh4wEAALwCACDkAQIAxwIAIeYBAADIAuYBIucBAQCzAgAh6AEBALMCACHpAQEAswIAIesBAADJAusBIuwBAQCzAgAh7QEBAJ0CACEIygECAAAAAcsBAgAAAATMAQIAAAAEzQECAAAAAc4BAgAAAAHPAQIAAAAB0AECAAAAAdEBAgCWAgAhBMoBAAAA5gECywEAAADmAQjMAQAAAOYBCNEBAADDAuYBIgTKAQAAAOsBAssBAAAA6wEIzAEAAADrAQjRAQAAwQLrASIWRAAAuAIAIEUAALkCACBGAAC5AgAgSQAAugIAIL0BAACyAgAwvgEAAGwAEL8BAACyAgAwwAEBAJ0CACHBAQEAnQIAIcUBAAC3AuIBIsgBQACfAgAhyQFAAJ8CACHYAQEAnQIAIdkBAQCzAgAh2gEBAJ0CACHbAQEAswIAId0BAAC0At0BIt8BAAC1At8BIuABIAC2AgAh4gEBALMCACGPAgAAbAAgkAIAAGwAIAy9AQAAywIAML4BAADFAQAQvwEAAMsCADDAAQEAkgIAIcEBAQCSAgAhwgEBAJICACHFAQAAzALFASPIAUAAlAIAIckBQACUAgAh8QEBAJICACHyAQEAkgIAIfMBAQCSAgAhBwQAALACACAfAADOAgAgIAAAzgIAIMoBAAAAxQEDywEAAADFAQnMAQAAAMUBCdEBAADNAsUBIwcEAACwAgAgHwAAzgIAICAAAM4CACDKAQAAAMUBA8sBAAAAxQEJzAEAAADFAQnRAQAAzQLFASMEygEAAADFAQPLAQAAAMUBCcwBAAAAxQEJ0QEAAM4CxQEjDb0BAADPAgAwvgEAAK8BABC_AQAAzwIAMMABAQCSAgAhwwEBAJICACHFAQAA0AL3ASLIAUAAlAIAIckBQACUAgAh9AEBAJICACH1AQEAkgIAIfcBQACUAgAh-AFAAJQCACH5AQEAkgIAIQcEAACWAgAgHwAA0gIAICAAANICACDKAQAAAPcBAssBAAAA9wEIzAEAAAD3AQjRAQAA0QL3ASIHBAAAlgIAIB8AANICACAgAADSAgAgygEAAAD3AQLLAQAAAPcBCMwBAAAA9wEI0QEAANEC9wEiBMoBAAAA9wECywEAAAD3AQjMAQAAAPcBCNEBAADSAvcBIg29AQAA0wIAML4BAACZAQAQvwEAANMCADDAAQEAkgIAIcUBAADVAv4BIsgBQACUAgAhyQFAAJQCACH6ARAA1AIAIfsBAQCSAgAh_AEBAJICACH-AUAA1gIAIf8BAQCSAgAhgAIBAJICACENBAAAlgIAIB8AANwCACAgAADcAgAgaQAA3AIAIGoAANwCACDKARAAAAABywEQAAAABMwBEAAAAATNARAAAAABzgEQAAAAAc8BEAAAAAHQARAAAAAB0QEQANsCACEHBAAAlgIAIB8AANoCACAgAADaAgAgygEAAAD-AQLLAQAAAP4BCMwBAAAA_gEI0QEAANkC_gEiCwQAALACACAfAADYAgAgIAAA2AIAIMoBQAAAAAHLAUAAAAAFzAFAAAAABc0BQAAAAAHOAUAAAAABzwFAAAAAAdABQAAAAAHRAUAA1wIAIQsEAACwAgAgHwAA2AIAICAAANgCACDKAUAAAAABywFAAAAABcwBQAAAAAXNAUAAAAABzgFAAAAAAc8BQAAAAAHQAUAAAAAB0QFAANcCACEIygFAAAAAAcsBQAAAAAXMAUAAAAAFzQFAAAAAAc4BQAAAAAHPAUAAAAAB0AFAAAAAAdEBQADYAgAhBwQAAJYCACAfAADaAgAgIAAA2gIAIMoBAAAA_gECywEAAAD-AQjMAQAAAP4BCNEBAADZAv4BIgTKAQAAAP4BAssBAAAA_gEIzAEAAAD-AQjRAQAA2gL-ASINBAAAlgIAIB8AANwCACAgAADcAgAgaQAA3AIAIGoAANwCACDKARAAAAABywEQAAAABMwBEAAAAATNARAAAAABzgEQAAAAAc8BEAAAAAHQARAAAAAB0QEQANsCACEIygEQAAAAAcsBEAAAAATMARAAAAAEzQEQAAAAAc4BEAAAAAHPARAAAAAB0AEQAAAAAdEBEADcAgAhEL0BAADdAgAwvgEAAIMBABC_AQAA3QIAMMABAQCSAgAhwwEBAJICACHFAQAA3wKGAiLIAUAAlAIAIckBQACUAgAh7QEBAJICACGBAgEAkgIAIYMCAADeAoMCIoQCQACUAgAhhgJAANYCACGHAkAA1gIAIYgCIAClAgAhiQIBAKICACEHBAAAlgIAIB8AAOMCACAgAADjAgAgygEAAACDAgLLAQAAAIMCCMwBAAAAgwII0QEAAOICgwIiBwQAAJYCACAfAADhAgAgIAAA4QIAIMoBAAAAhgICywEAAACGAgjMAQAAAIYCCNEBAADgAoYCIgcEAACWAgAgHwAA4QIAICAAAOECACDKAQAAAIYCAssBAAAAhgIIzAEAAACGAgjRAQAA4AKGAiIEygEAAACGAgLLAQAAAIYCCMwBAAAAhgII0QEAAOEChgIiBwQAAJYCACAfAADjAgAgIAAA4wIAIMoBAAAAgwICywEAAACDAgjMAQAAAIMCCNEBAADiAoMCIgTKAQAAAIMCAssBAAAAgwIIzAEAAACDAgjRAQAA4wKDAiIPRwAAygIAIEgAAOgCACC9AQAA5AIAML4BAABkABC_AQAA5AIAMMABAQCdAgAhxQEAAOYC_gEiyAFAAJ8CACHJAUAAnwIAIfoBEADlAgAh-wEBAJ0CACH8AQEAnQIAIf4BQADnAgAh_wEBAJ0CACGAAgEAnQIAIQjKARAAAAABywEQAAAABMwBEAAAAATNARAAAAABzgEQAAAAAc8BEAAAAAHQARAAAAAB0QEQANwCACEEygEAAAD-AQLLAQAAAP4BCMwBAAAA_gEI0QEAANoC_gEiCMoBQAAAAAHLAUAAAAAFzAFAAAAABc0BQAAAAAHOAUAAAAABzwFAAAAAAdABQAAAAAHRAUAA2AIAIRVDAADKAgAgSQAAugIAIEoAAOwCACC9AQAA6QIAML4BAABgABC_AQAA6QIAMMABAQCdAgAhwwEBAJ0CACHFAQAA6wKGAiLIAUAAnwIAIckBQACfAgAh7QEBAJ0CACGBAgEAnQIAIYMCAADqAoMCIoQCQACfAgAhhgJAAOcCACGHAkAA5wIAIYgCIAC2AgAhiQIBALMCACGPAgAAYAAgkAIAAGAAIBNDAADKAgAgSQAAugIAIEoAAOwCACC9AQAA6QIAML4BAABgABC_AQAA6QIAMMABAQCdAgAhwwEBAJ0CACHFAQAA6wKGAiLIAUAAnwIAIckBQACfAgAh7QEBAJ0CACGBAgEAnQIAIYMCAADqAoMCIoQCQACfAgAhhgJAAOcCACGHAkAA5wIAIYgCIAC2AgAhiQIBALMCACEEygEAAACDAgLLAQAAAIMCCMwBAAAAgwII0QEAAOMCgwIiBMoBAAAAhgICywEAAACGAgjMAQAAAIYCCNEBAADhAoYCIhZEAAC4AgAgRQAAuQIAIEYAALkCACBJAAC6AgAgvQEAALICADC-AQAAbAAQvwEAALICADDAAQEAnQIAIcEBAQCdAgAhxQEAALcC4gEiyAFAAJ8CACHJAUAAnwIAIdgBAQCdAgAh2QEBALMCACHaAQEAnQIAIdsBAQCzAgAh3QEAALQC3QEi3wEAALUC3wEi4AEgALYCACHiAQEAswIAIY8CAABsACCQAgAAbAAgCr0BAADtAgAwvgEAAFkAEL8BAADtAgAwwAEBAJICACHFAQAA7gKLAiL0AQEAkgIAIfUBAQCiAgAh9wFAAJQCACH4AUAAlAIAIfkBAQCSAgAhBwQAAJYCACAfAADwAgAgIAAA8AIAIMoBAAAAiwICywEAAACLAgjMAQAAAIsCCNEBAADvAosCIgcEAACWAgAgHwAA8AIAICAAAPACACDKAQAAAIsCAssBAAAAiwIIzAEAAACLAgjRAQAA7wKLAiIEygEAAACLAgLLAQAAAIsCCMwBAAAAiwII0QEAAPACiwIiC70BAADxAgAwvgEAAEMAEL8BAADxAgAwwAEBAJICACHBAQEAkgIAIcIBAQCSAgAhxQEAAJMCxQEiyAFAAJQCACHJAUAAlAIAIYsCAQCSAgAhjAIBAJICACELvQEAAPICADC-AQAALQAQvwEAAPICADDAAQEAkgIAIcEBAQCSAgAhwgEBAJICACHFAQAAkwLFASLIAUAAlAIAIckBQACUAgAhjQIBAJICACGOAgEAkgIAIQ4KAAD1AgAgvQEAAPMCADC-AQAAFQAQvwEAAPMCADDAAQEAnQIAIcMBAQCdAgAhxQEAAPQC9wEiyAFAAJ8CACHJAUAAnwIAIfQBAQCdAgAh9QEBAJ0CACH3AUAAnwIAIfgBQACfAgAh-QEBAJ0CACEEygEAAAD3AQLLAQAAAPcBCMwBAAAA9wEI0QEAANIC9wEiEAkAAPkCACALAAD6AgAgDAAA-wIAIL0BAAD4AgAwvgEAAA0AEL8BAAD4AgAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIY0CAQCdAgAhjgIBAJ0CACGPAgAADQAgkAIAAA0AIAsKAAD1AgAgvQEAAPYCADC-AQAAEQAQvwEAAPYCADDAAQEAnQIAIcUBAAD3AosCIvQBAQCdAgAh9QEBALMCACH3AUAAnwIAIfgBQACfAgAh-QEBAJ0CACEEygEAAACLAgLLAQAAAIsCCMwBAAAAiwII0QEAAPACiwIiDgkAAPkCACALAAD6AgAgDAAA-wIAIL0BAAD4AgAwvgEAAA0AEL8BAAD4AgAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIY0CAQCdAgAhjgIBAJ0CACEPBwAA_QIAIAgAAP4CACC9AQAA_AIAML4BAAAIABC_AQAA_AIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACeAsUBIsgBQACfAgAhyQFAAJ8CACGLAgEAnQIAIYwCAQCdAgAhjwIAAAgAIJACAAAIACAD1QEAABEAINYBAAARACDXAQAAEQAgA9UBAAAVACDWAQAAFQAg1wEAABUAIA0HAAD9AgAgCAAA_gIAIL0BAAD8AgAwvgEAAAgAEL8BAAD8AgAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIYsCAQCdAgAhjAIBAJ0CACEQBQAAgQMAIAYAAIIDACC9AQAA_wIAML4BAAADABC_AQAA_wIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACAA8UBI8gBQACfAgAhyQFAAJ8CACHxAQEAnQIAIfIBAQCdAgAh8wEBAJ0CACGPAgAAAwAgkAIAAAMAIAPVAQAADQAg1gEAAA0AINcBAAANACAOBQAAgQMAIAYAAIIDACC9AQAA_wIAML4BAAADABC_AQAA_wIAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACAA8UBI8gBQACfAgAhyQFAAJ8CACHxAQEAnQIAIfIBAQCdAgAh8wEBAJ0CACEEygEAAADFAQPLAQAAAMUBCcwBAAAAxQEJ0QEAAM4CxQEjDwMAAKACACC9AQAAnAIAML4BAAD7AQAQvwEAAJwCADDAAQEAnQIAIcEBAQCdAgAhwgEBAJ0CACHDAQEAnQIAIcUBAACeAsUBIsYBAQCdAgAhxwEBAJ0CACHIAUAAnwIAIckBQACfAgAhjwIAAPsBACCQAgAA-wEAIAPVAQAACAAg1gEAAAgAINcBAAAIACAAAAABlAIBAAAAAQGUAgAAAMUBAgGUAkAAAAABCxkAAIoDADAaAACPAwAwkQIAAIsDADCSAgAAjAMAMJMCAACNAwAglAIAAI4DADCVAgAAjgMAMJYCAACOAwAwlwIAAI4DADCYAgAAkAMAMJkCAACRAwAwCQYAANEDACDAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBA8gBQAAAAAHJAUAAAAAB8QEBAAAAAfIBAQAAAAECAAAABQAgGQAA0AMAIAMAAAAFACAZAADQAwAgGgAAlQMAIAESAACWBQAwDgUAAIEDACAGAACCAwAgvQEAAP8CADC-AQAAAwAQvwEAAP8CADDAAQEAAAABwQEBAJ0CACHCAQEAAAABxQEAAIADxQEjyAFAAJ8CACHJAUAAnwIAIfEBAQCdAgAh8gEBAJ0CACHzAQEAnQIAIQIAAAAFACASAACVAwAgAgAAAJIDACASAACTAwAgDL0BAACRAwAwvgEAAJIDABC_AQAAkQMAMMABAQCdAgAhwQEBAJ0CACHCAQEAnQIAIcUBAACAA8UBI8gBQACfAgAhyQFAAJ8CACHxAQEAnQIAIfIBAQCdAgAh8wEBAJ0CACEMvQEAAJEDADC-AQAAkgMAEL8BAACRAwAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAIADxQEjyAFAAJ8CACHJAUAAnwIAIfEBAQCdAgAh8gEBAJ0CACHzAQEAnQIAIQjAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAlAPFASPIAUAAiAMAIckBQACIAwAh8QEBAIYDACHyAQEAhgMAIQGUAgAAAMUBAwkGAACWAwAgwAEBAIYDACHBAQEAhgMAIcIBAQCGAwAhxQEAAJQDxQEjyAFAAIgDACHJAUAAiAMAIfEBAQCGAwAh8gEBAIYDACELGQAAlwMAMBoAAJwDADCRAgAAmAMAMJICAACZAwAwkwIAAJoDACCUAgAAmwMAMJUCAACbAwAwlgIAAJsDADCXAgAAmwMAMJgCAACdAwAwmQIAAJ4DADAICAAAzwMAIMABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQECyAFAAAAAAckBQAAAAAGLAgEAAAABAgAAAAoAIBkAAM4DACADAAAACgAgGQAAzgMAIBoAAKEDACABEgAAlQUAMA0HAAD9AgAgCAAA_gIAIL0BAAD8AgAwvgEAAAgAEL8BAAD8AgAwwAEBAAAAAcEBAQCdAgAhwgEBAAAAAcUBAACeAsUBIsgBQACfAgAhyQFAAJ8CACGLAgEAnQIAIYwCAQCdAgAhAgAAAAoAIBIAAKEDACACAAAAnwMAIBIAAKADACALvQEAAJ4DADC-AQAAnwMAEL8BAACeAwAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIYsCAQCdAgAhjAIBAJ0CACELvQEAAJ4DADC-AQAAnwMAEL8BAACeAwAwwAEBAJ0CACHBAQEAnQIAIcIBAQCdAgAhxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIYsCAQCdAgAhjAIBAJ0CACEHwAEBAIYDACHBAQEAhgMAIcIBAQCGAwAhxQEAAIcDxQEiyAFAAIgDACHJAUAAiAMAIYsCAQCGAwAhCAgAAKIDACDAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAhwPFASLIAUAAiAMAIckBQACIAwAhiwIBAIYDACELGQAAowMAMBoAAKgDADCRAgAApAMAMJICAAClAwAwkwIAAKYDACCUAgAApwMAMJUCAACnAwAwlgIAAKcDADCXAgAApwMAMJgCAACpAwAwmQIAAKoDADAJCwAAzAMAIAwAAM0DACDAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBAsgBQAAAAAHJAUAAAAABjQIBAAAAAQIAAAABACAZAADLAwAgAwAAAAEAIBkAAMsDACAaAACtAwAgARIAAJQFADAOCQAA-QIAIAsAAPoCACAMAAD7AgAgvQEAAPgCADC-AQAADQAQvwEAAPgCADDAAQEAAAABwQEBAJ0CACHCAQEAAAABxQEAAJ4CxQEiyAFAAJ8CACHJAUAAnwIAIY0CAQCdAgAhjgIBAJ0CACECAAAAAQAgEgAArQMAIAIAAACrAwAgEgAArAMAIAu9AQAAqgMAML4BAACrAwAQvwEAAKoDADDAAQEAnQIAIcEBAQCdAgAhwgEBAJ0CACHFAQAAngLFASLIAUAAnwIAIckBQACfAgAhjQIBAJ0CACGOAgEAnQIAIQu9AQAAqgMAML4BAACrAwAQvwEAAKoDADDAAQEAnQIAIcEBAQCdAgAhwgEBAJ0CACHFAQAAngLFASLIAUAAnwIAIckBQACfAgAhjQIBAJ0CACGOAgEAnQIAIQfAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAhwPFASLIAUAAiAMAIckBQACIAwAhjQIBAIYDACEJCwAArgMAIAwAAK8DACDAAQEAhgMAIcEBAQCGAwAhwgEBAIYDACHFAQAAhwPFASLIAUAAiAMAIckBQACIAwAhjQIBAIYDACELGQAAvQMAMBoAAMIDADCRAgAAvgMAMJICAAC_AwAwkwIAAMADACCUAgAAwQMAMJUCAADBAwAwlgIAAMEDADCXAgAAwQMAMJgCAADDAwAwmQIAAMQDADALGQAAsAMAMBoAALUDADCRAgAAsQMAMJICAACyAwAwkwIAALMDACCUAgAAtAMAMJUCAAC0AwAwlgIAALQDADCXAgAAtAMAMJgCAAC2AwAwmQIAALcDADAJwAEBAAAAAcMBAQAAAAHFAQAAAPcBAsgBQAAAAAHJAUAAAAAB9AEBAAAAAfUBAQAAAAH3AUAAAAAB-AFAAAAAAQIAAAAXACAZAAC8AwAgAwAAABcAIBkAALwDACAaAAC7AwAgARIAAJMFADAOCgAA9QIAIL0BAADzAgAwvgEAABUAEL8BAADzAgAwwAEBAAAAAcMBAQCdAgAhxQEAAPQC9wEiyAFAAJ8CACHJAUAAnwIAIfQBAQCdAgAh9QEBAJ0CACH3AUAAnwIAIfgBQACfAgAh-QEBAJ0CACECAAAAFwAgEgAAuwMAIAIAAAC4AwAgEgAAuQMAIA29AQAAtwMAML4BAAC4AwAQvwEAALcDADDAAQEAnQIAIcMBAQCdAgAhxQEAAPQC9wEiyAFAAJ8CACHJAUAAnwIAIfQBAQCdAgAh9QEBAJ0CACH3AUAAnwIAIfgBQACfAgAh-QEBAJ0CACENvQEAALcDADC-AQAAuAMAEL8BAAC3AwAwwAEBAJ0CACHDAQEAnQIAIcUBAAD0AvcBIsgBQACfAgAhyQFAAJ8CACH0AQEAnQIAIfUBAQCdAgAh9wFAAJ8CACH4AUAAnwIAIfkBAQCdAgAhCcABAQCGAwAhwwEBAIYDACHFAQAAugP3ASLIAUAAiAMAIckBQACIAwAh9AEBAIYDACH1AQEAhgMAIfcBQACIAwAh-AFAAIgDACEBlAIAAAD3AQIJwAEBAIYDACHDAQEAhgMAIcUBAAC6A_cBIsgBQACIAwAhyQFAAIgDACH0AQEAhgMAIfUBAQCGAwAh9wFAAIgDACH4AUAAiAMAIQnAAQEAAAABwwEBAAAAAcUBAAAA9wECyAFAAAAAAckBQAAAAAH0AQEAAAAB9QEBAAAAAfcBQAAAAAH4AUAAAAABBsABAQAAAAHFAQAAAIsCAvQBAQAAAAH1AQEAAAAB9wFAAAAAAfgBQAAAAAECAAAAEwAgGQAAygMAIAMAAAATACAZAADKAwAgGgAAyQMAIAESAACSBQAwCwoAAPUCACC9AQAA9gIAML4BAAARABC_AQAA9gIAMMABAQAAAAHFAQAA9wKLAiL0AQEAnQIAIfUBAQCzAgAh9wFAAJ8CACH4AUAAnwIAIfkBAQCdAgAhAgAAABMAIBIAAMkDACACAAAAxQMAIBIAAMYDACAKvQEAAMQDADC-AQAAxQMAEL8BAADEAwAwwAEBAJ0CACHFAQAA9wKLAiL0AQEAnQIAIfUBAQCzAgAh9wFAAJ8CACH4AUAAnwIAIfkBAQCdAgAhCr0BAADEAwAwvgEAAMUDABC_AQAAxAMAMMABAQCdAgAhxQEAAPcCiwIi9AEBAJ0CACH1AQEAswIAIfcBQACfAgAh-AFAAJ8CACH5AQEAnQIAIQbAAQEAhgMAIcUBAADHA4sCIvQBAQCGAwAh9QEBAMgDACH3AUAAiAMAIfgBQACIAwAhAZQCAAAAiwICAZQCAQAAAAEGwAEBAIYDACHFAQAAxwOLAiL0AQEAhgMAIfUBAQDIAwAh9wFAAIgDACH4AUAAiAMAIQbAAQEAAAABxQEAAACLAgL0AQEAAAAB9QEBAAAAAfcBQAAAAAH4AUAAAAABCQsAAMwDACAMAADNAwAgwAEBAAAAAcEBAQAAAAHCAQEAAAABxQEAAADFAQLIAUAAAAAByQFAAAAAAY0CAQAAAAEEGQAAvQMAMJECAAC-AwAwkwIAAMADACCXAgAAwQMAMAQZAACwAwAwkQIAALEDADCTAgAAswMAIJcCAAC0AwAwCAgAAM8DACDAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBAsgBQAAAAAHJAUAAAAABiwIBAAAAAQQZAACjAwAwkQIAAKQDADCTAgAApgMAIJcCAACnAwAwCQYAANEDACDAAQEAAAABwQEBAAAAAcIBAQAAAAHFAQAAAMUBA8gBQAAAAAHJAUAAAAAB8QEBAAAAAfIBAQAAAAEEGQAAlwMAMJECAACYAwAwkwIAAJoDACCXAgAAmwMAMAQZAACKAwAwkQIAAIsDADCTAgAAjQMAIJcCAACOAwAwAAAAAAABlAIAAADdAQIBlAIAAADfAQIBlAIgAAAAAQGUAgAAAOIBAgcZAACZBAAgGgAAnAQAIJECAACaBAAgkgIAAJsEACCVAgAAXgAglgIAAF4AIJcCAADIAQAgCxkAAI4EADAaAACSBAAwkQIAAI8EADCSAgAAkAQAMJMCAACRBAAglAIAAPUDADCVAgAA9QMAMJYCAAD1AwAwlwIAAPUDADCYAgAAkwQAMJkCAAD4AwAwCxkAAPEDADAaAAD2AwAwkQIAAPIDADCSAgAA8wMAMJMCAAD0AwAglAIAAPUDADCVAgAA9QMAMJYCAAD1AwAwlwIAAPUDADCYAgAA9wMAMJkCAAD4AwAwCxkAAOADADAaAADlAwAwkQIAAOEDADCSAgAA4gMAMJMCAADjAwAglAIAAOQDADCVAgAA5AMAMJYCAADkAwAwlwIAAOQDADCYAgAA5gMAMJkCAADnAwAwCkgAAPADACDAAQEAAAABxQEAAAD-AQLIAUAAAAAByQFAAAAAAfoBEAAAAAH7AQEAAAAB_AEBAAAAAf4BQAAAAAGAAgEAAAABAgAAAGYAIBkAAO8DACADAAAAZgAgGQAA7wMAIBoAAO0DACABEgAAkQUAMA9HAADKAgAgSAAA6AIAIL0BAADkAgAwvgEAAGQAEL8BAADkAgAwwAEBAAAAAcUBAADmAv4BIsgBQACfAgAhyQFAAJ8CACH6ARAA5QIAIfsBAQCdAgAh_AEBAAAAAf4BQADnAgAh_wEBAJ0CACGAAgEAnQIAIQIAAABmACASAADtAwAgAgAAAOgDACASAADpAwAgDb0BAADnAwAwvgEAAOgDABC_AQAA5wMAMMABAQCdAgAhxQEAAOYC_gEiyAFAAJ8CACHJAUAAnwIAIfoBEADlAgAh-wEBAJ0CACH8AQEAnQIAIf4BQADnAgAh_wEBAJ0CACGAAgEAnQIAIQ29AQAA5wMAML4BAADoAwAQvwEAAOcDADDAAQEAnQIAIcUBAADmAv4BIsgBQACfAgAhyQFAAJ8CACH6ARAA5QIAIfsBAQCdAgAh_AEBAJ0CACH-AUAA5wIAIf8BAQCdAgAhgAIBAJ0CACEJwAEBAIYDACHFAQAA6wP-ASLIAUAAiAMAIckBQACIAwAh-gEQAOoDACH7AQEAhgMAIfwBAQCGAwAh_gFAAOwDACGAAgEAhgMAIQWUAhAAAAABmgIQAAAAAZsCEAAAAAGcAhAAAAABnQIQAAAAAQGUAgAAAP4BAgGUAkAAAAABCkgAAO4DACDAAQEAhgMAIcUBAADrA_4BIsgBQACIAwAhyQFAAIgDACH6ARAA6gMAIfsBAQCGAwAh_AEBAIYDACH-AUAA7AMAIYACAQCGAwAhBRkAAIwFACAaAACPBQAgkQIAAI0FACCSAgAAjgUAIJcCAABcACAKSAAA8AMAIMABAQAAAAHFAQAAAP4BAsgBQAAAAAHJAUAAAAAB-gEQAAAAAfsBAQAAAAH8AQEAAAAB_gFAAAAAAYACAQAAAAEDGQAAjAUAIJECAACNBQAglwIAAFwAIA5DAACMBAAgSQAAjQQAIMABAQAAAAHDAQEAAAABxQEAAACGAgLIAUAAAAAByQFAAAAAAe0BAQAAAAGBAgEAAAABgwIAAACDAgKEAkAAAAABhgJAAAAAAYcCQAAAAAGIAiAAAAABAgAAAFwAIBkAAIsEACADAAAAXAAgGQAAiwQAIBoAAP0DACABEgAAiwUAMBNDAADKAgAgSQAAugIAIEoAAOwCACC9AQAA6QIAML4BAABgABC_AQAA6QIAMMABAQAAAAHDAQEAnQIAIcUBAADrAoYCIsgBQACfAgAhyQFAAJ8CACHtAQEAnQIAIYECAQCdAgAhgwIAAOoCgwIihAJAAJ8CACGGAkAA5wIAIYcCQADnAgAhiAIgALYCACGJAgEAswIAIQIAAABcACASAAD9AwAgAgAAAPkDACASAAD6AwAgEL0BAAD4AwAwvgEAAPkDABC_AQAA-AMAMMABAQCdAgAhwwEBAJ0CACHFAQAA6wKGAiLIAUAAnwIAIckBQACfAgAh7QEBAJ0CACGBAgEAnQIAIYMCAADqAoMCIoQCQACfAgAhhgJAAOcCACGHAkAA5wIAIYgCIAC2AgAhiQIBALMCACEQvQEAAPgDADC-AQAA-QMAEL8BAAD4AwAwwAEBAJ0CACHDAQEAnQIAIcUBAADrAoYCIsgBQACfAgAhyQFAAJ8CACHtAQEAnQIAIYECAQCdAgAhgwIAAOoCgwIihAJAAJ8CACGGAkAA5wIAIYcCQADnAgAhiAIgALYCACGJAgEAswIAIQzAAQEAhgMAIcMBAQCGAwAhxQEAAPwDhgIiyAFAAIgDACHJAUAAiAMAIe0BAQCGAwAhgQIBAIYDACGDAgAA-wODAiKEAkAAiAMAIYYCQADsAwAhhwJAAOwDACGIAiAA2gMAIQGUAgAAAIMCAgGUAgAAAIYCAg5DAAD-AwAgSQAA_wMAIMABAQCGAwAhwwEBAIYDACHFAQAA_AOGAiLIAUAAiAMAIckBQACIAwAh7QEBAIYDACGBAgEAhgMAIYMCAAD7A4MCIoQCQACIAwAhhgJAAOwDACGHAkAA7AMAIYgCIADaAwAhBRkAAIAFACAaAACJBQAgkQIAAIEFACCSAgAAiAUAIJcCAADgAQAgCxkAAIAEADAaAACEBAAwkQIAAIEEADCSAgAAggQAMJMCAACDBAAglAIAAOQDADCVAgAA5AMAMJYCAADkAwAwlwIAAOQDADCYAgAAhQQAMJkCAADnAwAwCkcAAIoEACDAAQEAAAABxQEAAAD-AQLIAUAAAAAByQFAAAAAAfoBEAAAAAH7AQEAAAAB_AEBAAAAAf4BQAAAAAH_AQEAAAABAgAAAGYAIBkAAIkEACADAAAAZgAgGQAAiQQAIBoAAIcEACABEgAAhwUAMAIAAABmACASAACHBAAgAgAAAOgDACASAACGBAAgCcABAQCGAwAhxQEAAOsD_gEiyAFAAIgDACHJAUAAiAMAIfoBEADqAwAh-wEBAIYDACH8AQEAhgMAIf4BQADsAwAh_wEBAIYDACEKRwAAiAQAIMABAQCGAwAhxQEAAOsD_gEiyAFAAIgDACHJAUAAiAMAIfoBEADqAwAh-wEBAIYDACH8AQEAhgMAIf4BQADsAwAh_wEBAIYDACEFGQAAggUAIBoAAIUFACCRAgAAgwUAIJICAACEBQAglwIAAOABACAKRwAAigQAIMABAQAAAAHFAQAAAP4BAsgBQAAAAAHJAUAAAAAB-gEQAAAAAfsBAQAAAAH8AQEAAAAB_gFAAAAAAf8BAQAAAAEDGQAAggUAIJECAACDBQAglwIAAOABACAOQwAAjAQAIEkAAI0EACDAAQEAAAABwwEBAAAAAcUBAAAAhgICyAFAAAAAAckBQAAAAAHtAQEAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAQMZAACABQAgkQIAAIEFACCXAgAA4AEAIAQZAACABAAwkQIAAIEEADCTAgAAgwQAIJcCAADkAwAwDkkAAI0EACBKAACYBAAgwAEBAAAAAcMBAQAAAAHFAQAAAIYCAsgBQAAAAAHJAUAAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAYkCAQAAAAECAAAAXAAgGQAAlwQAIAMAAABcACAZAACXBAAgGgAAlQQAIAESAAD_BAAwAgAAAFwAIBIAAJUEACACAAAA-QMAIBIAAJQEACAMwAEBAIYDACHDAQEAhgMAIcUBAAD8A4YCIsgBQACIAwAhyQFAAIgDACGBAgEAhgMAIYMCAAD7A4MCIoQCQACIAwAhhgJAAOwDACGHAkAA7AMAIYgCIADaAwAhiQIBAMgDACEOSQAA_wMAIEoAAJYEACDAAQEAhgMAIcMBAQCGAwAhxQEAAPwDhgIiyAFAAIgDACHJAUAAiAMAIYECAQCGAwAhgwIAAPsDgwIihAJAAIgDACGGAkAA7AMAIYcCQADsAwAhiAIgANoDACGJAgEAyAMAIQcZAAD6BAAgGgAA_QQAIJECAAD7BAAgkgIAAPwEACCVAgAAbAAglgIAAGwAIJcCAADgAQAgDkkAAI0EACBKAACYBAAgwAEBAAAAAcMBAQAAAAHFAQAAAIYCAsgBQAAAAAHJAUAAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAYkCAQAAAAEDGQAA-gQAIJECAAD7BAAglwIAAOABACAJwAEBAAAAAeMBAACiBAAg5AECAAAAAeYBAAAA5gEC5wEBAAAAAegBAQAAAAHpAQEAAAAB6wEAAADrAQLsAQEAAAABAgAAAMgBACAZAACZBAAgAwAAAF4AIBkAAJkEACAaAACdBAAgCwAAAF4AIBIAAJ0EACDAAQEAhgMAIeMBAACeBAAg5AECAJ8EACHmAQAAoATmASLnAQEAyAMAIegBAQDIAwAh6QEBAMgDACHrAQAAoQTrASLsAQEAyAMAIQnAAQEAhgMAIeMBAACeBAAg5AECAJ8EACHmAQAAoATmASLnAQEAyAMAIegBAQDIAwAh6QEBAMgDACHrAQAAoQTrASLsAQEAyAMAIQKUAgEAAAAEngIBAAAABQWUAgIAAAABmgICAAAAAZsCAgAAAAGcAgIAAAABnQICAAAAAQGUAgAAAOYBAgGUAgAAAOsBAgGUAgEAAAAEAxkAAJkEACCRAgAAmgQAIJcCAADIAQAgBBkAAI4EADCRAgAAjwQAMJMCAACRBAAglwIAAPUDADAEGQAA8QMAMJECAADyAwAwkwIAAPQDACCXAgAA9QMAMAQZAADgAwAwkQIAAOEDADCTAgAA4wMAIJcCAADkAwAwBUMAALEEACDnAQAA1AMAIOgBAADUAwAg6QEAANQDACDsAQAA1AMAIAAAAAAAAAAFGQAA9QQAIBoAAPgEACCRAgAA9gQAIJICAAD3BAAglwIAAOABACADGQAA9QQAIJECAAD2BAAglwIAAOABACAHRAAApwQAIEUAAKgEACBGAACoBAAgSQAAqQQAINkBAADUAwAg2wEAANQDACDiAQAA1AMAIAAAAAUZAADwBAAgGgAA8wQAIJECAADxBAAgkgIAAPIEACCXAgAA-AEAIAMZAADwBAAgkQIAAPEEACCXAgAA-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-gQAIAMAAABsACAZAAD6BAAgGgAA_gQAIBIAAABsACASAAD-BAAgRAAA3AMAIEUAAN0DACBJAADfAwAgwAEBAIYDACHBAQEAhgMAIcUBAADbA-IBIsgBQACIAwAhyQFAAIgDACHYAQEAhgMAIdkBAQDIAwAh2gEBAIYDACHbAQEAyAMAId0BAADYA90BIt8BAADZA98BIuABIADaAwAh4gEBAMgDACEQRAAA3AMAIEUAAN0DACBJAADfAwAgwAEBAIYDACHBAQEAhgMAIcUBAADbA-IBIsgBQACIAwAhyQFAAIgDACHYAQEAhgMAIdkBAQDIAwAh2gEBAIYDACHbAQEAyAMAId0BAADYA90BIt8BAADZA98BIuABIADaAwAh4gEBAMgDACEMwAEBAAAAAcMBAQAAAAHFAQAAAIYCAsgBQAAAAAHJAUAAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAYkCAQAAAAEQRAAAowQAIEYAAKUEACBJAACmBAAgwAEBAAAAAcEBAQAAAAHFAQAAAOIBAsgBQAAAAAHJAUAAAAAB2AEBAAAAAdkBAQAAAAHaAQEAAAAB2wEBAAAAAd0BAAAA3QEC3wEAAADfAQLgASAAAAAB4gEBAAAAAQIAAADgAQAgGQAAgAUAIBBEAACjBAAgRQAApAQAIEYAAKUEACDAAQEAAAABwQEBAAAAAcUBAAAA4gECyAFAAAAAAckBQAAAAAHYAQEAAAAB2QEBAAAAAdoBAQAAAAHbAQEAAAAB3QEAAADdAQLfAQAAAN8BAuABIAAAAAHiAQEAAAABAgAAAOABACAZAACCBQAgAwAAAGwAIBkAAIIFACAaAACGBQAgEgAAAGwAIBIAAIYFACBEAADcAwAgRQAA3QMAIEYAAN4DACDAAQEAhgMAIcEBAQCGAwAhxQEAANsD4gEiyAFAAIgDACHJAUAAiAMAIdgBAQCGAwAh2QEBAMgDACHaAQEAhgMAIdsBAQDIAwAh3QEAANgD3QEi3wEAANkD3wEi4AEgANoDACHiAQEAyAMAIRBEAADcAwAgRQAA3QMAIEYAAN4DACDAAQEAhgMAIcEBAQCGAwAhxQEAANsD4gEiyAFAAIgDACHJAUAAiAMAIdgBAQCGAwAh2QEBAMgDACHaAQEAhgMAIdsBAQDIAwAh3QEAANgD3QEi3wEAANkD3wEi4AEgANoDACHiAQEAyAMAIQnAAQEAAAABxQEAAAD-AQLIAUAAAAAByQFAAAAAAfoBEAAAAAH7AQEAAAAB_AEBAAAAAf4BQAAAAAH_AQEAAAABAwAAAGwAIBkAAIAFACAaAACKBQAgEgAAAGwAIBIAAIoFACBEAADcAwAgRgAA3gMAIEkAAN8DACDAAQEAhgMAIcEBAQCGAwAhxQEAANsD4gEiyAFAAIgDACHJAUAAiAMAIdgBAQCGAwAh2QEBAMgDACHaAQEAhgMAIdsBAQDIAwAh3QEAANgD3QEi3wEAANkD3wEi4AEgANoDACHiAQEAyAMAIRBEAADcAwAgRgAA3gMAIEkAAN8DACDAAQEAhgMAIcEBAQCGAwAhxQEAANsD4gEiyAFAAIgDACHJAUAAiAMAIdgBAQCGAwAh2QEBAMgDACHaAQEAhgMAIdsBAQDIAwAh3QEAANgD3QEi3wEAANkD3wEi4AEgANoDACHiAQEAyAMAIQzAAQEAAAABwwEBAAAAAcUBAAAAhgICyAFAAAAAAckBQAAAAAHtAQEAAAABgQIBAAAAAYMCAAAAgwIChAJAAAAAAYYCQAAAAAGHAkAAAAABiAIgAAAAAQ9DAACMBAAgSgAAmAQAIMABAQAAAAHDAQEAAAABxQEAAACGAgLIAUAAAAAByQFAAAAAAe0BAQAAAAGBAgEAAAABgwIAAACDAgKEAkAAAAABhgJAAAAAAYcCQAAAAAGIAiAAAAABiQIBAAAAAQIAAABcACAZAACMBQAgAwAAAGAAIBkAAIwFACAaAACQBQAgEQAAAGAAIBIAAJAFACBDAAD-AwAgSgAAlgQAIMABAQCGAwAhwwEBAIYDACHFAQAA_AOGAiLIAUAAiAMAIckBQACIAwAh7QEBAIYDACGBAgEAhgMAIYMCAAD7A4MCIoQCQACIAwAhhgJAAOwDACGHAkAA7AMAIYgCIADaAwAhiQIBAMgDACEPQwAA_gMAIEoAAJYEACDAAQEAhgMAIcMBAQCGAwAhxQEAAPwDhgIiyAFAAIgDACHJAUAAiAMAIe0BAQCGAwAhgQIBAIYDACGDAgAA-wODAiKEAkAAiAMAIYYCQADsAwAhhwJAAOwDACGIAiAA2gMAIYkCAQDIAwAhCcABAQAAAAHFAQAAAP4BAsgBQAAAAAHJAUAAAAAB-gEQAAAAAfsBAQAAAAH8AQEAAAAB_gFAAAAAAYACAQAAAAEGwAEBAAAAAcUBAAAAiwIC9AEBAAAAAfUBAQAAAAH3AUAAAAAB-AFAAAAAAQnAAQEAAAABwwEBAAAAAcUBAAAA9wECyAFAAAAAAckBQAAAAAH0AQEAAAAB9QEBAAAAAfcBQAAAAAH4AUAAAAABB8ABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQECyAFAAAAAAckBQAAAAAGNAgEAAAABB8ABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQECyAFAAAAAAckBQAAAAAGLAgEAAAABCMABAQAAAAHBAQEAAAABwgEBAAAAAcUBAAAAxQEDyAFAAAAAAckBQAAAAAHxAQEAAAAB8gEBAAAAAQQEAAoJAAILFAgMGAkDBAAHBwADCA8BAwQABgUABAYLAgIDBgMEAAUBAwcAAQYMAAEIEAABCgABAQoAAQILGQAMGgAAAQkAAgEJAAIDBAAPHwAQIAARAAAAAwQADx8AECAAEQEHAAMBBwADAwQAFh8AFyAAGAAAAAMEABYfABcgABgBCgABAQoAAQMEAB0fAB4gAB8AAAADBAAdHwAeIAAfBAQAJkMAIklrJEptIgUEACVEXyNFYiFGYyFJZyQBQwAiAkcAIkgAIQNFaABGaQBJagABSW4AAkMAIkp4IgJDACJKfiIDBAAqHwArIAAsAAAAAwQAKh8AKyAALAJHACJIACECRwAiSAAhBQQAMR8ANCAANWkAMmoAMwAAAAAABQQAMR8ANCAANWkAMmoAMwEKAAEBCgABAwQAOh8AOyAAPAAAAAMEADofADsgADwBBQAEAQUABAMEAEEfAEIgAEMAAAADBABBHwBCIABDAUMAIgFDACIFBABIHwBLIABMaQBJagBKAAAAAAAFBABIHwBLIABMaQBJagBKAAADBABRHwBSIABTAAAAAwQAUR8AUiAAUwAAAwQAWB8AWSAAWgAAAAMEAFgfAFkgAFoNAgEOGwEPHAEQHQERHgETIAEUIgsVIwwWJQEXJwsYKA0bKQEcKgEdKwshLg4iLxIjMAIkMQIlMgImMwInNAIoNgIpOAsqORMrOwIsPQstPhQuPwIvQAIwQQsxRBUyRRkzRgg0Rwg1SAg2SQg3Sgg4TAg5Tgs6Txo7UQg8Uws9VBs-VQg_VghAVwtBWhxCWyBLXSFMbyFNcCFOcSFPciFQdCFRdgtSdydTeiFUfAtVfShWfyFXgAEhWIEBC1mEASlahQEtW4YBJFyHASRdiAEkXokBJF-KASRgjAEkYY4BC2KPAS5jkQEkZJMBC2WUAS9mlQEkZ5YBJGiXAQtrmgEwbJsBNm2cAQlunQEJb54BCXCfAQlxoAEJcqIBCXOkAQt0pQE3dacBCXapAQt3qgE4eKsBCXmsAQl6rQELe7ABOXyxAT19sgEDfrMBA3-0AQOAAbUBA4EBtgEDggG4AQODAboBC4QBuwE-hQG9AQOGAb8BC4cBwAE_iAHBAQOJAcIBA4oBwwELiwHGAUCMAccBRI0ByQEjjgHKASOPAcwBI5ABzQEjkQHOASOSAdABI5MB0gELlAHTAUWVAdUBI5YB1wELlwHYAUaYAdkBI5kB2gEjmgHbAQubAd4BR5wB3wFNnQHhASKeAeIBIp8B5AEioAHlASKhAeYBIqIB6AEiowHqAQukAesBTqUB7QEipgHvAQunAfABT6gB8QEiqQHyASKqAfMBC6sB9gFQrAH3AVStAfkBBK4B-gEErwH9AQSwAf4BBLEB_wEEsgGBAgSzAYMCC7QBhAJVtQGGAgS2AYgCC7cBiQJWuAGKAgS5AYsCBLoBjAILuwGPAle8AZACWw"
+  strings: JSON.parse('["where","orderBy","cursor","substations","_count","zone","feeders","substation","areas","feeder","area","loadSheddings","plannedOutages","user","technicianProfile","reportedOutages","assignedOutages","customer","outage","payments","techician","outages","Area.findUnique","Area.findUniqueOrThrow","Area.findFirst","Area.findFirstOrThrow","Area.findMany","data","Area.createOne","Area.createMany","Area.createManyAndReturn","Area.updateOne","Area.updateMany","Area.updateManyAndReturn","create","update","Area.upsertOne","Area.deleteOne","Area.deleteMany","having","_min","_max","Area.groupBy","Area.aggregate","Feeder.findUnique","Feeder.findUniqueOrThrow","Feeder.findFirst","Feeder.findFirstOrThrow","Feeder.findMany","Feeder.createOne","Feeder.createMany","Feeder.createManyAndReturn","Feeder.updateOne","Feeder.updateMany","Feeder.updateManyAndReturn","Feeder.upsertOne","Feeder.deleteOne","Feeder.deleteMany","Feeder.groupBy","Feeder.aggregate","LoadShedding.findUnique","LoadShedding.findUniqueOrThrow","LoadShedding.findFirst","LoadShedding.findFirstOrThrow","LoadShedding.findMany","LoadShedding.createOne","LoadShedding.createMany","LoadShedding.createManyAndReturn","LoadShedding.updateOne","LoadShedding.updateMany","LoadShedding.updateManyAndReturn","LoadShedding.upsertOne","LoadShedding.deleteOne","LoadShedding.deleteMany","LoadShedding.groupBy","LoadShedding.aggregate","Outage.findUnique","Outage.findUniqueOrThrow","Outage.findFirst","Outage.findFirstOrThrow","Outage.findMany","Outage.createOne","Outage.createMany","Outage.createManyAndReturn","Outage.updateOne","Outage.updateMany","Outage.updateManyAndReturn","Outage.upsertOne","Outage.deleteOne","Outage.deleteMany","Outage.groupBy","Outage.aggregate","Payment.findUnique","Payment.findUniqueOrThrow","Payment.findFirst","Payment.findFirstOrThrow","Payment.findMany","Payment.createOne","Payment.createMany","Payment.createManyAndReturn","Payment.updateOne","Payment.updateMany","Payment.updateManyAndReturn","Payment.upsertOne","Payment.deleteOne","Payment.deleteMany","_avg","_sum","Payment.groupBy","Payment.aggregate","PlannedOutage.findUnique","PlannedOutage.findUniqueOrThrow","PlannedOutage.findFirst","PlannedOutage.findFirstOrThrow","PlannedOutage.findMany","PlannedOutage.createOne","PlannedOutage.createMany","PlannedOutage.createManyAndReturn","PlannedOutage.updateOne","PlannedOutage.updateMany","PlannedOutage.updateManyAndReturn","PlannedOutage.upsertOne","PlannedOutage.deleteOne","PlannedOutage.deleteMany","PlannedOutage.groupBy","PlannedOutage.aggregate","Substation.findUnique","Substation.findUniqueOrThrow","Substation.findFirst","Substation.findFirstOrThrow","Substation.findMany","Substation.createOne","Substation.createMany","Substation.createManyAndReturn","Substation.updateOne","Substation.updateMany","Substation.updateManyAndReturn","Substation.upsertOne","Substation.deleteOne","Substation.deleteMany","Substation.groupBy","Substation.aggregate","TechnicianProfile.findUnique","TechnicianProfile.findUniqueOrThrow","TechnicianProfile.findFirst","TechnicianProfile.findFirstOrThrow","TechnicianProfile.findMany","TechnicianProfile.createOne","TechnicianProfile.createMany","TechnicianProfile.createManyAndReturn","TechnicianProfile.updateOne","TechnicianProfile.updateMany","TechnicianProfile.updateManyAndReturn","TechnicianProfile.upsertOne","TechnicianProfile.deleteOne","TechnicianProfile.deleteMany","TechnicianProfile.groupBy","TechnicianProfile.aggregate","User.findUnique","User.findUniqueOrThrow","User.findFirst","User.findFirstOrThrow","User.findMany","User.createOne","User.createMany","User.createManyAndReturn","User.updateOne","User.updateMany","User.updateManyAndReturn","User.upsertOne","User.deleteOne","User.deleteMany","User.groupBy","User.aggregate","Zone.findUnique","Zone.findUniqueOrThrow","Zone.findFirst","Zone.findFirstOrThrow","Zone.findMany","Zone.createOne","Zone.createMany","Zone.createManyAndReturn","Zone.updateOne","Zone.updateMany","Zone.updateManyAndReturn","Zone.upsertOne","Zone.deleteOne","Zone.deleteMany","Zone.groupBy","Zone.aggregate","AND","OR","NOT","id","name","code","description","InfrastructureStatus","status","zoneImageUrl","zoneImagePublicId","createdAt","updatedAt","equals","in","notIn","lt","lte","gt","gte","not","contains","startsWith","endsWith","every","some","none","email","profileImage","profileImagePublicId","googleId","AuthProvider","authProvider","Role","role","emailVerified","UserStatus","password","expertise","experience","TechnicianStatus","availability","bio","resume","resumePublicId","TechnicianProfileStatus","technicianvProfileVerificationStatus","rejectionReason","userId","has","hasEvery","hasSome","capacity","location","zoneId","title","reason","PlannedOutageStatus","startTime","endTime","areaId","amount","provider","transactionId","PaymentStatus","paidAt","customerId","outageReportId","cause","OutagePriority","priority","reported_At","OutageStatus","acknowledgedAt","startedAt","isDeleted","technicianId","LoadSheddingStatus","voltageLevel","substationId","address","feederId","is","isNot","connectOrCreate","upsert","createMany","set","disconnect","delete","connect","updateMany","deleteMany","increment","decrement","multiply","divide","push"]'),
+  graph: "qwVboAEPCQAA-wIAIAsAAPwCACAMAAD9AgAgFQAAuwIAIL4BAAD6AgAwvwEAAA0AEMABAAD6AgAwwQEBAAAAAcIBAQCfAgAhwwEBAAAAAcYBAACgAsYBIskBQAChAgAhygFAAKECACGOAgEAnwIAIY8CAQCfAgAhAQAAAAEAIA4FAACDAwAgBgAAhAMAIL4BAACBAwAwvwEAAAMAEMABAACBAwAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAIIDxgEjyQFAAKECACHKAUAAoQIAIfIBAQCfAgAh8wEBAJ8CACH0AQEAnwIAIQMFAADpBAAgBgAA6gQAIMYBAAD-AwAgDgUAAIMDACAGAACEAwAgvgEAAIEDADC_AQAAAwAQwAEAAIEDADDBAQEAAAABwgEBAJ8CACHDAQEAAAABxgEAAIIDxgEjyQFAAKECACHKAUAAoQIAIfIBAQCfAgAh8wEBAJ8CACH0AQEAnwIAIQMAAAADACABAAAEADACAAAFACABAAAAAwAgDQcAAP8CACAIAACAAwAgvgEAAP4CADC_AQAACAAQwAEAAP4CADDBAQEAnwIAIcIBAQCfAgAhwwEBAJ8CACHGAQAAoALGASLJAUAAoQIAIcoBQAChAgAhjAIBAJ8CACGNAgEAnwIAIQIHAADnBAAgCAAA6AQAIA0HAAD_AgAgCAAAgAMAIL4BAAD-AgAwvwEAAAgAEMABAAD-AgAwwQEBAAAAAcIBAQCfAgAhwwEBAAAAAcYBAACgAsYBIskBQAChAgAhygFAAKECACGMAgEAnwIAIY0CAQCfAgAhAwAAAAgAIAEAAAkAMAIAAAoAIAEAAAAIACAPCQAA-wIAIAsAAPwCACAMAAD9AgAgFQAAuwIAIL4BAAD6AgAwvwEAAA0AEMABAAD6AgAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAKACxgEiyQFAAKECACHKAUAAoQIAIY4CAQCfAgAhjwIBAJ8CACEECQAA5AQAIAsAAOUEACAMAADmBAAgFQAAtwQAIAMAAAANACABAAAOADACAAABACABAAAADQAgDQoAAPUCACC-AQAA-AIAML8BAAARABDAAQAA-AIAMMEBAQCfAgAhxgEAAPkCjAIiyQFAAKECACHKAUAAoQIAIfUBAQCfAgAh9gEBALUCACH4AUAAoQIAIfkBQAChAgAh-gEBAJ8CACECCgAA4wQAIPYBAAD-AwAgDQoAAPUCACC-AQAA-AIAML8BAAARABDAAQAA-AIAMMEBAQAAAAHGAQAA-QKMAiLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAtQIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQMAAAARACABAAASADACAAATACAOCgAA9QIAIL4BAAD2AgAwvwEAABUAEMABAAD2AgAwwQEBAJ8CACHEAQEAnwIAIcYBAAD3AvgBIskBQAChAgAhygFAAKECACH1AQEAnwIAIfYBAQCfAgAh-AFAAKECACH5AUAAoQIAIfoBAQCfAgAhAQoAAOMEACAOCgAA9QIAIL4BAAD2AgAwvwEAABUAEMABAAD2AgAwwQEBAAAAAcQBAQCfAgAhxgEAAPcC-AEiyQFAAKECACHKAUAAoQIAIfUBAQCfAgAh9gEBAJ8CACH4AUAAoQIAIfkBQAChAgAh-gEBAJ8CACEDAAAAFQAgAQAAFgAwAgAAFwAgFQoAAPUCACANAADMAgAgEwAAvAIAIBQAAPQCACC-AQAA8QIAML8BAAAZABDAAQAA8QIAMMEBAQCfAgAhxAEBAJ8CACHGAQAA8wKHAiLJAUAAoQIAIcoBQAChAgAh7gEBAJ8CACH6AQEAnwIAIYICAQCfAgAhhAIAAPIChAIihQJAAKECACGHAkAA7wIAIYgCQADvAgAhiQIgALgCACGKAgEAtQIAIQcKAADjBAAgDQAAwAQAIBMAALgEACAUAADABAAghwIAAP4DACCIAgAA_gMAIIoCAAD-AwAgFQoAAPUCACANAADMAgAgEwAAvAIAIBQAAPQCACC-AQAA8QIAML8BAAAZABDAAQAA8QIAMMEBAQAAAAHEAQEAnwIAIcYBAADzAocCIskBQAChAgAhygFAAKECACHuAQEAnwIAIfoBAQCfAgAhggIBAJ8CACGEAgAA8gKEAiKFAkAAoQIAIYcCQADvAgAhiAJAAO8CACGJAiAAuAIAIYoCAQC1AgAhAwAAABkAIAEAABoAMAIAABsAIA4NAADMAgAgvgEAAMgCADC_AQAAHQAQwAEAAMgCADDBAQEAnwIAIeQBAAC-AgAg5QECAMkCACHnAQAAygLnASLoAQEAtQIAIekBAQC1AgAh6gEBALUCACHsAQAAywLsASLtAQEAtQIAIe4BAQCfAgAhAQAAAB0AIAMAAAAZACABAAAaADACAAAbACADAAAAGQAgAQAAGgAwAgAAGwAgDxEAAMwCACASAADwAgAgvgEAAOwCADC_AQAAIQAQwAEAAOwCADDBAQEAnwIAIcYBAADuAv8BIskBQAChAgAhygFAAKECACH7ARAA7QIAIfwBAQCfAgAh_QEBAJ8CACH_AUAA7wIAIYACAQCfAgAhgQIBAJ8CACEDEQAAwAQAIBIAAOIEACD_AQAA_gMAIA8RAADMAgAgEgAA8AIAIL4BAADsAgAwvwEAACEAEMABAADsAgAwwQEBAAAAAcYBAADuAv8BIskBQAChAgAhygFAAKECACH7ARAA7QIAIfwBAQCfAgAh_QEBAAAAAf8BQADvAgAhgAIBAJ8CACGBAgEAnwIAIQMAAAAhACABAAAiADACAAAjACABAAAAGQAgAQAAABkAIAEAAAAhACADAAAAIQAgAQAAIgAwAgAAIwAgFA4AALoCACAPAAC7AgAgEAAAuwIAIBMAALwCACC-AQAAtAIAML8BAAApABDAAQAAtAIAMMEBAQCfAgAhwgEBAJ8CACHGAQAAuQLjASLJAUAAoQIAIcoBQAChAgAh2QEBAJ8CACHaAQEAtQIAIdsBAQCfAgAh3AEBALUCACHeAQAAtgLeASLgAQAAtwLgASLhASAAuAIAIeMBAQC1AgAhAQAAACkAIAEAAAAhACABAAAAEQAgAQAAABUAIAEAAAAZACABAAAAAQAgAwAAAA0AIAEAAA4AMAIAAAEAIAMAAAANACABAAAOADACAAABACADAAAADQAgAQAADgAwAgAAAQAgDAkAAOEEACALAAD1AwAgDAAA9gMAIBUAAPcDACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBAskBQAAAAAHKAUAAAAABjgIBAAAAAY8CAQAAAAEBGwAAMwAgCMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgECyQFAAAAAAcoBQAAAAAGOAgEAAAABjwIBAAAAAQEbAAA1ADABGwAANQAwDAkAAOAEACALAACwAwAgDAAAsQMAIBUAALIDACDBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAiQPGASLJAUAAigMAIcoBQACKAwAhjgIBAIgDACGPAgEAiAMAIQIAAAABACAbAAA4ACAIwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIY4CAQCIAwAhjwIBAIgDACECAAAADQAgGwAAOgAgAgAAAA0AIBsAADoAIAMAAAABACAiAAAzACAjAAA4ACABAAAAAQAgAQAAAA0AIAMEAADdBAAgKAAA3wQAICkAAN4EACALvgEAAOsCADC_AQAAQQAQwAEAAOsCADDBAQEAlAIAIcIBAQCUAgAhwwEBAJQCACHGAQAAlQLGASLJAUAAlgIAIcoBQACWAgAhjgIBAJQCACGPAgEAlAIAIQMAAAANACABAABAADAnAABBACADAAAADQAgAQAADgAwAgAAAQAgAQAAAAoAIAEAAAAKACADAAAACAAgAQAACQAwAgAACgAgAwAAAAgAIAEAAAkAMAIAAAoAIAMAAAAIACABAAAJADACAAAKACAKBwAA3AQAIAgAAPkDACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBAskBQAAAAAHKAUAAAAABjAIBAAAAAY0CAQAAAAEBGwAASQAgCMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgECyQFAAAAAAcoBQAAAAAGMAgEAAAABjQIBAAAAAQEbAABLADABGwAASwAwCgcAANsEACAIAACkAwAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIYwCAQCIAwAhjQIBAIgDACECAAAACgAgGwAATgAgCMEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACJA8YBIskBQACKAwAhygFAAIoDACGMAgEAiAMAIY0CAQCIAwAhAgAAAAgAIBsAAFAAIAIAAAAIACAbAABQACADAAAACgAgIgAASQAgIwAATgAgAQAAAAoAIAEAAAAIACADBAAA2AQAICgAANoEACApAADZBAAgC74BAADqAgAwvwEAAFcAEMABAADqAgAwwQEBAJQCACHCAQEAlAIAIcMBAQCUAgAhxgEAAJUCxgEiyQFAAJYCACHKAUAAlgIAIYwCAQCUAgAhjQIBAJQCACEDAAAACAAgAQAAVgAwJwAAVwAgAwAAAAgAIAEAAAkAMAIAAAoAIAEAAAATACABAAAAEwAgAwAAABEAIAEAABIAMAIAABMAIAMAAAARACABAAASADACAAATACADAAAAEQAgAQAAEgAwAgAAEwAgCgoAANcEACDBAQEAAAABxgEAAACMAgLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAH6AQEAAAABARsAAF8AIAnBAQEAAAABxgEAAACMAgLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAH6AQEAAAABARsAAGEAMAEbAABhADAKCgAA1gQAIMEBAQCIAwAhxgEAAPEDjAIiyQFAAIoDACHKAUAAigMAIfUBAQCIAwAh9gEBAMEDACH4AUAAigMAIfkBQACKAwAh-gEBAIgDACECAAAAEwAgGwAAZAAgCcEBAQCIAwAhxgEAAPEDjAIiyQFAAIoDACHKAUAAigMAIfUBAQCIAwAh9gEBAMEDACH4AUAAigMAIfkBQACKAwAh-gEBAIgDACECAAAAEQAgGwAAZgAgAgAAABEAIBsAAGYAIAMAAAATACAiAABfACAjAABkACABAAAAEwAgAQAAABEAIAQEAADTBAAgKAAA1QQAICkAANQEACD2AQAA_gMAIAy-AQAA5gIAML8BAABtABDAAQAA5gIAMMEBAQCUAgAhxgEAAOcCjAIiyQFAAJYCACHKAUAAlgIAIfUBAQCUAgAh9gEBAKQCACH4AUAAlgIAIfkBQACWAgAh-gEBAJQCACEDAAAAEQAgAQAAbAAwJwAAbQAgAwAAABEAIAEAABIAMAIAABMAIAEAAAAbACABAAAAGwAgAwAAABkAIAEAABoAMAIAABsAIAMAAAAZACABAAAaADACAAAbACADAAAAGQAgAQAAGgAwAgAAGwAgEgoAAJ4EACANAADXAwAgEwAA2AMAIBQAANkDACDBAQEAAAABxAEBAAAAAcYBAAAAhwICyQFAAAAAAcoBQAAAAAHuAQEAAAAB-gEBAAAAAYICAQAAAAGEAgAAAIQCAoUCQAAAAAGHAkAAAAABiAJAAAAAAYkCIAAAAAGKAgEAAAABARsAAHUAIA7BAQEAAAABxAEBAAAAAcYBAAAAhwICyQFAAAAAAcoBQAAAAAHuAQEAAAAB-gEBAAAAAYICAQAAAAGEAgAAAIQCAoUCQAAAAAGHAkAAAAABiAJAAAAAAYkCIAAAAAGKAgEAAAABARsAAHcAMAEbAAB3ADABAAAAKQAgEgoAAJwEACANAADDAwAgEwAAxAMAIBQAAMUDACDBAQEAiAMAIcQBAQCIAwAhxgEAAL4DhwIiyQFAAIoDACHKAUAAigMAIe4BAQCIAwAh-gEBAIgDACGCAgEAiAMAIYQCAAC9A4QCIoUCQACKAwAhhwJAAL8DACGIAkAAvwMAIYkCIADAAwAhigIBAMEDACECAAAAGwAgGwAAewAgDsEBAQCIAwAhxAEBAIgDACHGAQAAvgOHAiLJAUAAigMAIcoBQACKAwAh7gEBAIgDACH6AQEAiAMAIYICAQCIAwAhhAIAAL0DhAIihQJAAIoDACGHAkAAvwMAIYgCQAC_AwAhiQIgAMADACGKAgEAwQMAIQIAAAAZACAbAAB9ACACAAAAGQAgGwAAfQAgAQAAACkAIAMAAAAbACAiAAB1ACAjAAB7ACABAAAAGwAgAQAAABkAIAYEAADQBAAgKAAA0gQAICkAANEEACCHAgAA_gMAIIgCAAD-AwAgigIAAP4DACARvgEAAN8CADC_AQAAhQEAEMABAADfAgAwwQEBAJQCACHEAQEAlAIAIcYBAADhAocCIskBQACWAgAhygFAAJYCACHuAQEAlAIAIfoBAQCUAgAhggIBAJQCACGEAgAA4AKEAiKFAkAAlgIAIYcCQADYAgAhiAJAANgCACGJAiAApwIAIYoCAQCkAgAhAwAAABkAIAEAAIQBADAnAACFAQAgAwAAABkAIAEAABoAMAIAABsAIAEAAAAjACABAAAAIwAgAwAAACEAIAEAACIAMAIAACMAIAMAAAAhACABAAAiADACAAAjACADAAAAIQAgAQAAIgAwAgAAIwAgDBEAANUDACASAACTBAAgwQEBAAAAAcYBAAAA_wECyQFAAAAAAcoBQAAAAAH7ARAAAAAB_AEBAAAAAf0BAQAAAAH_AUAAAAABgAIBAAAAAYECAQAAAAEBGwAAjQEAIArBAQEAAAABxgEAAAD_AQLJAUAAAAABygFAAAAAAfsBEAAAAAH8AQEAAAAB_QEBAAAAAf8BQAAAAAGAAgEAAAABgQIBAAAAAQEbAACPAQAwARsAAI8BADAMEQAA0wMAIBIAAJEEACDBAQEAiAMAIcYBAADRA_8BIskBQACKAwAhygFAAIoDACH7ARAA0AMAIfwBAQCIAwAh_QEBAIgDACH_AUAAvwMAIYACAQCIAwAhgQIBAIgDACECAAAAIwAgGwAAkgEAIArBAQEAiAMAIcYBAADRA_8BIskBQACKAwAhygFAAIoDACH7ARAA0AMAIfwBAQCIAwAh_QEBAIgDACH_AUAAvwMAIYACAQCIAwAhgQIBAIgDACECAAAAIQAgGwAAlAEAIAIAAAAhACAbAACUAQAgAwAAACMAICIAAI0BACAjAACSAQAgAQAAACMAIAEAAAAhACAGBAAAywQAICgAAM4EACApAADNBAAgagAAzAQAIGsAAM8EACD_AQAA_gMAIA2-AQAA1QIAML8BAACbAQAQwAEAANUCADDBAQEAlAIAIcYBAADXAv8BIskBQACWAgAhygFAAJYCACH7ARAA1gIAIfwBAQCUAgAh_QEBAJQCACH_AUAA2AIAIYACAQCUAgAhgQIBAJQCACEDAAAAIQAgAQAAmgEAMCcAAJsBACADAAAAIQAgAQAAIgAwAgAAIwAgAQAAABcAIAEAAAAXACADAAAAFQAgAQAAFgAwAgAAFwAgAwAAABUAIAEAABYAMAIAABcAIAMAAAAVACABAAAWADACAAAXACALCgAAygQAIMEBAQAAAAHEAQEAAAABxgEAAAD4AQLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAH6AQEAAAABARsAAKMBACAKwQEBAAAAAcQBAQAAAAHGAQAAAPgBAskBQAAAAAHKAUAAAAAB9QEBAAAAAfYBAQAAAAH4AUAAAAAB-QFAAAAAAfoBAQAAAAEBGwAApQEAMAEbAAClAQAwCwoAAMkEACDBAQEAiAMAIcQBAQCIAwAhxgEAAOQD-AEiyQFAAIoDACHKAUAAigMAIfUBAQCIAwAh9gEBAIgDACH4AUAAigMAIfkBQACKAwAh-gEBAIgDACECAAAAFwAgGwAAqAEAIArBAQEAiAMAIcQBAQCIAwAhxgEAAOQD-AEiyQFAAIoDACHKAUAAigMAIfUBAQCIAwAh9gEBAIgDACH4AUAAigMAIfkBQACKAwAh-gEBAIgDACECAAAAFQAgGwAAqgEAIAIAAAAVACAbAACqAQAgAwAAABcAICIAAKMBACAjAACoAQAgAQAAABcAIAEAAAAVACADBAAAxgQAICgAAMgEACApAADHBAAgDb4BAADRAgAwvwEAALEBABDAAQAA0QIAMMEBAQCUAgAhxAEBAJQCACHGAQAA0gL4ASLJAUAAlgIAIcoBQACWAgAh9QEBAJQCACH2AQEAlAIAIfgBQACWAgAh-QFAAJYCACH6AQEAlAIAIQMAAAAVACABAACwAQAwJwAAsQEAIAMAAAAVACABAAAWADACAAAXACABAAAABQAgAQAAAAUAIAMAAAADACABAAAEADACAAAFACADAAAAAwAgAQAABAAwAgAABQAgAwAAAAMAIAEAAAQAMAIAAAUAIAsFAADFBAAgBgAA-wMAIMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgEDyQFAAAAAAcoBQAAAAAHyAQEAAAAB8wEBAAAAAfQBAQAAAAEBGwAAuQEAIAnBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBA8kBQAAAAAHKAUAAAAAB8gEBAAAAAfMBAQAAAAH0AQEAAAABARsAALsBADABGwAAuwEAMAsFAADEBAAgBgAAmAMAIMEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACWA8YBI8kBQACKAwAhygFAAIoDACHyAQEAiAMAIfMBAQCIAwAh9AEBAIgDACECAAAABQAgGwAAvgEAIAnBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAlgPGASPJAUAAigMAIcoBQACKAwAh8gEBAIgDACHzAQEAiAMAIfQBAQCIAwAhAgAAAAMAIBsAAMABACACAAAAAwAgGwAAwAEAIAMAAAAFACAiAAC5AQAgIwAAvgEAIAEAAAAFACABAAAAAwAgBAQAAMEEACAoAADDBAAgKQAAwgQAIMYBAAD-AwAgDL4BAADNAgAwvwEAAMcBABDAAQAAzQIAMMEBAQCUAgAhwgEBAJQCACHDAQEAlAIAIcYBAADOAsYBI8kBQACWAgAhygFAAJYCACHyAQEAlAIAIfMBAQCUAgAh9AEBAJQCACEDAAAAAwAgAQAAxgEAMCcAAMcBACADAAAAAwAgAQAABAAwAgAABQAgDg0AAMwCACC-AQAAyAIAML8BAAAdABDAAQAAyAIAMMEBAQAAAAHkAQAAvgIAIOUBAgDJAgAh5wEAAMoC5wEi6AEBALUCACHpAQEAtQIAIeoBAQC1AgAh7AEAAMsC7AEi7QEBALUCACHuAQEAAAABAQAAAMoBACABAAAAygEAIAUNAADABAAg6AEAAP4DACDpAQAA_gMAIOoBAAD-AwAg7QEAAP4DACADAAAAHQAgAQAAzQEAMAIAAMoBACADAAAAHQAgAQAAzQEAMAIAAMoBACADAAAAHQAgAQAAzQEAMAIAAMoBACALDQAAvwQAIMEBAQAAAAHkAQAAsQQAIOUBAgAAAAHnAQAAAOcBAugBAQAAAAHpAQEAAAAB6gEBAAAAAewBAAAA7AEC7QEBAAAAAe4BAQAAAAEBGwAA0QEAIArBAQEAAAAB5AEAALEEACDlAQIAAAAB5wEAAADnAQLoAQEAAAAB6QEBAAAAAeoBAQAAAAHsAQAAAOwBAu0BAQAAAAHuAQEAAAABARsAANMBADABGwAA0wEAMAsNAAC-BAAgwQEBAIgDACHkAQAArQQAIOUBAgCuBAAh5wEAAK8E5wEi6AEBAMEDACHpAQEAwQMAIeoBAQDBAwAh7AEAALAE7AEi7QEBAMEDACHuAQEAiAMAIQIAAADKAQAgGwAA1gEAIArBAQEAiAMAIeQBAACtBAAg5QECAK4EACHnAQAArwTnASLoAQEAwQMAIekBAQDBAwAh6gEBAMEDACHsAQAAsATsASLtAQEAwQMAIe4BAQCIAwAhAgAAAB0AIBsAANgBACACAAAAHQAgGwAA2AEAIAMAAADKAQAgIgAA0QEAICMAANYBACABAAAAygEAIAEAAAAdACAJBAAAuQQAICgAALwEACApAAC7BAAgagAAugQAIGsAAL0EACDoAQAA_gMAIOkBAAD-AwAg6gEAAP4DACDtAQAA_gMAIA2-AQAAvQIAML8BAADfAQAQwAEAAL0CADDBAQEAlAIAIeQBAAC-AgAg5QECAL8CACHnAQAAwALnASLoAQEApAIAIekBAQCkAgAh6gEBAKQCACHsAQAAwQLsASLtAQEApAIAIe4BAQCUAgAhAwAAAB0AIAEAAN4BADAnAADfAQAgAwAAAB0AIAEAAM0BADACAADKAQAgFA4AALoCACAPAAC7AgAgEAAAuwIAIBMAALwCACC-AQAAtAIAML8BAAApABDAAQAAtAIAMMEBAQAAAAHCAQEAnwIAIcYBAAC5AuMBIskBQAChAgAhygFAAKECACHZAQEAAAAB2gEBALUCACHbAQEAnwIAIdwBAQAAAAHeAQAAtgLeASLgAQAAtwLgASLhASAAuAIAIeMBAQC1AgAhAQAAAOIBACABAAAA4gEAIAcOAAC2BAAgDwAAtwQAIBAAALcEACATAAC4BAAg2gEAAP4DACDcAQAA_gMAIOMBAAD-AwAgAwAAACkAIAEAAOUBADACAADiAQAgAwAAACkAIAEAAOUBADACAADiAQAgAwAAACkAIAEAAOUBADACAADiAQAgEQ4AALIEACAPAACzBAAgEAAAtAQAIBMAALUEACDBAQEAAAABwgEBAAAAAcYBAAAA4wECyQFAAAAAAcoBQAAAAAHZAQEAAAAB2gEBAAAAAdsBAQAAAAHcAQEAAAAB3gEAAADeAQLgAQAAAOABAuEBIAAAAAHjAQEAAAABARsAAOkBACANwQEBAAAAAcIBAQAAAAHGAQAAAOMBAskBQAAAAAHKAUAAAAAB2QEBAAAAAdoBAQAAAAHbAQEAAAAB3AEBAAAAAd4BAAAA3gEC4AEAAADgAQLhASAAAAAB4wEBAAAAAQEbAADrAQAwARsAAOsBADARDgAAhQQAIA8AAIYEACAQAACHBAAgEwAAiAQAIMEBAQCIAwAhwgEBAIgDACHGAQAAhATjASLJAUAAigMAIcoBQACKAwAh2QEBAIgDACHaAQEAwQMAIdsBAQCIAwAh3AEBAMEDACHeAQAAggTeASLgAQAAgwTgASLhASAAwAMAIeMBAQDBAwAhAgAAAOIBACAbAADuAQAgDcEBAQCIAwAhwgEBAIgDACHGAQAAhATjASLJAUAAigMAIcoBQACKAwAh2QEBAIgDACHaAQEAwQMAIdsBAQCIAwAh3AEBAMEDACHeAQAAggTeASLgAQAAgwTgASLhASAAwAMAIeMBAQDBAwAhAgAAACkAIBsAAPABACACAAAAKQAgGwAA8AEAIAMAAADiAQAgIgAA6QEAICMAAO4BACABAAAA4gEAIAEAAAApACAGBAAA_wMAICgAAIEEACApAACABAAg2gEAAP4DACDcAQAA_gMAIOMBAAD-AwAgEL4BAACjAgAwvwEAAPcBABDAAQAAowIAMMEBAQCUAgAhwgEBAJQCACHGAQAAqALjASLJAUAAlgIAIcoBQACWAgAh2QEBAJQCACHaAQEApAIAIdsBAQCUAgAh3AEBAKQCACHeAQAApQLeASLgAQAApgLgASLhASAApwIAIeMBAQCkAgAhAwAAACkAIAEAAPYBADAnAAD3AQAgAwAAACkAIAEAAOUBADACAADiAQAgDQMAAKICACC-AQAAngIAML8BAAD9AQAQwAEAAJ4CADDBAQEAAAABwgEBAJ8CACHDAQEAAAABxAEBAJ8CACHGAQAAoALGASLHAQEAnwIAIcgBAQCfAgAhyQFAAKECACHKAUAAoQIAIQEAAAD6AQAgAQAAAPoBACANAwAAogIAIL4BAACeAgAwvwEAAP0BABDAAQAAngIAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcQBAQCfAgAhxgEAAKACxgEixwEBAJ8CACHIAQEAnwIAIckBQAChAgAhygFAAKECACEBAwAA_QMAIAMAAAD9AQAgAQAA_gEAMAIAAPoBACADAAAA_QEAIAEAAP4BADACAAD6AQAgAwAAAP0BACABAAD-AQAwAgAA-gEAIAoDAAD8AwAgwQEBAAAAAcIBAQAAAAHDAQEAAAABxAEBAAAAAcYBAAAAxgECxwEBAAAAAcgBAQAAAAHJAUAAAAABygFAAAAAAQEbAACCAgAgCcEBAQAAAAHCAQEAAAABwwEBAAAAAcQBAQAAAAHGAQAAAMYBAscBAQAAAAHIAQEAAAAByQFAAAAAAcoBQAAAAAEBGwAAhAIAMAEbAACEAgAwCgMAAIsDACDBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHEAQEAiAMAIcYBAACJA8YBIscBAQCIAwAhyAEBAIgDACHJAUAAigMAIcoBQACKAwAhAgAAAPoBACAbAACHAgAgCcEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcQBAQCIAwAhxgEAAIkDxgEixwEBAIgDACHIAQEAiAMAIckBQACKAwAhygFAAIoDACECAAAA_QEAIBsAAIkCACACAAAA_QEAIBsAAIkCACADAAAA-gEAICIAAIICACAjAACHAgAgAQAAAPoBACABAAAA_QEAIAMEAACFAwAgKAAAhwMAICkAAIYDACAMvgEAAJMCADC_AQAAkAIAEMABAACTAgAwwQEBAJQCACHCAQEAlAIAIcMBAQCUAgAhxAEBAJQCACHGAQAAlQLGASLHAQEAlAIAIcgBAQCUAgAhyQFAAJYCACHKAUAAlgIAIQMAAAD9AQAgAQAAjwIAMCcAAJACACADAAAA_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_AQAAHQAQwAEAAMgCADDBAQEAnwIAIeQBAAC-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-AEI0gEAANMC-AEiBMsBAAAA-AECzAEAAAD4AQjNAQAAAPgBCNIBAADUAvgBIg2-AQAA1QIAML8BAACbAQAQwAEAANUCADDBAQEAlAIAIcYBAADXAv8BIskBQACWAgAhygFAAJYCACH7ARAA1gIAIfwBAQCUAgAh_QEBAJQCACH_AUAA2AIAIYACAQCUAgAhgQIBAJQCACENBAAAmAIAICgAAN4CACApAADeAgAgagAA3gIAIGsAAN4CACDLARAAAAABzAEQAAAABM0BEAAAAATOARAAAAABzwEQAAAAAdABEAAAAAHRARAAAAAB0gEQAN0CACEHBAAAmAIAICgAANwCACApAADcAgAgywEAAAD_AQLMAQAAAP8BCM0BAAAA_wEI0gEAANsC_wEiCwQAALICACAoAADaAgAgKQAA2gIAIMsBQAAAAAHMAUAAAAAFzQFAAAAABc4BQAAAAAHPAUAAAAAB0AFAAAAAAdEBQAAAAAHSAUAA2QIAIQsEAACyAgAgKAAA2gIAICkAANoCACDLAUAAAAABzAFAAAAABc0BQAAAAAXOAUAAAAABzwFAAAAAAdABQAAAAAHRAUAAAAAB0gFAANkCACEIywFAAAAAAcwBQAAAAAXNAUAAAAAFzgFAAAAAAc8BQAAAAAHQAUAAAAAB0QFAAAAAAdIBQADaAgAhBwQAAJgCACAoAADcAgAgKQAA3AIAIMsBAAAA_wECzAEAAAD_AQjNAQAAAP8BCNIBAADbAv8BIgTLAQAAAP8BAswBAAAA_wEIzQEAAAD_AQjSAQAA3AL_ASINBAAAmAIAICgAAN4CACApAADeAgAgagAA3gIAIGsAAN4CACDLARAAAAABzAEQAAAABM0BEAAAAATOARAAAAABzwEQAAAAAdABEAAAAAHRARAAAAAB0gEQAN0CACEIywEQAAAAAcwBEAAAAATNARAAAAAEzgEQAAAAAc8BEAAAAAHQARAAAAAB0QEQAAAAAdIBEADeAgAhEb4BAADfAgAwvwEAAIUBABDAAQAA3wIAMMEBAQCUAgAhxAEBAJQCACHGAQAA4QKHAiLJAUAAlgIAIcoBQACWAgAh7gEBAJQCACH6AQEAlAIAIYICAQCUAgAhhAIAAOAChAIihQJAAJYCACGHAkAA2AIAIYgCQADYAgAhiQIgAKcCACGKAgEApAIAIQcEAACYAgAgKAAA5QIAICkAAOUCACDLAQAAAIQCAswBAAAAhAIIzQEAAACEAgjSAQAA5AKEAiIHBAAAmAIAICgAAOMCACApAADjAgAgywEAAACHAgLMAQAAAIcCCM0BAAAAhwII0gEAAOIChwIiBwQAAJgCACAoAADjAgAgKQAA4wIAIMsBAAAAhwICzAEAAACHAgjNAQAAAIcCCNIBAADiAocCIgTLAQAAAIcCAswBAAAAhwIIzQEAAACHAgjSAQAA4wKHAiIHBAAAmAIAICgAAOUCACApAADlAgAgywEAAACEAgLMAQAAAIQCCM0BAAAAhAII0gEAAOQChAIiBMsBAAAAhAICzAEAAACEAgjNAQAAAIQCCNIBAADlAoQCIgy-AQAA5gIAML8BAABtABDAAQAA5gIAMMEBAQCUAgAhxgEAAOcCjAIiyQFAAJYCACHKAUAAlgIAIfUBAQCUAgAh9gEBAKQCACH4AUAAlgIAIfkBQACWAgAh-gEBAJQCACEHBAAAmAIAICgAAOkCACApAADpAgAgywEAAACMAgLMAQAAAIwCCM0BAAAAjAII0gEAAOgCjAIiBwQAAJgCACAoAADpAgAgKQAA6QIAIMsBAAAAjAICzAEAAACMAgjNAQAAAIwCCNIBAADoAowCIgTLAQAAAIwCAswBAAAAjAIIzQEAAACMAgjSAQAA6QKMAiILvgEAAOoCADC_AQAAVwAQwAEAAOoCADDBAQEAlAIAIcIBAQCUAgAhwwEBAJQCACHGAQAAlQLGASLJAUAAlgIAIcoBQACWAgAhjAIBAJQCACGNAgEAlAIAIQu-AQAA6wIAML8BAABBABDAAQAA6wIAMMEBAQCUAgAhwgEBAJQCACHDAQEAlAIAIcYBAACVAsYBIskBQACWAgAhygFAAJYCACGOAgEAlAIAIY8CAQCUAgAhDxEAAMwCACASAADwAgAgvgEAAOwCADC_AQAAIQAQwAEAAOwCADDBAQEAnwIAIcYBAADuAv8BIskBQAChAgAhygFAAKECACH7ARAA7QIAIfwBAQCfAgAh_QEBAJ8CACH_AUAA7wIAIYACAQCfAgAhgQIBAJ8CACEIywEQAAAAAcwBEAAAAATNARAAAAAEzgEQAAAAAc8BEAAAAAHQARAAAAAB0QEQAAAAAdIBEADeAgAhBMsBAAAA_wECzAEAAAD_AQjNAQAAAP8BCNIBAADcAv8BIgjLAUAAAAABzAFAAAAABc0BQAAAAAXOAUAAAAABzwFAAAAAAdABQAAAAAHRAUAAAAAB0gFAANoCACEXCgAA9QIAIA0AAMwCACATAAC8AgAgFAAA9AIAIL4BAADxAgAwvwEAABkAEMABAADxAgAwwQEBAJ8CACHEAQEAnwIAIcYBAADzAocCIskBQAChAgAhygFAAKECACHuAQEAnwIAIfoBAQCfAgAhggIBAJ8CACGEAgAA8gKEAiKFAkAAoQIAIYcCQADvAgAhiAJAAO8CACGJAiAAuAIAIYoCAQC1AgAhkAIAABkAIJECAAAZACAVCgAA9QIAIA0AAMwCACATAAC8AgAgFAAA9AIAIL4BAADxAgAwvwEAABkAEMABAADxAgAwwQEBAJ8CACHEAQEAnwIAIcYBAADzAocCIskBQAChAgAhygFAAKECACHuAQEAnwIAIfoBAQCfAgAhggIBAJ8CACGEAgAA8gKEAiKFAkAAoQIAIYcCQADvAgAhiAJAAO8CACGJAiAAuAIAIYoCAQC1AgAhBMsBAAAAhAICzAEAAACEAgjNAQAAAIQCCNIBAADlAoQCIgTLAQAAAIcCAswBAAAAhwIIzQEAAACHAgjSAQAA4wKHAiIWDgAAugIAIA8AALsCACAQAAC7AgAgEwAAvAIAIL4BAAC0AgAwvwEAACkAEMABAAC0AgAwwQEBAJ8CACHCAQEAnwIAIcYBAAC5AuMBIskBQAChAgAhygFAAKECACHZAQEAnwIAIdoBAQC1AgAh2wEBAJ8CACHcAQEAtQIAId4BAAC2At4BIuABAAC3AuABIuEBIAC4AgAh4wEBALUCACGQAgAAKQAgkQIAACkAIBEJAAD7AgAgCwAA_AIAIAwAAP0CACAVAAC7AgAgvgEAAPoCADC_AQAADQAQwAEAAPoCADDBAQEAnwIAIcIBAQCfAgAhwwEBAJ8CACHGAQAAoALGASLJAUAAoQIAIcoBQAChAgAhjgIBAJ8CACGPAgEAnwIAIZACAAANACCRAgAADQAgDgoAAPUCACC-AQAA9gIAML8BAAAVABDAAQAA9gIAMMEBAQCfAgAhxAEBAJ8CACHGAQAA9wL4ASLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAnwIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQTLAQAAAPgBAswBAAAA-AEIzQEAAAD4AQjSAQAA1AL4ASINCgAA9QIAIL4BAAD4AgAwvwEAABEAEMABAAD4AgAwwQEBAJ8CACHGAQAA-QKMAiLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAtQIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQTLAQAAAIwCAswBAAAAjAIIzQEAAACMAgjSAQAA6QKMAiIPCQAA-wIAIAsAAPwCACAMAAD9AgAgFQAAuwIAIL4BAAD6AgAwvwEAAA0AEMABAAD6AgAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAKACxgEiyQFAAKECACHKAUAAoQIAIY4CAQCfAgAhjwIBAJ8CACEPBwAA_wIAIAgAAIADACC-AQAA_gIAML8BAAAIABDAAQAA_gIAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACgAsYBIskBQAChAgAhygFAAKECACGMAgEAnwIAIY0CAQCfAgAhkAIAAAgAIJECAAAIACAD1gEAABEAINcBAAARACDYAQAAEQAgA9YBAAAVACDXAQAAFQAg2AEAABUAIA0HAAD_AgAgCAAAgAMAIL4BAAD-AgAwvwEAAAgAEMABAAD-AgAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAKACxgEiyQFAAKECACHKAUAAoQIAIYwCAQCfAgAhjQIBAJ8CACEQBQAAgwMAIAYAAIQDACC-AQAAgQMAML8BAAADABDAAQAAgQMAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACCA8YBI8kBQAChAgAhygFAAKECACHyAQEAnwIAIfMBAQCfAgAh9AEBAJ8CACGQAgAAAwAgkQIAAAMAIAPWAQAADQAg1wEAAA0AINgBAAANACAOBQAAgwMAIAYAAIQDACC-AQAAgQMAML8BAAADABDAAQAAgQMAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACCA8YBI8kBQAChAgAhygFAAKECACHyAQEAnwIAIfMBAQCfAgAh9AEBAJ8CACEEywEAAADGAQPMAQAAAMYBCc0BAAAAxgEJ0gEAANACxgEjDwMAAKICACC-AQAAngIAML8BAAD9AQAQwAEAAJ4CADDBAQEAnwIAIcIBAQCfAgAhwwEBAJ8CACHEAQEAnwIAIcYBAACgAsYBIscBAQCfAgAhyAEBAJ8CACHJAUAAoQIAIcoBQAChAgAhkAIAAP0BACCRAgAA_QEAIAPWAQAACAAg1wEAAAgAINgBAAAIACAAAAABlQIBAAAAAQGVAgAAAMYBAgGVAkAAAAABCyIAAIwDADAjAACRAwAwkgIAAI0DADCTAgAAjgMAMJQCAACPAwAglQIAAJADADCWAgAAkAMAMJcCAACQAwAwmAIAAJADADCZAgAAkgMAMJoCAACTAwAwCQYAAPsDACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBA8kBQAAAAAHKAUAAAAAB8gEBAAAAAfMBAQAAAAECAAAABQAgIgAA-gMAIAMAAAAFACAiAAD6AwAgIwAAlwMAIAEbAACrBQAwDgUAAIMDACAGAACEAwAgvgEAAIEDADC_AQAAAwAQwAEAAIEDADDBAQEAAAABwgEBAJ8CACHDAQEAAAABxgEAAIIDxgEjyQFAAKECACHKAUAAoQIAIfIBAQCfAgAh8wEBAJ8CACH0AQEAnwIAIQIAAAAFACAbAACXAwAgAgAAAJQDACAbAACVAwAgDL4BAACTAwAwvwEAAJQDABDAAQAAkwMAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACCA8YBI8kBQAChAgAhygFAAKECACHyAQEAnwIAIfMBAQCfAgAh9AEBAJ8CACEMvgEAAJMDADC_AQAAlAMAEMABAACTAwAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAIIDxgEjyQFAAKECACHKAUAAoQIAIfIBAQCfAgAh8wEBAJ8CACH0AQEAnwIAIQjBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAlgPGASPJAUAAigMAIcoBQACKAwAh8gEBAIgDACHzAQEAiAMAIQGVAgAAAMYBAwkGAACYAwAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAJYDxgEjyQFAAIoDACHKAUAAigMAIfIBAQCIAwAh8wEBAIgDACELIgAAmQMAMCMAAJ4DADCSAgAAmgMAMJMCAACbAwAwlAIAAJwDACCVAgAAnQMAMJYCAACdAwAwlwIAAJ0DADCYAgAAnQMAMJkCAACfAwAwmgIAAKADADAICAAA-QMAIMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgECyQFAAAAAAcoBQAAAAAGMAgEAAAABAgAAAAoAICIAAPgDACADAAAACgAgIgAA-AMAICMAAKMDACABGwAAqgUAMA0HAAD_AgAgCAAAgAMAIL4BAAD-AgAwvwEAAAgAEMABAAD-AgAwwQEBAAAAAcIBAQCfAgAhwwEBAAAAAcYBAACgAsYBIskBQAChAgAhygFAAKECACGMAgEAnwIAIY0CAQCfAgAhAgAAAAoAIBsAAKMDACACAAAAoQMAIBsAAKIDACALvgEAAKADADC_AQAAoQMAEMABAACgAwAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAKACxgEiyQFAAKECACHKAUAAoQIAIYwCAQCfAgAhjQIBAJ8CACELvgEAAKADADC_AQAAoQMAEMABAACgAwAwwQEBAJ8CACHCAQEAnwIAIcMBAQCfAgAhxgEAAKACxgEiyQFAAKECACHKAUAAoQIAIYwCAQCfAgAhjQIBAJ8CACEHwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIYwCAQCIAwAhCAgAAKQDACDBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAiQPGASLJAUAAigMAIcoBQACKAwAhjAIBAIgDACELIgAApQMAMCMAAKoDADCSAgAApgMAMJMCAACnAwAwlAIAAKgDACCVAgAAqQMAMJYCAACpAwAwlwIAAKkDADCYAgAAqQMAMJkCAACrAwAwmgIAAKwDADAKCwAA9QMAIAwAAPYDACAVAAD3AwAgwQEBAAAAAcIBAQAAAAHDAQEAAAABxgEAAADGAQLJAUAAAAABygFAAAAAAY4CAQAAAAECAAAAAQAgIgAA9AMAIAMAAAABACAiAAD0AwAgIwAArwMAIAEbAACpBQAwDwkAAPsCACALAAD8AgAgDAAA_QIAIBUAALsCACC-AQAA-gIAML8BAAANABDAAQAA-gIAMMEBAQAAAAHCAQEAnwIAIcMBAQAAAAHGAQAAoALGASLJAUAAoQIAIcoBQAChAgAhjgIBAJ8CACGPAgEAnwIAIQIAAAABACAbAACvAwAgAgAAAK0DACAbAACuAwAgC74BAACsAwAwvwEAAK0DABDAAQAArAMAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACgAsYBIskBQAChAgAhygFAAKECACGOAgEAnwIAIY8CAQCfAgAhC74BAACsAwAwvwEAAK0DABDAAQAArAMAMMEBAQCfAgAhwgEBAJ8CACHDAQEAnwIAIcYBAACgAsYBIskBQAChAgAhygFAAKECACGOAgEAnwIAIY8CAQCfAgAhB8EBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACJA8YBIskBQACKAwAhygFAAIoDACGOAgEAiAMAIQoLAACwAwAgDAAAsQMAIBUAALIDACDBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAiQPGASLJAUAAigMAIcoBQACKAwAhjgIBAIgDACELIgAA5wMAMCMAAOwDADCSAgAA6AMAMJMCAADpAwAwlAIAAOoDACCVAgAA6wMAMJYCAADrAwAwlwIAAOsDADCYAgAA6wMAMJkCAADtAwAwmgIAAO4DADALIgAA2gMAMCMAAN8DADCSAgAA2wMAMJMCAADcAwAwlAIAAN0DACCVAgAA3gMAMJYCAADeAwAwlwIAAN4DADCYAgAA3gMAMJkCAADgAwAwmgIAAOEDADALIgAAswMAMCMAALgDADCSAgAAtAMAMJMCAAC1AwAwlAIAALYDACCVAgAAtwMAMJYCAAC3AwAwlwIAALcDADCYAgAAtwMAMJkCAAC5AwAwmgIAALoDADAQDQAA1wMAIBMAANgDACAUAADZAwAgwQEBAAAAAcQBAQAAAAHGAQAAAIcCAskBQAAAAAHKAUAAAAAB7gEBAAAAAYICAQAAAAGEAgAAAIQCAoUCQAAAAAGHAkAAAAABiAJAAAAAAYkCIAAAAAGKAgEAAAABAgAAABsAICIAANYDACADAAAAGwAgIgAA1gMAICMAAMIDACABGwAAqAUAMBUKAAD1AgAgDQAAzAIAIBMAALwCACAUAAD0AgAgvgEAAPECADC_AQAAGQAQwAEAAPECADDBAQEAAAABxAEBAJ8CACHGAQAA8wKHAiLJAUAAoQIAIcoBQAChAgAh7gEBAJ8CACH6AQEAnwIAIYICAQCfAgAhhAIAAPIChAIihQJAAKECACGHAkAA7wIAIYgCQADvAgAhiQIgALgCACGKAgEAtQIAIQIAAAAbACAbAADCAwAgAgAAALsDACAbAAC8AwAgEb4BAAC6AwAwvwEAALsDABDAAQAAugMAMMEBAQCfAgAhxAEBAJ8CACHGAQAA8wKHAiLJAUAAoQIAIcoBQAChAgAh7gEBAJ8CACH6AQEAnwIAIYICAQCfAgAhhAIAAPIChAIihQJAAKECACGHAkAA7wIAIYgCQADvAgAhiQIgALgCACGKAgEAtQIAIRG-AQAAugMAML8BAAC7AwAQwAEAALoDADDBAQEAnwIAIcQBAQCfAgAhxgEAAPMChwIiyQFAAKECACHKAUAAoQIAIe4BAQCfAgAh-gEBAJ8CACGCAgEAnwIAIYQCAADyAoQCIoUCQAChAgAhhwJAAO8CACGIAkAA7wIAIYkCIAC4AgAhigIBALUCACENwQEBAIgDACHEAQEAiAMAIcYBAAC-A4cCIskBQACKAwAhygFAAIoDACHuAQEAiAMAIYICAQCIAwAhhAIAAL0DhAIihQJAAIoDACGHAkAAvwMAIYgCQAC_AwAhiQIgAMADACGKAgEAwQMAIQGVAgAAAIQCAgGVAgAAAIcCAgGVAkAAAAABAZUCIAAAAAEBlQIBAAAAARANAADDAwAgEwAAxAMAIBQAAMUDACDBAQEAiAMAIcQBAQCIAwAhxgEAAL4DhwIiyQFAAIoDACHKAUAAigMAIe4BAQCIAwAhggIBAIgDACGEAgAAvQOEAiKFAkAAigMAIYcCQAC_AwAhiAJAAL8DACGJAiAAwAMAIYoCAQDBAwAhBSIAAJoFACAjAACmBQAgkgIAAJsFACCTAgAApQUAIJgCAADiAQAgCyIAAMYDADAjAADLAwAwkgIAAMcDADCTAgAAyAMAMJQCAADJAwAglQIAAMoDADCWAgAAygMAMJcCAADKAwAwmAIAAMoDADCZAgAAzAMAMJoCAADNAwAwByIAAJgFACAjAACjBQAgkgIAAJkFACCTAgAAogUAIJYCAAApACCXAgAAKQAgmAIAAOIBACAKEQAA1QMAIMEBAQAAAAHGAQAAAP8BAskBQAAAAAHKAUAAAAAB-wEQAAAAAfwBAQAAAAH9AQEAAAAB_wFAAAAAAYACAQAAAAECAAAAIwAgIgAA1AMAIAMAAAAjACAiAADUAwAgIwAA0gMAIAEbAAChBQAwDxEAAMwCACASAADwAgAgvgEAAOwCADC_AQAAIQAQwAEAAOwCADDBAQEAAAABxgEAAO4C_wEiyQFAAKECACHKAUAAoQIAIfsBEADtAgAh_AEBAJ8CACH9AQEAAAAB_wFAAO8CACGAAgEAnwIAIYECAQCfAgAhAgAAACMAIBsAANIDACACAAAAzgMAIBsAAM8DACANvgEAAM0DADC_AQAAzgMAEMABAADNAwAwwQEBAJ8CACHGAQAA7gL_ASLJAUAAoQIAIcoBQAChAgAh-wEQAO0CACH8AQEAnwIAIf0BAQCfAgAh_wFAAO8CACGAAgEAnwIAIYECAQCfAgAhDb4BAADNAwAwvwEAAM4DABDAAQAAzQMAMMEBAQCfAgAhxgEAAO4C_wEiyQFAAKECACHKAUAAoQIAIfsBEADtAgAh_AEBAJ8CACH9AQEAnwIAIf8BQADvAgAhgAIBAJ8CACGBAgEAnwIAIQnBAQEAiAMAIcYBAADRA_8BIskBQACKAwAhygFAAIoDACH7ARAA0AMAIfwBAQCIAwAh_QEBAIgDACH_AUAAvwMAIYACAQCIAwAhBZUCEAAAAAGbAhAAAAABnAIQAAAAAZ0CEAAAAAGeAhAAAAABAZUCAAAA_wECChEAANMDACDBAQEAiAMAIcYBAADRA_8BIskBQACKAwAhygFAAIoDACH7ARAA0AMAIfwBAQCIAwAh_QEBAIgDACH_AUAAvwMAIYACAQCIAwAhBSIAAJwFACAjAACfBQAgkgIAAJ0FACCTAgAAngUAIJgCAADiAQAgChEAANUDACDBAQEAAAABxgEAAAD_AQLJAUAAAAABygFAAAAAAfsBEAAAAAH8AQEAAAAB_QEBAAAAAf8BQAAAAAGAAgEAAAABAyIAAJwFACCSAgAAnQUAIJgCAADiAQAgEA0AANcDACATAADYAwAgFAAA2QMAIMEBAQAAAAHEAQEAAAABxgEAAACHAgLJAUAAAAABygFAAAAAAe4BAQAAAAGCAgEAAAABhAIAAACEAgKFAkAAAAABhwJAAAAAAYgCQAAAAAGJAiAAAAABigIBAAAAAQMiAACaBQAgkgIAAJsFACCYAgAA4gEAIAQiAADGAwAwkgIAAMcDADCUAgAAyQMAIJgCAADKAwAwAyIAAJgFACCSAgAAmQUAIJgCAADiAQAgCcEBAQAAAAHEAQEAAAABxgEAAAD4AQLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAECAAAAFwAgIgAA5gMAIAMAAAAXACAiAADmAwAgIwAA5QMAIAEbAACXBQAwDgoAAPUCACC-AQAA9gIAML8BAAAVABDAAQAA9gIAMMEBAQAAAAHEAQEAnwIAIcYBAAD3AvgBIskBQAChAgAhygFAAKECACH1AQEAnwIAIfYBAQCfAgAh-AFAAKECACH5AUAAoQIAIfoBAQCfAgAhAgAAABcAIBsAAOUDACACAAAA4gMAIBsAAOMDACANvgEAAOEDADC_AQAA4gMAEMABAADhAwAwwQEBAJ8CACHEAQEAnwIAIcYBAAD3AvgBIskBQAChAgAhygFAAKECACH1AQEAnwIAIfYBAQCfAgAh-AFAAKECACH5AUAAoQIAIfoBAQCfAgAhDb4BAADhAwAwvwEAAOIDABDAAQAA4QMAMMEBAQCfAgAhxAEBAJ8CACHGAQAA9wL4ASLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAnwIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQnBAQEAiAMAIcQBAQCIAwAhxgEAAOQD-AEiyQFAAIoDACHKAUAAigMAIfUBAQCIAwAh9gEBAIgDACH4AUAAigMAIfkBQACKAwAhAZUCAAAA-AECCcEBAQCIAwAhxAEBAIgDACHGAQAA5AP4ASLJAUAAigMAIcoBQACKAwAh9QEBAIgDACH2AQEAiAMAIfgBQACKAwAh-QFAAIoDACEJwQEBAAAAAcQBAQAAAAHGAQAAAPgBAskBQAAAAAHKAUAAAAAB9QEBAAAAAfYBAQAAAAH4AUAAAAAB-QFAAAAAAQjBAQEAAAABxgEAAACMAgLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAECAAAAEwAgIgAA8wMAIAMAAAATACAiAADzAwAgIwAA8gMAIAEbAACWBQAwDQoAAPUCACC-AQAA-AIAML8BAAARABDAAQAA-AIAMMEBAQAAAAHGAQAA-QKMAiLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAtQIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQIAAAATACAbAADyAwAgAgAAAO8DACAbAADwAwAgDL4BAADuAwAwvwEAAO8DABDAAQAA7gMAMMEBAQCfAgAhxgEAAPkCjAIiyQFAAKECACHKAUAAoQIAIfUBAQCfAgAh9gEBALUCACH4AUAAoQIAIfkBQAChAgAh-gEBAJ8CACEMvgEAAO4DADC_AQAA7wMAEMABAADuAwAwwQEBAJ8CACHGAQAA-QKMAiLJAUAAoQIAIcoBQAChAgAh9QEBAJ8CACH2AQEAtQIAIfgBQAChAgAh-QFAAKECACH6AQEAnwIAIQjBAQEAiAMAIcYBAADxA4wCIskBQACKAwAhygFAAIoDACH1AQEAiAMAIfYBAQDBAwAh-AFAAIoDACH5AUAAigMAIQGVAgAAAIwCAgjBAQEAiAMAIcYBAADxA4wCIskBQACKAwAhygFAAIoDACH1AQEAiAMAIfYBAQDBAwAh-AFAAIoDACH5AUAAigMAIQjBAQEAAAABxgEAAACMAgLJAUAAAAABygFAAAAAAfUBAQAAAAH2AQEAAAAB-AFAAAAAAfkBQAAAAAEKCwAA9QMAIAwAAPYDACAVAAD3AwAgwQEBAAAAAcIBAQAAAAHDAQEAAAABxgEAAADGAQLJAUAAAAABygFAAAAAAY4CAQAAAAEEIgAA5wMAMJICAADoAwAwlAIAAOoDACCYAgAA6wMAMAQiAADaAwAwkgIAANsDADCUAgAA3QMAIJgCAADeAwAwBCIAALMDADCSAgAAtAMAMJQCAAC2AwAgmAIAALcDADAICAAA-QMAIMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgECyQFAAAAAAcoBQAAAAAGMAgEAAAABBCIAAKUDADCSAgAApgMAMJQCAACoAwAgmAIAAKkDADAJBgAA-wMAIMEBAQAAAAHCAQEAAAABwwEBAAAAAcYBAAAAxgEDyQFAAAAAAcoBQAAAAAHyAQEAAAAB8wEBAAAAAQQiAACZAwAwkgIAAJoDADCUAgAAnAMAIJgCAACdAwAwBCIAAIwDADCSAgAAjQMAMJQCAACPAwAgmAIAAJADADAAAAAAAAGVAgAAAN4BAgGVAgAAAOABAgGVAgAAAOMBAgciAACoBAAgIwAAqwQAIJICAACpBAAgkwIAAKoEACCWAgAAHQAglwIAAB0AIJgCAADKAQAgCyIAAJ8EADAjAACjBAAwkgIAAKAEADCTAgAAoQQAMJQCAACiBAAglQIAALcDADCWAgAAtwMAMJcCAAC3AwAwmAIAALcDADCZAgAApAQAMJoCAAC6AwAwCyIAAJQEADAjAACYBAAwkgIAAJUEADCTAgAAlgQAMJQCAACXBAAglQIAALcDADCWAgAAtwMAMJcCAAC3AwAwmAIAALcDADCZAgAAmQQAMJoCAAC6AwAwCyIAAIkEADAjAACNBAAwkgIAAIoEADCTAgAAiwQAMJQCAACMBAAglQIAAMoDADCWAgAAygMAMJcCAADKAwAwmAIAAMoDADCZAgAAjgQAMJoCAADNAwAwChIAAJMEACDBAQEAAAABxgEAAAD_AQLJAUAAAAABygFAAAAAAfsBEAAAAAH8AQEAAAAB_QEBAAAAAf8BQAAAAAGBAgEAAAABAgAAACMAICIAAJIEACADAAAAIwAgIgAAkgQAICMAAJAEACABGwAAlQUAMAIAAAAjACAbAACQBAAgAgAAAM4DACAbAACPBAAgCcEBAQCIAwAhxgEAANED_wEiyQFAAIoDACHKAUAAigMAIfsBEADQAwAh_AEBAIgDACH9AQEAiAMAIf8BQAC_AwAhgQIBAIgDACEKEgAAkQQAIMEBAQCIAwAhxgEAANED_wEiyQFAAIoDACHKAUAAigMAIfsBEADQAwAh_AEBAIgDACH9AQEAiAMAIf8BQAC_AwAhgQIBAIgDACEFIgAAkAUAICMAAJMFACCSAgAAkQUAIJMCAACSBQAgmAIAABsAIAoSAACTBAAgwQEBAAAAAcYBAAAA_wECyQFAAAAAAcoBQAAAAAH7ARAAAAAB_AEBAAAAAf0BAQAAAAH_AUAAAAABgQIBAAAAAQMiAACQBQAgkgIAAJEFACCYAgAAGwAgEAoAAJ4EACANAADXAwAgEwAA2AMAIMEBAQAAAAHEAQEAAAABxgEAAACHAgLJAUAAAAABygFAAAAAAe4BAQAAAAH6AQEAAAABggIBAAAAAYQCAAAAhAIChQJAAAAAAYcCQAAAAAGIAkAAAAABiQIgAAAAAQIAAAAbACAiAACdBAAgAwAAABsAICIAAJ0EACAjAACbBAAgARsAAI8FADACAAAAGwAgGwAAmwQAIAIAAAC7AwAgGwAAmgQAIA3BAQEAiAMAIcQBAQCIAwAhxgEAAL4DhwIiyQFAAIoDACHKAUAAigMAIe4BAQCIAwAh-gEBAIgDACGCAgEAiAMAIYQCAAC9A4QCIoUCQACKAwAhhwJAAL8DACGIAkAAvwMAIYkCIADAAwAhEAoAAJwEACANAADDAwAgEwAAxAMAIMEBAQCIAwAhxAEBAIgDACHGAQAAvgOHAiLJAUAAigMAIcoBQACKAwAh7gEBAIgDACH6AQEAiAMAIYICAQCIAwAhhAIAAL0DhAIihQJAAIoDACGHAkAAvwMAIYgCQAC_AwAhiQIgAMADACEFIgAAigUAICMAAI0FACCSAgAAiwUAIJMCAACMBQAgmAIAAAEAIBAKAACeBAAgDQAA1wMAIBMAANgDACDBAQEAAAABxAEBAAAAAcYBAAAAhwICyQFAAAAAAcoBQAAAAAHuAQEAAAAB-gEBAAAAAYICAQAAAAGEAgAAAIQCAoUCQAAAAAGHAkAAAAABiAJAAAAAAYkCIAAAAAEDIgAAigUAIJICAACLBQAgmAIAAAEAIBAKAACeBAAgEwAA2AMAIBQAANkDACDBAQEAAAABxAEBAAAAAcYBAAAAhwICyQFAAAAAAcoBQAAAAAH6AQEAAAABggIBAAAAAYQCAAAAhAIChQJAAAAAAYcCQAAAAAGIAkAAAAABiQIgAAAAAYoCAQAAAAECAAAAGwAgIgAApwQAIAMAAAAbACAiAACnBAAgIwAApgQAIAEbAACJBQAwAgAAABsAIBsAAKYEACACAAAAuwMAIBsAAKUEACANwQEBAIgDACHEAQEAiAMAIcYBAAC-A4cCIskBQACKAwAhygFAAIoDACH6AQEAiAMAIYICAQCIAwAhhAIAAL0DhAIihQJAAIoDACGHAkAAvwMAIYgCQAC_AwAhiQIgAMADACGKAgEAwQMAIRAKAACcBAAgEwAAxAMAIBQAAMUDACDBAQEAiAMAIcQBAQCIAwAhxgEAAL4DhwIiyQFAAIoDACHKAUAAigMAIfoBAQCIAwAhggIBAIgDACGEAgAAvQOEAiKFAkAAigMAIYcCQAC_AwAhiAJAAL8DACGJAiAAwAMAIYoCAQDBAwAhEAoAAJ4EACATAADYAwAgFAAA2QMAIMEBAQAAAAHEAQEAAAABxgEAAACHAgLJAUAAAAABygFAAAAAAfoBAQAAAAGCAgEAAAABhAIAAACEAgKFAkAAAAABhwJAAAAAAYgCQAAAAAGJAiAAAAABigIBAAAAAQnBAQEAAAAB5AEAALEEACDlAQIAAAAB5wEAAADnAQLoAQEAAAAB6QEBAAAAAeoBAQAAAAHsAQAAAOwBAu0BAQAAAAECAAAAygEAICIAAKgEACADAAAAHQAgIgAAqAQAICMAAKwEACALAAAAHQAgGwAArAQAIMEBAQCIAwAh5AEAAK0EACDlAQIArgQAIecBAACvBOcBIugBAQDBAwAh6QEBAMEDACHqAQEAwQMAIewBAACwBOwBIu0BAQDBAwAhCcEBAQCIAwAh5AEAAK0EACDlAQIArgQAIecBAACvBOcBIugBAQDBAwAh6QEBAMEDACHqAQEAwQMAIewBAACwBOwBIu0BAQDBAwAhApUCAQAAAASfAgEAAAAFBZUCAgAAAAGbAgIAAAABnAICAAAAAZ0CAgAAAAGeAgIAAAABAZUCAAAA5wECAZUCAAAA7AECAZUCAQAAAAQDIgAAqAQAIJICAACpBAAgmAIAAMoBACAEIgAAnwQAMJICAACgBAAwlAIAAKIEACCYAgAAtwMAMAQiAACUBAAwkgIAAJUEADCUAgAAlwQAIJgCAAC3AwAwBCIAAIkEADCSAgAAigQAMJQCAACMBAAgmAIAAMoDADAFDQAAwAQAIOgBAAD-AwAg6QEAAP4DACDqAQAA_gMAIO0BAAD-AwAgAAAAAAAAAAUiAACEBQAgIwAAhwUAIJICAACFBQAgkwIAAIYFACCYAgAA4gEAIAMiAACEBQAgkgIAAIUFACCYAgAA4gEAIAcOAAC2BAAgDwAAtwQAIBAAALcEACATAAC4BAAg2gEAAP4DACDcAQAA_gMAIOMBAAD-AwAgAAAABSIAAP8EACAjAACCBQAgkgIAAIAFACCTAgAAgQUAIJgCAAD6AQAgAyIAAP8EACCSAgAAgAUAIJgCAAD6AQAgAAAABSIAAPoEACAjAAD9BAAgkgIAAPsEACCTAgAA_AQAIJgCAAABACADIgAA-gQAIJICAAD7BAAgmAIAAAEAIAAAAAAAAAAAAAAABSIAAPUEACAjAAD4BAAgkgIAAPYEACCTAgAA9wQAIJgCAAABACADIgAA9QQAIJICAAD2BAAgmAIAAAEAIAAAAAUiAADwBAAgIwAA8wQAIJICAADxBAAgkwIAAPIEACCYAgAABQAgAyIAAPAEACCSAgAA8QQAIJgCAAAFACAAAAAFIgAA6wQAICMAAO4EACCSAgAA7AQAIJMCAADtBAAgmAIAAAoAIAMiAADrBAAgkgIAAOwEACCYAgAACgAgBwoAAOMEACANAADABAAgEwAAuAQAIBQAAMAEACCHAgAA_gMAIIgCAAD-AwAgigIAAP4DACAECQAA5AQAIAsAAOUEACAMAADmBAAgFQAAtwQAIAIHAADnBAAgCAAA6AQAIAAAAwUAAOkEACAGAADqBAAgxgEAAP4DACAAAQMAAP0DACAACQcAANwEACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBAskBQAAAAAHKAUAAAAABjAIBAAAAAY0CAQAAAAECAAAACgAgIgAA6wQAIAMAAAAIACAiAADrBAAgIwAA7wQAIAsAAAAIACAHAADbBAAgGwAA7wQAIMEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACJA8YBIskBQACKAwAhygFAAIoDACGMAgEAiAMAIY0CAQCIAwAhCQcAANsEACDBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHGAQAAiQPGASLJAUAAigMAIcoBQACKAwAhjAIBAIgDACGNAgEAiAMAIQoFAADFBAAgwQEBAAAAAcIBAQAAAAHDAQEAAAABxgEAAADGAQPJAUAAAAABygFAAAAAAfIBAQAAAAHzAQEAAAAB9AEBAAAAAQIAAAAFACAiAADwBAAgAwAAAAMAICIAAPAEACAjAAD0BAAgDAAAAAMAIAUAAMQEACAbAAD0BAAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAJYDxgEjyQFAAIoDACHKAUAAigMAIfIBAQCIAwAh8wEBAIgDACH0AQEAiAMAIQoFAADEBAAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAJYDxgEjyQFAAIoDACHKAUAAigMAIfIBAQCIAwAh8wEBAIgDACH0AQEAiAMAIQsJAADhBAAgDAAA9gMAIBUAAPcDACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBAskBQAAAAAHKAUAAAAABjgIBAAAAAY8CAQAAAAECAAAAAQAgIgAA9QQAIAMAAAANACAiAAD1BAAgIwAA-QQAIA0AAAANACAJAADgBAAgDAAAsQMAIBUAALIDACAbAAD5BAAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIY4CAQCIAwAhjwIBAIgDACELCQAA4AQAIAwAALEDACAVAACyAwAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIY4CAQCIAwAhjwIBAIgDACELCQAA4QQAIAsAAPUDACAVAAD3AwAgwQEBAAAAAcIBAQAAAAHDAQEAAAABxgEAAADGAQLJAUAAAAABygFAAAAAAY4CAQAAAAGPAgEAAAABAgAAAAEAICIAAPoEACADAAAADQAgIgAA-gQAICMAAP4EACANAAAADQAgCQAA4AQAIAsAALADACAVAACyAwAgGwAA_gQAIMEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACJA8YBIskBQACKAwAhygFAAIoDACGOAgEAiAMAIY8CAQCIAwAhCwkAAOAEACALAACwAwAgFQAAsgMAIMEBAQCIAwAhwgEBAIgDACHDAQEAiAMAIcYBAACJA8YBIskBQACKAwAhygFAAIoDACGOAgEAiAMAIY8CAQCIAwAhCcEBAQAAAAHCAQEAAAABwwEBAAAAAcQBAQAAAAHGAQAAAMYBAscBAQAAAAHIAQEAAAAByQFAAAAAAcoBQAAAAAECAAAA-gEAICIAAP8EACADAAAA_QEAICIAAP8EACAjAACDBQAgCwAAAP0BACAbAACDBQAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxAEBAIgDACHGAQAAiQPGASLHAQEAiAMAIcgBAQCIAwAhyQFAAIoDACHKAUAAigMAIQnBAQEAiAMAIcIBAQCIAwAhwwEBAIgDACHEAQEAiAMAIcYBAACJA8YBIscBAQCIAwAhyAEBAIgDACHJAUAAigMAIcoBQACKAwAhEA8AALMEACAQAAC0BAAgEwAAtQQAIMEBAQAAAAHCAQEAAAABxgEAAADjAQLJAUAAAAABygFAAAAAAdkBAQAAAAHaAQEAAAAB2wEBAAAAAdwBAQAAAAHeAQAAAN4BAuABAAAA4AEC4QEgAAAAAeMBAQAAAAECAAAA4gEAICIAAIQFACADAAAAKQAgIgAAhAUAICMAAIgFACASAAAAKQAgDwAAhgQAIBAAAIcEACATAACIBAAgGwAAiAUAIMEBAQCIAwAhwgEBAIgDACHGAQAAhATjASLJAUAAigMAIcoBQACKAwAh2QEBAIgDACHaAQEAwQMAIdsBAQCIAwAh3AEBAMEDACHeAQAAggTeASLgAQAAgwTgASLhASAAwAMAIeMBAQDBAwAhEA8AAIYEACAQAACHBAAgEwAAiAQAIMEBAQCIAwAhwgEBAIgDACHGAQAAhATjASLJAUAAigMAIcoBQACKAwAh2QEBAIgDACHaAQEAwQMAIdsBAQCIAwAh3AEBAMEDACHeAQAAggTeASLgAQAAgwTgASLhASAAwAMAIeMBAQDBAwAhDcEBAQAAAAHEAQEAAAABxgEAAACHAgLJAUAAAAABygFAAAAAAfoBAQAAAAGCAgEAAAABhAIAAACEAgKFAkAAAAABhwJAAAAAAYgCQAAAAAGJAiAAAAABigIBAAAAAQsJAADhBAAgCwAA9QMAIAwAAPYDACDBAQEAAAABwgEBAAAAAcMBAQAAAAHGAQAAAMYBAskBQAAAAAHKAUAAAAABjgIBAAAAAY8CAQAAAAECAAAAAQAgIgAAigUAIAMAAAANACAiAACKBQAgIwAAjgUAIA0AAAANACAJAADgBAAgCwAAsAMAIAwAALEDACAbAACOBQAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIY4CAQCIAwAhjwIBAIgDACELCQAA4AQAIAsAALADACAMAACxAwAgwQEBAIgDACHCAQEAiAMAIcMBAQCIAwAhxgEAAIkDxgEiyQFAAIoDACHKAUAAigMAIY4CAQCIAwAhjwIBAIgDACENwQEBAAAAAcQBAQAAAAHGAQAAAIcCAskBQAAAAAHKAUAAAAAB7gEBAAAAAfoBAQAAAAGCAgEAAAABhAIAAACEAgKFAkAAAAABhwJAAAAAAYgCQAAAAAGJAiAAAAABEQoAAJ4EACANAADXAwAgFAAA2QMAIMEBAQAAAAHEAQEAAAABxgEAAACHAgLJAUAAAAABygFAAAAAAe4BAQAAAAH6AQEAAAABggIBAAAAAYQCAAAAhAIChQJAAAAAAYcCQAAAAAGIAkAAAAABiQIgAAAAAYoCAQAAAAECAAAAGwAgIgAAkAUAIAMAAAAZACAiAACQBQAgIwAAlAUAIBMAAAAZACAKAACcBAAgDQAAwwMAIBQAAMUDACAbAACUBQAgwQEBAIgDACHEAQEAiAMAIcYBAAC-A4cCIskBQACKAwAhygFAAIoDACHuAQEAiAMAIfoBAQCIAwAhggIBAIgDACGEAgAAvQOEAiKFAkAAigMAIYcCQAC_AwAhiAJAAL8DACGJAiAAwAMAIYoCAQDBAwAhEQoAAJwEACANAADDAwAgFAAAxQMAIMEBAQCIAwAhxAEBAIgDACHGAQAAvgOHAiLJAUAAigMAIcoBQACKAwAh7gEBAIgDACH6AQEAiAMAIYICAQCIAwAhhAIAAL0DhAIihQJAAIoDACGHAkAAvwMAIYgCQAC_AwAhiQIgAMADACGKAgEAwQMAIQnBAQEAAAABxgEAAAD_AQLJAUAAAAABygFAAAAAAfsBEAAAAAH8AQEAAAAB_QEBAAAAAf8BQAAAAAGBAgEAAAABCMEBAQAAAAHGAQAAAIwCAskBQAAAAAHKAUAAAAAB9QEBAAAAAfYBAQAAAAH4AUAAAAAB-QFAAAAAAQnBAQEAAAABxAEBAAAAAcYBAAAA-AECyQFAAAAAAcoBQAAAAAH1AQEAAAAB9gEBAAAAAfgBQAAAAAH5AUAAAAABEA4AALIEACAPAACzBAAgEwAAtQQAIMEBAQAAAAHCAQEAAAABxgEAAADjAQLJAUAAAAABygFAAAAAAdkBAQAAAAHaAQEAAAAB2wEBAAAAAdwBAQAAAAHeAQAAAN4BAuABAAAA4AEC4QEgAAAAAeMBAQAAAAECAAAA4gEAICIAAJgFACAQDgAAsgQAIBAAALQEACATAAC1BAAgwQEBAAAAAcIBAQAAAAHGAQAAAOMBAskBQAAAAAHKAUAAAAAB2QEBAAAAAdoBAQAAAAHbAQEAAAAB3AEBAAAAAd4BAAAA3gEC4AEAAADgAQLhASAAAAAB4wEBAAAAAQIAAADiAQAgIgAAmgUAIBAOAACyBAAgDwAAswQAIBAAALQEACDBAQEAAAABwgEBAAAAAcYBAAAA4wECyQFAAAAAAcoBQAAAAAHZAQEAAAAB2gEBAAAAAdsBAQAAAAHcAQEAAAAB3gEAAADeAQLgAQAAAOABAuEBIAAAAAHjAQEAAAABAgAAAOIBACAiAACcBQAgAwAAACkAICIAAJwFACAjAACgBQAgEgAAACkAIA4AAIUEACAPAACGBAAgEAAAhwQAIBsAAKAFACDBAQEAiAMAIcIBAQCIAwAhxgEAAIQE4wEiyQFAAIoDACHKAUAAigMAIdkBAQCIAwAh2gEBAMEDACHbAQEAiAMAIdwBAQDBAwAh3gEAAIIE3gEi4AEAAIME4AEi4QEgAMADACHjAQEAwQMAIRAOAACFBAAgDwAAhgQAIBAAAIcEACDBAQEAiAMAIcIBAQCIAwAhxgEAAIQE4wEiyQFAAIoDACHKAUAAigMAIdkBAQCIAwAh2gEBAMEDACHbAQEAiAMAIdwBAQDBAwAh3gEAAIIE3gEi4AEAAIME4AEi4QEgAMADACHjAQEAwQMAIQnBAQEAAAABxgEAAAD_AQLJAUAAAAABygFAAAAAAfsBEAAAAAH8AQEAAAAB_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_tQEDgAG2AQOBAbcBA4IBuAEDgwG6AQOEAbwBEYUBvQE-hgG_AQOHAcEBEYgBwgE_iQHDAQOKAcQBA4sBxQERjAHIAUCNAckBRI4BywEMjwHMAQyQAc4BDJEBzwEMkgHQAQyTAdIBDJQB1AERlQHVAUWWAdcBDJcB2QERmAHaAUaZAdsBDJoB3AEMmwHdARGcAeABR50B4QFNngHjAQufAeQBC6AB5gELoQHnAQuiAegBC6MB6gELpAHsARGlAe0BTqYB7wELpwHxARGoAfIBT6kB8wELqgH0AQurAfUBEawB-AFQrQH5AVSuAfsBBK8B_AEEsAH_AQSxAYACBLIBgQIEswGDAgS0AYUCEbUBhgJVtgGIAgS3AYoCEbgBiwJWuQGMAgS6AY0CBLsBjgIRvAGRAle9AZICWw"
 };
 async function decodeBase64AsWasm(wasmBase64) {
   const { Buffer: Buffer2 } = await import("buffer");
@@ -167,7 +167,9 @@ var LoadSheddingScalarFieldEnum = {
   endTime: "endTime",
   status: "status",
   reason: "reason",
-  areaId: "areaId"
+  areaId: "areaId",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt"
 };
 var OutageScalarFieldEnum = {
   id: "id",
@@ -181,6 +183,7 @@ var OutageScalarFieldEnum = {
   isDeleted: "isDeleted",
   userId: "userId",
   technicianId: "technicianId",
+  areaId: "areaId",
   createdAt: "createdAt",
   updatedAt: "updatedAt"
 };
@@ -337,6 +340,12 @@ var config_default = {
   tester_admin_name: process.env.TESTER_ADMIN_NAME,
   tester_admin_email: process.env.TESTER_ADMIN_EMAIL,
   tester_admin_password: process.env.TESTER_ADMIN_PASSWORD,
+  tester_technician_name: process.env.TESTER_TECHNICIAN_NAME,
+  tester_technician_email: process.env.TESTER_TECHNICIAN_EMAIL,
+  tester_technician_password: process.env.TESTER_TECHNICIAN_PASSWORD,
+  tester_customer_name: process.env.TESTER_CUSTOMER_NAME,
+  tester_customer_email: process.env.TESTER_CUSTOMER_EMAIL,
+  tester_customer_password: process.env.TESTER_CUSTOMER_PASSWORD,
   redis_user: process.env.REDIS_USER,
   redis_password: process.env.REDIS_PASSWORD,
   redis_host: process.env.REDIS_HOST,
@@ -358,7 +367,6 @@ var AppError = class extends Error {
   statusCode;
   constructor(statusCode, message, stack = "") {
     super(message);
-    console.log(message, "this is message from app error");
     this.statusCode = statusCode;
     if (stack) {
       this.stack = stack;
@@ -651,7 +659,6 @@ var verifyOtpAndCreateUser = async (payload) => {
 var loginUser = async (payload) => {
   const { password } = payload;
   const email = payload.email.trim().toLowerCase();
-  console.log(payload, "in login user");
   const user = await prisma.user.findUnique({
     where: {
       email
@@ -968,7 +975,6 @@ var registerUser = catchAsync(async (req, res) => {
   });
 });
 var verifyUserEmail = catchAsync(async (req, res) => {
-  console.log("user  hited controller", req.body);
   const payload = req.body;
   const result = await authServices.verifyOtpAndCreateUser(payload);
   const { accessToken, refreshToken: refreshToken3, createdUser } = result;
@@ -989,12 +995,11 @@ var verifyUserEmail = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus4.CREATED,
     success: true,
-    message: "Patient registered successfully",
+    message: "User registered successfully",
     data: { accessToken, refreshToken: refreshToken3, createdUser }
   });
 });
 var loginUser2 = catchAsync(async (req, res) => {
-  console.log("LOGIN user LOGIN hited controller", req.body);
   const payload = req.body;
   const { accessToken, refreshToken: refreshToken3 } = await authServices.loginUser(payload);
   res.cookie("accessToken", accessToken, {
@@ -1014,7 +1019,7 @@ var loginUser2 = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus4.CREATED,
     success: true,
-    message: "Login successfull",
+    message: "User Login successfull",
     data: {
       accessToken,
       refreshToken: refreshToken3
@@ -1132,6 +1137,7 @@ var auth = (...requiredRoles) => {
         "You are not logged in. Please log in to access this resource."
       );
     }
+    console.log("AUTH MIDDLEWARE IS HITTED OVER HERE");
     const verifiedToken = jwtUtils.verifyToken(token, config_default.jwt_access_secret);
     if (!verifiedToken.success) {
       throw new AppError(httpStatus5.UNAUTHORIZED, verifiedToken.error);
@@ -1143,7 +1149,6 @@ var auth = (...requiredRoles) => {
         "Forbidden. You don't have permission to access this resource."
       );
     }
-    console.log(verifiedToken, "verifiedToken");
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -1176,6 +1181,7 @@ import httpStatus6 from "http-status";
 var validateRequest = (zodSchema) => {
   return catchAsync((req, res, next) => {
     const payload = req.body ?? {};
+    console.log(payload, "this is payload in validate resuques");
     const result = zodSchema.safeParse(payload);
     if (!result.success) {
       console.log(result.error);
@@ -1285,8 +1291,37 @@ var updateTechnicicanProfileInDb = async (payload, resume, technicianUserId) => 
   });
   return updatedTechnicianProfile;
 };
+var technicianProfileApprovalInDb = async (payload) => {
+  const techProfile = await prisma.technicianProfile.findUnique({
+    where: {
+      id: payload.technicianId
+    }
+  });
+  if (!techProfile) {
+    throw new AppError(httpStatus7.NOT_FOUND, "Technican profile is not exist");
+  }
+  if (payload.status === TechnicianProfileStatus.REJECTED && techProfile.technicianvProfileVerificationStatus === TechnicianProfileStatus.APPROVED) {
+    throw new AppError(httpStatus7.BAD_REQUEST, `Technican profile is approved cant reject it again`);
+  }
+  if (payload.status === TechnicianProfileStatus.PENDING && (techProfile.technicianvProfileVerificationStatus === TechnicianProfileStatus.APPROVED || techProfile.technicianvProfileVerificationStatus === TechnicianProfileStatus.REJECTED)) {
+    throw new AppError(httpStatus7.BAD_REQUEST, `Technican profile is approved OR REJECTED CANT MAKE IT PENDING`);
+  }
+  if (techProfile.technicianvProfileVerificationStatus === payload.status) {
+    throw new AppError(httpStatus7.CONFLICT, `Technican profile is already ${payload.status}`);
+  }
+  const updatedResult = await prisma.technicianProfile.update({
+    where: {
+      id: payload.technicianId
+    },
+    data: {
+      technicianvProfileVerificationStatus: payload.status
+    }
+  });
+  return updatedResult;
+};
 var TechnicianProfileService = {
-  updateTechnicicanProfileInDb
+  updateTechnicicanProfileInDb,
+  technicianProfileApprovalInDb
 };
 
 // src/app/modules/technicianProfile/technician-profile.controller.ts
@@ -1315,13 +1350,25 @@ var updateTechnicianProfile = catchAsync(async (req, res) => {
     data: result
   });
 });
+var profileApproval = catchAsync(async (req, res) => {
+  const payload = req.body;
+  const result = await TechnicianProfileService.technicianProfileApprovalInDb(payload);
+  sendResponse(res, {
+    statusCode: httpStatus8.OK,
+    success: true,
+    message: "Technicain profile approval status updated successfully",
+    data: result
+  });
+});
 var TechnicianProfileController = {
-  updateTechnicianProfile
+  updateTechnicianProfile,
+  profileApproval
 };
 
 // src/app/modules/technicianProfile/technician-profile.route.ts
 var router2 = Router2();
 router2.patch("/", auth(Role.TECHNICIAN), upload.single("resume"), TechnicianProfileController.updateTechnicianProfile);
+router2.patch("/update-status", auth(Role.ADMIN), TechnicianProfileController.profileApproval);
 var TechnicianRoutes = router2;
 
 // src/app/modules/distributionInfrastructure/zone/zone.route.ts
@@ -1453,10 +1500,56 @@ var getZoneDetails = async (zoneId) => {
   });
   return zoneDetails;
 };
+var updateZoneInDb = async (zoneId, payload, zoneImageFile) => {
+  const existingZone = await prisma.zone.findUnique({
+    where: { id: zoneId }
+  });
+  if (!existingZone) {
+    throw new AppError(httpStatus9.NOT_FOUND, "Zone not found");
+  }
+  if (payload.code && payload.code !== existingZone.code) {
+    const zoneWithSameCode = await prisma.zone.findUnique({
+      where: { code: payload.code }
+    });
+    if (zoneWithSameCode) {
+      throw new AppError(httpStatus9.CONFLICT, "Zone code already exists");
+    }
+  }
+  const data = { ...payload };
+  if (zoneImageFile) {
+    const zoneImageUploadResult = await new Promise(
+      (resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { resource_type: "image" },
+          (error, result) => {
+            if (error) return reject(error);
+            if (!result) {
+              return reject(
+                new AppError(
+                  httpStatus9.INTERNAL_SERVER_ERROR,
+                  "No result returned from Cloudinary"
+                )
+              );
+            }
+            resolve(result);
+          }
+        ).end(zoneImageFile.buffer);
+      }
+    );
+    data.zoneImageUrl = zoneImageUploadResult.secure_url;
+    data.zoneImagePublicId = zoneImageUploadResult.public_id;
+  }
+  return prisma.zone.update({
+    where: { id: zoneId },
+    data,
+    include: { substations: true }
+  });
+};
 var ZoneService = {
   createZoneInDb,
   getAllZoneFromDb,
-  getZoneDetails
+  getZoneDetails,
+  updateZoneInDb
 };
 
 // src/app/modules/distributionInfrastructure/zone/zone.validation.ts
@@ -1467,6 +1560,10 @@ var createZoneZodSchema = z3.object({
   description: z3.string("Not a string").min(5, "Description should minimum have 5 char").max(150, "Max 150 chars"),
   status: z3.enum(["ACTIVE", "INACTIVE"])
 });
+var updateZoneZodSchema = createZoneZodSchema.partial().refine(
+  (payload) => Object.keys(payload).length > 0,
+  "At least one zone field is required for update"
+);
 
 // src/app/modules/distributionInfrastructure/zone/zone.controller.ts
 var createZone = catchAsync(async (req, res) => {
@@ -1505,15 +1602,41 @@ var getZoneDetails2 = catchAsync(async (req, res) => {
     data: result
   });
 });
+var updateZone = catchAsync(async (req, res) => {
+  const zoneId = req.params.zoneId;
+  const zoneImageFile = req.file;
+  const zodValidationResult = updateZoneZodSchema.safeParse(
+    JSON.parse(req.body.data)
+  );
+  if (!zodValidationResult.success) {
+    throw new AppError(
+      httpStatus10.BAD_REQUEST,
+      zodValidationResult.error.issues[0].message
+    );
+  }
+  const result = await ZoneService.updateZoneInDb(
+    zoneId,
+    zodValidationResult.data,
+    zoneImageFile
+  );
+  sendResponse(res, {
+    statusCode: httpStatus10.OK,
+    success: true,
+    message: "Zone updated successfully",
+    data: result
+  });
+});
 var ZoneController = {
   createZone,
   getAllZone,
-  getZoneDetails: getZoneDetails2
+  getZoneDetails: getZoneDetails2,
+  updateZone
 };
 
 // src/app/modules/distributionInfrastructure/zone/zone.route.ts
 var router3 = Router3();
 router3.post("/", auth(Role.ADMIN), upload.single("zoneImage"), ZoneController.createZone);
+router3.patch("/:zoneId", auth(Role.ADMIN), upload.single("zoneImage"), ZoneController.updateZone);
 router3.get("/", ZoneController.getAllZone);
 router3.get("/:zoneId", ZoneController.getZoneDetails);
 var ZoneRoutes = router3;
@@ -1530,11 +1653,23 @@ var createSubstationZodSchema = z4.object({
   location: z4.string("Not a string").min(5, "Location should minimum have 5 char").max(60, "Max 60 chars"),
   zoneId: z4.string("Not a string")
 });
+var updateSubstationZodSchema = z4.object({
+  name: z4.string("Name is not a string").min(5, "Name should minimum have 5 char").max(100, "Name should not be more than 100 chars").optional(),
+  code: z4.string("Not a string").min(5, "Code should minimum have 5 char").max(10, "Max 10 chars").optional(),
+  capacity: z4.string("Not a string").min(5, "capacity should minimum have 5 char").max(50, "Max 50 chars").optional(),
+  location: z4.string("Not a string").min(5, "Location should minimum have 5 char").max(60, "Max 60 chars").optional(),
+  zoneId: z4.string("Not a string").min(1, "Zone ID is required").optional(),
+  status: z4.enum(["ACTIVE", "INACTIVE"]).optional()
+}).refine((payload) => Object.keys(payload).length > 0, {
+  message: "At least one substation field is required for update"
+});
 var substationValidation = {
-  createSubstationZodSchema
+  createSubstationZodSchema,
+  updateSubstationZodSchema
 };
 
 // src/app/modules/distributionInfrastructure/substation/substation.service.ts
+import httpStatus11 from "http-status";
 var createSubstation = async (payload) => {
   const { name, code, capacity, location, zoneId } = payload;
   const createdSubstationResult = await prisma.substation.create({
@@ -1614,19 +1749,52 @@ var getSubstationDetails = async (substationId) => {
   });
   return substationDetails;
 };
+var updateSubstation = async (substationId, payload) => {
+  const existingSubstation = await prisma.substation.findUnique({
+    where: { id: substationId }
+  });
+  if (!existingSubstation) {
+    throw new AppError(httpStatus11.NOT_FOUND, "Substation not found");
+  }
+  if (payload.code && payload.code !== existingSubstation.code) {
+    const substationWithSameCode = await prisma.substation.findUnique({
+      where: { code: payload.code }
+    });
+    if (substationWithSameCode) {
+      throw new AppError(httpStatus11.CONFLICT, "Substation code already exists");
+    }
+  }
+  if (payload.zoneId && payload.zoneId !== existingSubstation.zoneId) {
+    const zone = await prisma.zone.findUnique({
+      where: { id: payload.zoneId }
+    });
+    if (!zone) {
+      throw new AppError(httpStatus11.NOT_FOUND, "Zone not found");
+    }
+  }
+  return prisma.substation.update({
+    where: { id: substationId },
+    data: payload,
+    include: {
+      zone: true,
+      feeders: true
+    }
+  });
+};
 var SubstationService = {
   createSubstation,
   getAllSubstationFromDb,
-  getSubstationDetails
+  getSubstationDetails,
+  updateSubstation
 };
 
 // src/app/modules/distributionInfrastructure/substation/substation.controller.ts
-import httpStatus11 from "http-status";
+import httpStatus12 from "http-status";
 var createSubstation2 = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await SubstationService.createSubstation(payload);
   sendResponse(res, {
-    statusCode: httpStatus11.OK,
+    statusCode: httpStatus12.OK,
     success: true,
     message: "Substation created successfully",
     data: result
@@ -1635,7 +1803,7 @@ var createSubstation2 = catchAsync(async (req, res) => {
 var getAllSubstation = catchAsync(async (req, res) => {
   const { data, meta } = await SubstationService.getAllSubstationFromDb(req.query);
   sendResponse(res, {
-    statusCode: httpStatus11.OK,
+    statusCode: httpStatus12.OK,
     success: true,
     message: "All Substation Retrieved Successfully",
     data,
@@ -1646,23 +1814,38 @@ var getSubstationDetails2 = catchAsync(async (req, res) => {
   const substationId = req.params.substationId;
   const result = await SubstationService.getSubstationDetails(substationId);
   sendResponse(res, {
-    statusCode: httpStatus11.OK,
+    statusCode: httpStatus12.OK,
     success: true,
     message: " Zone Details Successfully",
+    data: result
+  });
+});
+var updateSubstation2 = catchAsync(async (req, res) => {
+  const substationId = req.params.substationId;
+  const result = await SubstationService.updateSubstation(
+    substationId,
+    req.body
+  );
+  sendResponse(res, {
+    statusCode: httpStatus12.OK,
+    success: true,
+    message: "Substation updated successfully",
     data: result
   });
 });
 var SubstationController = {
   createSubstation: createSubstation2,
   getAllSubstation,
-  getSubstationDetails: getSubstationDetails2
+  getSubstationDetails: getSubstationDetails2,
+  updateSubstation: updateSubstation2
 };
 
 // src/app/modules/distributionInfrastructure/substation/substation.route.ts
 var router4 = Router4();
 router4.post("/", auth(Role.ADMIN), validateRequest(substationValidation.createSubstationZodSchema), SubstationController.createSubstation);
+router4.patch("/:substationId", auth(Role.ADMIN), validateRequest(substationValidation.updateSubstationZodSchema), SubstationController.updateSubstation);
 router4.get("/", SubstationController.getAllSubstation);
-router4.get("/:substationId", auth(Role.CUSTOMER, Role.TECHNICIAN, Role.ADMIN), SubstationController.getSubstationDetails);
+router4.get("/:substationId", SubstationController.getSubstationDetails);
 var SubstationRoutes = router4;
 
 // src/app/modules/distributionInfrastructure/feeder/feeder.route.ts
@@ -1676,14 +1859,23 @@ var createFeederZodSchema = z5.object({
   voltageLevel: z5.string("Not a string").min(5, "capacity should minimum have 5 char").max(50, "Max 150 chars"),
   substationId: z5.string("Not a string")
 });
+var updateFeederZodSchema = z5.object({
+  name: z5.string("Name is not a string").min(5, "Name should minimum have 5 char").max(100, "Name should not be more than 100 chars").optional(),
+  code: z5.string("Not a string").min(5, "Code should minimum have 5 char").max(10, "Max 10 chars").optional(),
+  voltageLevel: z5.string("Not a string").min(5, "Voltage level should minimum have 5 chars").max(50, "Max 50 chars").optional(),
+  substationId: z5.string("Not a string").min(1, "Substation ID is required").optional(),
+  status: z5.enum(["ACTIVE", "INACTIVE"]).optional()
+});
 var feederValidation = {
-  createFeederZodSchema
+  createFeederZodSchema,
+  updateFeederZodSchema
 };
 
 // src/app/modules/distributionInfrastructure/feeder/feeder.controller.ts
-import httpStatus12 from "http-status";
+import httpStatus14 from "http-status";
 
 // src/app/modules/distributionInfrastructure/feeder/feeder.service.ts
+import httpStatus13 from "http-status";
 var createFeederInDb = async (payload) => {
   const { name, code, voltageLevel, substationId } = payload;
   const createdSubstationResult = await prisma.feeder.create({
@@ -1764,10 +1956,43 @@ var getFeederDetails = async (feederId) => {
   });
   return substationDetails;
 };
+var updateFeeder = async (feederId, payload) => {
+  const existingFeeder = await prisma.feeder.findUnique({
+    where: { id: feederId }
+  });
+  if (!existingFeeder) {
+    throw new AppError(httpStatus13.NOT_FOUND, "Feeder not found");
+  }
+  if (payload.code && payload.code !== existingFeeder.code) {
+    const feederWithSameCode = await prisma.feeder.findUnique({
+      where: { code: payload.code }
+    });
+    if (feederWithSameCode) {
+      throw new AppError(httpStatus13.CONFLICT, "Feeder code already exists");
+    }
+  }
+  if (payload.substationId && payload.substationId !== existingFeeder.substationId) {
+    const substation = await prisma.substation.findUnique({
+      where: { id: payload.substationId }
+    });
+    if (!substation) {
+      throw new AppError(httpStatus13.NOT_FOUND, "Substation not found");
+    }
+  }
+  return prisma.feeder.update({
+    where: { id: feederId },
+    data: payload,
+    include: {
+      substation: true,
+      areas: true
+    }
+  });
+};
 var FeederService = {
   createFeederInDb,
   getAllFeederFromDb,
-  getFeederDetails
+  getFeederDetails,
+  updateFeeder
 };
 
 // src/app/modules/distributionInfrastructure/feeder/feeder.controller.ts
@@ -1775,7 +2000,7 @@ var createFeeder = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await FeederService.createFeederInDb(payload);
   sendResponse(res, {
-    statusCode: httpStatus12.OK,
+    statusCode: httpStatus14.OK,
     success: true,
     message: "Feeder created successfully",
     data: result
@@ -1784,7 +2009,7 @@ var createFeeder = catchAsync(async (req, res) => {
 var getAllFeeder = catchAsync(async (req, res) => {
   const { data, meta } = await FeederService.getAllFeederFromDb(req.query);
   sendResponse(res, {
-    statusCode: httpStatus12.OK,
+    statusCode: httpStatus14.OK,
     success: true,
     message: "All Feeder Retrieved Successfully",
     data,
@@ -1795,23 +2020,35 @@ var getFeederDetails2 = catchAsync(async (req, res) => {
   const feederId = req.params.feederId;
   const result = await FeederService.getFeederDetails(feederId);
   sendResponse(res, {
-    statusCode: httpStatus12.OK,
+    statusCode: httpStatus14.OK,
     success: true,
     message: " Feeder Details Retrieved Successfully",
+    data: result
+  });
+});
+var updateFeeder2 = catchAsync(async (req, res) => {
+  const feederId = req.params.feederId;
+  const result = await FeederService.updateFeeder(feederId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus14.OK,
+    success: true,
+    message: "Feeder updated successfully",
     data: result
   });
 });
 var FeederController = {
   createFeeder,
   getAllFeeder,
-  getFeederDetails: getFeederDetails2
+  getFeederDetails: getFeederDetails2,
+  updateFeeder: updateFeeder2
 };
 
 // src/app/modules/distributionInfrastructure/feeder/feeder.route.ts
 var router5 = Router5();
 router5.post("/", auth(Role.ADMIN), validateRequest(feederValidation.createFeederZodSchema), FeederController.createFeeder);
+router5.patch("/:feederId", auth(Role.ADMIN), validateRequest(feederValidation.updateFeederZodSchema), FeederController.updateFeeder);
 router5.get("/", FeederController.getAllFeeder);
-router5.get("/:feederId", auth(Role.CUSTOMER, Role.TECHNICIAN, Role.ADMIN), FeederController.getFeederDetails);
+router5.get("/:feederId", FeederController.getFeederDetails);
 var FeederRoutes = router5;
 
 // src/app/modules/distributionInfrastructure/area/area.route.ts
@@ -1825,14 +2062,23 @@ var createAreaZodSchema = z6.object({
   address: z6.string("Not a string").min(5, " address should minimum have 5 char").max(300, "Max 300 chars"),
   feederId: z6.string("Not a string")
 });
+var updateAreaZodSchema = z6.object({
+  name: z6.string("Name is not a string").min(5, "Name should minimum have 5 char").max(100, "Name should not be more than 100 chars").optional(),
+  code: z6.string("Not a string").min(5, "Code should minimum have 5 char").max(10, "Max 10 chars").optional(),
+  address: z6.string("Not a string").min(5, "Address should minimum have 5 char").max(300, "Max 300 chars").optional(),
+  feederId: z6.string("Not a string").min(1, "Feeder ID is required").optional(),
+  status: z6.enum(["ACTIVE", "INACTIVE"]).optional()
+});
 var areaValidation = {
-  createAreaZodSchema
+  createAreaZodSchema,
+  updateAreaZodSchema
 };
 
 // src/app/modules/distributionInfrastructure/area/area.controller.ts
-import httpStatus13 from "http-status";
+import httpStatus16 from "http-status";
 
 // src/app/modules/distributionInfrastructure/area/area.service.ts
+import httpStatus15 from "http-status";
 var createAreaInDb = async (payload) => {
   const { name, code, address, feederId } = payload;
   const createdAreaResult = await prisma.area.create({
@@ -1909,10 +2155,42 @@ var getAreaDetails = async (areaId) => {
   });
   return areaDetails;
 };
+var updateArea = async (areaId, payload) => {
+  const existingArea = await prisma.area.findUnique({
+    where: { id: areaId }
+  });
+  if (!existingArea) {
+    throw new AppError(httpStatus15.NOT_FOUND, "Area not found");
+  }
+  if (payload.code && payload.code !== existingArea.code) {
+    const areaWithSameCode = await prisma.area.findUnique({
+      where: { code: payload.code }
+    });
+    if (areaWithSameCode) {
+      throw new AppError(httpStatus15.CONFLICT, "Area code already exists");
+    }
+  }
+  if (payload.feederId && payload.feederId !== existingArea.feederId) {
+    const feeder = await prisma.feeder.findUnique({
+      where: { id: payload.feederId }
+    });
+    if (!feeder) {
+      throw new AppError(httpStatus15.NOT_FOUND, "Feeder not found");
+    }
+  }
+  return prisma.area.update({
+    where: { id: areaId },
+    data: payload,
+    include: {
+      feeder: true
+    }
+  });
+};
 var AreaService = {
   createAreaInDb,
   getAllAreaFromDb,
-  getAreaDetails
+  getAreaDetails,
+  updateArea
 };
 
 // src/app/modules/distributionInfrastructure/area/area.controller.ts
@@ -1920,7 +2198,7 @@ var createArea = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await AreaService.createAreaInDb(payload);
   sendResponse(res, {
-    statusCode: httpStatus13.OK,
+    statusCode: httpStatus16.OK,
     success: true,
     message: "Area created successfully",
     data: result
@@ -1929,7 +2207,7 @@ var createArea = catchAsync(async (req, res) => {
 var getAllArea = catchAsync(async (req, res) => {
   const { data, meta } = await AreaService.getAllAreaFromDb(req.query);
   sendResponse(res, {
-    statusCode: httpStatus13.OK,
+    statusCode: httpStatus16.OK,
     success: true,
     message: "All Area Retrieved Successfully",
     data,
@@ -1940,21 +2218,33 @@ var getAreaDetails2 = catchAsync(async (req, res) => {
   const areaId = req.params.areaId;
   const result = await AreaService.getAreaDetails(areaId);
   sendResponse(res, {
-    statusCode: httpStatus13.OK,
+    statusCode: httpStatus16.OK,
     success: true,
     message: " Area Details Retrieved Successfully",
+    data: result
+  });
+});
+var updateArea2 = catchAsync(async (req, res) => {
+  const areaId = req.params.areaId;
+  const result = await AreaService.updateArea(areaId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus16.OK,
+    success: true,
+    message: "Area updated successfully",
     data: result
   });
 });
 var AreaController = {
   createArea,
   getAllArea,
-  getAreaDetails: getAreaDetails2
+  getAreaDetails: getAreaDetails2,
+  updateArea: updateArea2
 };
 
 // src/app/modules/distributionInfrastructure/area/area.route.ts
 var router6 = Router6();
 router6.post("/", auth(Role.ADMIN), validateRequest(areaValidation.createAreaZodSchema), AreaController.createArea);
+router6.patch("/:areaId", auth(Role.ADMIN), validateRequest(areaValidation.updateAreaZodSchema), AreaController.updateArea);
 router6.get("/", AreaController.getAllArea);
 router6.get("/:areaId", auth(Role.CUSTOMER, Role.TECHNICIAN, Role.ADMIN), AreaController.getAreaDetails);
 var AreaRoutes = router6;
@@ -1963,18 +2253,18 @@ var AreaRoutes = router6;
 import { Router as Router7 } from "express";
 
 // src/app/modules/outage/outage.controller.ts
-import httpStatus15 from "http-status";
+import httpStatus18 from "http-status";
 
 // src/app/modules/outage/outage.service.ts
-import httpStatus14 from "http-status";
+import httpStatus17 from "http-status";
 var createOutageInDb = async (payload, userId) => {
-  const { cause, description, priority } = payload;
+  const { cause, description, areaId } = payload;
   const outageCreatedResult = await prisma.outage.create({
     data: {
       cause,
       description,
-      priority,
-      userId
+      userId,
+      areaId
     }
   });
   return outageCreatedResult;
@@ -1986,6 +2276,9 @@ var getAllOutageFromDb = async (query) => {
   const sortBy = query.sortBy ? query.sortBy : "createdAt";
   const sortOrder = query.sortOrder ? query.sortOrder : "desc";
   const andConditions = [];
+  andConditions.push({
+    isDeleted: false
+  });
   if (query.searchTerm) {
     andConditions.push({
       OR: [
@@ -2036,7 +2329,8 @@ var getAllOutageFromDb = async (query) => {
 var getCurrentUserAddedAllOutagesFromDb = async (userId) => {
   const currentUserOutages = await prisma.outage.findMany({
     where: {
-      userId
+      userId,
+      isDeleted: false
     },
     include: {
       techician: true,
@@ -2052,11 +2346,14 @@ var assignTechnician = async (outageId, technicianId) => {
     }
   });
   if (!ifOutageExist) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Outage not found");
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage not found");
+  }
+  if (ifOutageExist.isDeleted) {
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage is deleted");
   }
   if (ifOutageExist.status === OutageStatus.RESTORED || ifOutageExist.status === OutageStatus.CANCELLED) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus17.BAD_REQUEST,
       "Technician cannot be assigned to a restored or cancelled outage"
     );
   }
@@ -2069,35 +2366,35 @@ var assignTechnician = async (outageId, technicianId) => {
     }
   });
   if (!technician) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Technician not found");
+    throw new AppError(httpStatus17.NOT_FOUND, "Technician not found");
   }
   if (technician.role !== Role.TECHNICIAN) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus17.BAD_REQUEST,
       "Selected user is not a technician"
     );
   }
   if (technician.status === UserStatus.BAN) {
-    throw new AppError(httpStatus14.FORBIDDEN, "This technician is banned");
+    throw new AppError(httpStatus17.FORBIDDEN, "This technician is banned");
   }
   if (!technician.technicianProfile) {
-    throw new AppError(httpStatus14.BAD_REQUEST, "Technician profile not found");
+    throw new AppError(httpStatus17.BAD_REQUEST, "Technician profile not found");
   }
   if (technician.technicianProfile.technicianvProfileVerificationStatus !== TechnicianProfileStatus.APPROVED) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus17.BAD_REQUEST,
       "Technician profile is not approved"
     );
   }
   if (technician.technicianProfile.availability !== TechnicianStatus.AVAILABLE) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus17.BAD_REQUEST,
       "Technician is currently unavailable"
     );
   }
   if (ifOutageExist.technicianId === technicianId) {
     throw new AppError(
-      httpStatus14.BAD_REQUEST,
+      httpStatus17.BAD_REQUEST,
       "This technician is already assigned to the outage"
     );
   }
@@ -2131,25 +2428,29 @@ var updateOutageStatusInDb = async (outageId, status, userId, userRole) => {
     select: {
       id: true,
       status: true,
-      technicianId: true
+      technicianId: true,
+      isDeleted: true
     }
   });
   if (!outage) {
-    throw new AppError(httpStatus14.NOT_FOUND, "Outage not found");
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage not found");
+  }
+  if (outage.isDeleted) {
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage is deleted");
   }
   if (outage.status === status) {
-    throw new AppError(httpStatus14.BAD_REQUEST, `Outage is already ${status}`);
+    throw new AppError(httpStatus17.BAD_REQUEST, `Outage is already ${status}`);
   }
   if (status === OutageStatus.ACKNOWLEDGED) {
     if (userRole !== Role.ADMIN) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus17.FORBIDDEN,
         "Only admin can acknowledge an outage"
       );
     }
     if (outage.status !== OutageStatus.REPORTED) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus17.BAD_REQUEST,
         "Only a reported outage can be acknowledged"
       );
     }
@@ -2167,19 +2468,19 @@ var updateOutageStatusInDb = async (outageId, status, userId, userRole) => {
   if (status === OutageStatus.IN_PROGRESS) {
     if (userRole !== Role.TECHNICIAN) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus17.FORBIDDEN,
         "Only technician can start outage work"
       );
     }
     if (outage.status !== OutageStatus.ASSIGNED) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus17.BAD_REQUEST,
         "Only an assigned outage can be moved to in progress"
       );
     }
     if (outage.technicianId !== userId) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus17.FORBIDDEN,
         "You are not assigned to this outage"
       );
     }
@@ -2197,19 +2498,19 @@ var updateOutageStatusInDb = async (outageId, status, userId, userRole) => {
   if (status === OutageStatus.RESTORED) {
     if (userRole !== Role.TECHNICIAN) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus17.FORBIDDEN,
         "Only technician can restore an outage"
       );
     }
     if (outage.status !== OutageStatus.IN_PROGRESS) {
       throw new AppError(
-        httpStatus14.BAD_REQUEST,
+        httpStatus17.BAD_REQUEST,
         "Only an in-progress outage can be restored"
       );
     }
     if (outage.technicianId !== userId) {
       throw new AppError(
-        httpStatus14.FORBIDDEN,
+        httpStatus17.FORBIDDEN,
         "You are not assigned to this outage"
       );
     }
@@ -2236,16 +2537,45 @@ var updateOutageStatusInDb = async (outageId, status, userId, userRole) => {
     return transactionResult;
   }
   throw new AppError(
-    httpStatus14.BAD_REQUEST,
+    httpStatus17.BAD_REQUEST,
     `Invalid outage status transition to ${status}`
   );
+};
+var deleteOutageFromDb = async (outageId, requestedUserId) => {
+  const outage = await prisma.outage.findUnique({
+    where: {
+      id: outageId
+    }
+  });
+  if (!outage) {
+    throw new AppError(httpStatus17.NOT_FOUND, "Outage not found");
+  }
+  if (outage.userId !== requestedUserId) {
+    throw new AppError(
+      httpStatus17.FORBIDDEN,
+      "You are not allowed to delete this outage"
+    );
+  }
+  if (outage.isDeleted) {
+    throw new AppError(httpStatus17.BAD_REQUEST, "Outage is already deleted");
+  }
+  const deletedOutage = await prisma.outage.update({
+    where: {
+      id: outageId
+    },
+    data: {
+      isDeleted: true
+    }
+  });
+  return deletedOutage;
 };
 var OutageService = {
   createOutageInDb,
   getAllOutageFromDb,
   getCurrentUserAddedAllOutagesFromDb,
   assignTechnician,
-  updateOutageStatusInDb
+  updateOutageStatusInDb,
+  deleteOutageFromDb
 };
 
 // src/app/modules/outage/outage.controller.ts
@@ -2254,7 +2584,7 @@ var createOutage = catchAsync(async (req, res) => {
   const userId = req.user?.userId;
   const result = await OutageService.createOutageInDb(payload, userId);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus18.OK,
     success: true,
     message: "Unexpected Outage created successfully",
     data: result
@@ -2263,7 +2593,7 @@ var createOutage = catchAsync(async (req, res) => {
 var getAllOutageForAdminManage = catchAsync(async (req, res) => {
   const { data, meta } = await OutageService.getAllOutageFromDb(req.query);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus18.OK,
     success: true,
     message: "All Outages Retrieved Successfully",
     data,
@@ -2274,7 +2604,7 @@ var getCurrentUserAddedOutages = catchAsync(async (req, res) => {
   const userId = req.user?.userId;
   const result = await OutageService.getCurrentUserAddedAllOutagesFromDb(userId);
   sendResponse(res, {
-    statusCode: httpStatus15.OK,
+    statusCode: httpStatus18.OK,
     success: true,
     message: "All Outages Retrieved Successfully",
     data: result
@@ -2289,7 +2619,7 @@ var assignTechnicianToReportedOutage = catchAsync(
       technicianId
     );
     sendResponse(res, {
-      statusCode: httpStatus15.OK,
+      statusCode: httpStatus18.OK,
       success: true,
       message: "Technician assigned successfully",
       data: result
@@ -2309,7 +2639,20 @@ var updateOutageStatus = catchAsync(
       userRole
     );
     sendResponse(res, {
-      statusCode: httpStatus15.OK,
+      statusCode: httpStatus18.OK,
+      success: true,
+      message: "Outage status updated successfully",
+      data: result
+    });
+  }
+);
+var deleteOutage = catchAsync(
+  async (req, res) => {
+    const outageId = req.params.outageId;
+    const requestedUserId = req.user?.userId;
+    const result = await OutageService.deleteOutageFromDb(outageId, requestedUserId);
+    sendResponse(res, {
+      statusCode: httpStatus18.OK,
       success: true,
       message: "Outage status updated successfully",
       data: result
@@ -2321,17 +2664,16 @@ var OutageController = {
   getAllOutageForAdminManage,
   getCurrentUserAddedOutages,
   assignTechnicianToReportedOutage,
-  updateOutageStatus
+  updateOutageStatus,
+  deleteOutage
 };
 
 // src/app/modules/outage/outage.validation.ts
 import z7 from "zod";
 var createOutageZodSchema = z7.object({
-  cause: z7.string("Cause is not a string").min(5, "Cause should minimum have 5 char").max(50, "Cause should not be more than 50 chars"),
-  description: z7.string("Not a string").min(5, "description should minimum have 5 char").max(400, "Max 400 chars"),
-  address: z7.string("Not a string").min(5, " address should minimum have 5 char").max(300, "Max 300 chars"),
-  priority: z7.enum(["HIGH", "NORMAL"]).optional(),
-  feederId: z7.string("Not a string")
+  cause: z7.string("cause Cause is not a string").min(5, "Cause should minimum have 5 char").max(50, "Cause should not be more than 50 chars"),
+  description: z7.string("description description Not a string").min(5, "description should minimum have 5 char").max(400, "Max 400 chars"),
+  areaId: z7.string("Not a string areaId")
 });
 var outageValidation = {
   createOutageZodSchema
@@ -2348,6 +2690,7 @@ router7.patch(
   auth(Role.ADMIN, Role.TECHNICIAN),
   OutageController.updateOutageStatus
 );
+router7.delete("/:outageId", auth(Role.ADMIN, Role.TECHNICIAN, Role.CUSTOMER), OutageController.deleteOutage);
 var OutageRoutes = router7;
 
 // src/app/modules/loadshedding/load-shedding.route.ts
@@ -2384,18 +2727,18 @@ var loadSheddingValidation = {
 };
 
 // src/app/modules/loadshedding/load-shedding.service.ts
-import httpStatus16 from "http-status";
+import httpStatus19 from "http-status";
 var createLoadSheddingScheduleInDb = async (payload) => {
-  const { title, startTime, endTime, status, reason, areaId } = payload;
+  const { title, startTime, endTime, reason, areaId } = payload;
   if (startTime >= endTime) {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Start time must be before end time"
     );
   }
   if (startTime < /* @__PURE__ */ new Date()) {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Load shedding schedule cannot start in the past"
     );
   }
@@ -2410,13 +2753,13 @@ var createLoadSheddingScheduleInDb = async (payload) => {
   });
   if (!area) {
     throw new AppError(
-      httpStatus16.NOT_FOUND,
+      httpStatus19.NOT_FOUND,
       "Area not found"
     );
   }
   if (area.status !== "ACTIVE") {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Cannot create load shedding schedule for an inactive area"
     );
   }
@@ -2437,7 +2780,7 @@ var createLoadSheddingScheduleInDb = async (payload) => {
   });
   if (conflictingSchedule) {
     throw new AppError(
-      httpStatus16.CONFLICT,
+      httpStatus19.CONFLICT,
       "A load shedding schedule already exists for this area during the selected time"
     );
   }
@@ -2446,7 +2789,6 @@ var createLoadSheddingScheduleInDb = async (payload) => {
       title,
       startTime,
       endTime,
-      status,
       reason,
       areaId
     }
@@ -2454,6 +2796,7 @@ var createLoadSheddingScheduleInDb = async (payload) => {
   return createdSchedule;
 };
 var getAllLoadSheddingSchdeule = async (query) => {
+  console.log(query, "query load sheddign schedule");
   const limit = query.limit ? Number(query.limit) : 10;
   const page = query.page ? Number(query.page) : 1;
   const skip = (page - 1) * limit;
@@ -2510,6 +2853,9 @@ var getLoadSheddingDetails = async (loadsheddingId) => {
   const getDetails = await prisma.loadShedding.findUniqueOrThrow({
     where: {
       id: loadsheddingId
+    },
+    include: {
+      area: true
     }
   });
   return getDetails;
@@ -2522,7 +2868,7 @@ var updateSchedule = async (payload, loadSheddingId) => {
   });
   if (!existingSchedule) {
     throw new AppError(
-      httpStatus16.NOT_FOUND,
+      httpStatus19.NOT_FOUND,
       "Load shedding schedule not found"
     );
   }
@@ -2530,13 +2876,13 @@ var updateSchedule = async (payload, loadSheddingId) => {
   const finalEndTime = payload.endTime ?? existingSchedule.endTime;
   if (finalStartTime >= finalEndTime) {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Start time must be before end time"
     );
   }
   if (payload.startTime && finalStartTime < /* @__PURE__ */ new Date()) {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Load shedding schedule cannot start in the past"
     );
   }
@@ -2551,13 +2897,13 @@ var updateSchedule = async (payload, loadSheddingId) => {
   });
   if (!area) {
     throw new AppError(
-      httpStatus16.NOT_FOUND,
+      httpStatus19.NOT_FOUND,
       "Area not found"
     );
   }
   if (area.status !== "ACTIVE") {
     throw new AppError(
-      httpStatus16.BAD_REQUEST,
+      httpStatus19.BAD_REQUEST,
       "Cannot update schedule for an inactive area"
     );
   }
@@ -2580,7 +2926,7 @@ var updateSchedule = async (payload, loadSheddingId) => {
   });
   if (conflictingSchedule) {
     throw new AppError(
-      httpStatus16.CONFLICT,
+      httpStatus19.CONFLICT,
       "Another load shedding schedule already exists during the selected time"
     );
   }
@@ -2613,21 +2959,22 @@ var LoadSheddingService = {
 };
 
 // src/app/modules/loadshedding/load-shedding.controller.ts
-import httpStatus17 from "http-status";
+import httpStatus20 from "http-status";
 var createLoadShedding = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await LoadSheddingService.createLoadSheddingScheduleInDb(payload);
   sendResponse(res, {
-    statusCode: httpStatus17.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "LoadShedding schedule created successfully",
     data: result
   });
 });
 var getAllLoadShedding = catchAsync(async (req, res) => {
+  console.log(req.query, "LOAD SHEDING CONTROLLER HITTED");
   const result = await LoadSheddingService.getAllLoadSheddingSchdeule(req.query);
   sendResponse(res, {
-    statusCode: httpStatus17.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: "All LoadShedding schedule Retrived successfully",
     data: result
@@ -2637,9 +2984,9 @@ var getLoadSheddingDetails2 = catchAsync(async (req, res) => {
   const loadsheddingId = req.params.loadsheddingId;
   const result = await LoadSheddingService.getLoadSheddingDetails(loadsheddingId);
   sendResponse(res, {
-    statusCode: httpStatus17.OK,
+    statusCode: httpStatus20.OK,
     success: true,
-    message: " Loadshedding Details Successfully",
+    message: " Load shedding Details Retrived Successfully",
     data: result
   });
 });
@@ -2648,7 +2995,7 @@ var updateLoadSheddingSchedule = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await LoadSheddingService.updateSchedule(payload, loadsheddingId);
   sendResponse(res, {
-    statusCode: httpStatus17.OK,
+    statusCode: httpStatus20.OK,
     success: true,
     message: " Loadshedding Details Successfully",
     data: result
@@ -2665,7 +3012,7 @@ var LoadSheddingController = {
 var router8 = Router8();
 router8.post("/", auth(Role.ADMIN), validateRequest(loadSheddingValidation.createLoadSheddingZodSchema), LoadSheddingController.createLoadShedding);
 router8.get("/", LoadSheddingController.getAllLoadShedding);
-router8.get("/:loadsheddingId", auth(Role.CUSTOMER), LoadSheddingController.getAllLoadShedding);
+router8.get("/:loadsheddingId", auth(Role.CUSTOMER, Role.TECHNICIAN, Role.ADMIN), LoadSheddingController.getLoadSheddingDetails);
 router8.patch("/:loadsheddingId", auth(Role.ADMIN), validateRequest(loadSheddingValidation.updateLoadSheddingZodSchema), LoadSheddingController.updateLoadSheddingSchedule);
 var LoadSheddingRoutes = router8;
 
@@ -2677,7 +3024,7 @@ import httpsStatus from "http-status";
 
 // src/app/modules/payment/payment.service.ts
 import axios from "axios";
-import httpStatus18 from "http-status";
+import httpStatus21 from "http-status";
 var createPaymentInDb = async (outageReportId, customerId) => {
   const transId = `TRX_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const customer = await prisma.user.findUniqueOrThrow({
@@ -2696,7 +3043,7 @@ var createPaymentInDb = async (outageReportId, customerId) => {
   });
   if (outageReport.userId !== customer.id)
     throw {
-      statusCode: httpStatus18.FORBIDDEN,
+      statusCode: httpStatus21.FORBIDDEN,
       name: "Forbidden",
       message: "You are not allowed to pay for this Outage since this is not you added.Pay for your own"
     };
@@ -2709,7 +3056,7 @@ var createPaymentInDb = async (outageReportId, customerId) => {
   });
   if (existingPayment)
     throw {
-      statusCode: httpStatus18.CONFLICT,
+      statusCode: httpStatus21.CONFLICT,
       name: "Conflict error",
       message: "You already paid for this outage report Wait for admin tech further step."
     };
@@ -2719,9 +3066,9 @@ var createPaymentInDb = async (outageReportId, customerId) => {
     total_amount: config_default.outage_priority_payment_fee,
     currency: "BDT",
     tran_id: transId,
-    success_url: `${config_default.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=success`,
-    fail_url: `${config_default.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=fail`,
-    cancel_url: `${config_default.app_url}/api/payments/confirm?rentalRequestId=${outageReportId}&tranId=${transId}&status=cancel`,
+    success_url: `${config_default.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=success`,
+    fail_url: `${config_default.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=fail`,
+    cancel_url: `${config_default.app_url}/api/v1/payment/confirm?outageReportId=${outageReportId}&tranId=${transId}&status=cancel`,
     cus_name: `${customer.name}`,
     cus_email: customer.email,
     cus_add1: "N/A",
@@ -2777,7 +3124,8 @@ var verifySslCommerzPayment = async (transId, status, val_id) => {
           transactionId: transId
         },
         data: {
-          status: PaymentStatus.COMPLETED
+          status: PaymentStatus.COMPLETED,
+          paidAt: /* @__PURE__ */ new Date()
         }
       });
       await tx.outage.update({
@@ -2966,21 +3314,21 @@ var plannedOutageValidation = {
 };
 
 // src/app/modules/planned-outage/planned-outage.controller.ts
-import httpStatus20 from "http-status";
+import httpStatus23 from "http-status";
 
 // src/app/modules/planned-outage/planned-outage.service.ts
-import httpStatus19 from "http-status";
+import httpStatus22 from "http-status";
 var createPlannedOutageInDb = async (payload) => {
   const { title, areaId, description, endTime, reason, startTime } = payload;
   if (startTime >= endTime) {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Start time must be before end time"
     );
   }
   if (startTime < /* @__PURE__ */ new Date()) {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Load shedding schedule cannot start in the past"
     );
   }
@@ -2994,14 +3342,11 @@ var createPlannedOutageInDb = async (payload) => {
     }
   });
   if (!area) {
-    throw new AppError(
-      httpStatus19.NOT_FOUND,
-      "Area not found"
-    );
+    throw new AppError(httpStatus22.NOT_FOUND, "Area not found");
   }
   if (area.status !== "ACTIVE") {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Cannot create load shedding schedule for an inactive area"
     );
   }
@@ -3022,7 +3367,7 @@ var createPlannedOutageInDb = async (payload) => {
   });
   if (plannedOutageConflict) {
     throw new AppError(
-      httpStatus19.CONFLICT,
+      httpStatus22.CONFLICT,
       "A Planned Outage schedule already exists for this area during the selected time"
     );
   }
@@ -3116,7 +3461,7 @@ var updatePlannedOutage = async (payload, planeedOutageId) => {
   });
   if (!existingSchedule) {
     throw new AppError(
-      httpStatus19.NOT_FOUND,
+      httpStatus22.NOT_FOUND,
       "Planned Outage schedule not found"
     );
   }
@@ -3124,13 +3469,13 @@ var updatePlannedOutage = async (payload, planeedOutageId) => {
   const finalEndTime = payload.endTime ?? existingSchedule.endTime;
   if (finalStartTime >= finalEndTime) {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Start time must be before end time"
     );
   }
   if (payload.startTime && finalStartTime < /* @__PURE__ */ new Date()) {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Load shedding schedule cannot start in the past"
     );
   }
@@ -3144,14 +3489,11 @@ var updatePlannedOutage = async (payload, planeedOutageId) => {
     }
   });
   if (!area) {
-    throw new AppError(
-      httpStatus19.NOT_FOUND,
-      "Area not found"
-    );
+    throw new AppError(httpStatus22.NOT_FOUND, "Area not found");
   }
   if (area.status !== "ACTIVE") {
     throw new AppError(
-      httpStatus19.BAD_REQUEST,
+      httpStatus22.BAD_REQUEST,
       "Cannot update schedule for an inactive area"
     );
   }
@@ -3174,7 +3516,7 @@ var updatePlannedOutage = async (payload, planeedOutageId) => {
   });
   if (conflictingSchedule) {
     throw new AppError(
-      httpStatus19.CONFLICT,
+      httpStatus22.CONFLICT,
       "Another Planned Outage schedule already exists during the selected time"
     );
   }
@@ -3211,7 +3553,7 @@ var createPlannedOutage = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await PlannedOutageService.createPlannedOutageInDb(payload);
   sendResponse(res, {
-    statusCode: httpStatus20.OK,
+    statusCode: httpStatus23.OK,
     success: true,
     message: "Planned Outage schedule created successfully",
     data: result
@@ -3220,7 +3562,7 @@ var createPlannedOutage = catchAsync(async (req, res) => {
 var getAllPlannedOutageSchdeule = catchAsync(async (req, res) => {
   const result = await PlannedOutageService.getAllPlannedOutage(req.query);
   sendResponse(res, {
-    statusCode: httpStatus20.OK,
+    statusCode: httpStatus23.OK,
     success: true,
     message: "All Planned Outage schedule Retrived successfully",
     data: result
@@ -3230,7 +3572,7 @@ var getPlannedOutageDetails = catchAsync(async (req, res) => {
   const plannedOutageId = req.params.plannedOutageId;
   const result = await PlannedOutageService.plannedOutageDetails(plannedOutageId);
   sendResponse(res, {
-    statusCode: httpStatus20.OK,
+    statusCode: httpStatus23.OK,
     success: true,
     message: " Planned Outage Details Retrived Successfully",
     data: result
@@ -3241,7 +3583,7 @@ var updatePlannedOutageSchedule = catchAsync(async (req, res) => {
   const payload = req.body;
   const result = await PlannedOutageService.updatePlannedOutage(payload, plannedOutageId);
   sendResponse(res, {
-    statusCode: httpStatus20.OK,
+    statusCode: httpStatus23.OK,
     success: true,
     message: " planned Outage Updated Successfully",
     data: result
@@ -3258,7 +3600,7 @@ var PlannedOutageController = {
 var router10 = Router10();
 router10.post("/", auth(Role.ADMIN), validateRequest(plannedOutageValidation.createPlannedOutageZodSchema), PlannedOutageController.createPlannedOutage);
 router10.get("/", PlannedOutageController.getAllPlannedOutageSchdeule);
-router10.get("/:plannedOutageId", auth(Role.CUSTOMER), PlannedOutageController.getAllPlannedOutageSchdeule);
+router10.get("/:plannedOutageId", auth(Role.CUSTOMER, Role.ADMIN), PlannedOutageController.getAllPlannedOutageSchdeule);
 router10.patch("/:plannedOutageId", auth(Role.ADMIN), validateRequest(plannedOutageValidation.updatePlannedOutageZodSchema), PlannedOutageController.getAllPlannedOutageSchdeule);
 var PlannedOutageRoutes = router10;
 
@@ -3266,10 +3608,10 @@ var PlannedOutageRoutes = router10;
 import { Router as Router11 } from "express";
 
 // src/app/modules/admin/admin.controller.ts
-import httpStatus22 from "http-status";
+import httpStatus25 from "http-status";
 
 // src/app/modules/admin/admin.service.ts
-import httpStatus21 from "http-status";
+import httpStatus24 from "http-status";
 var getAllUsersFromDb = async () => {
   const result = await prisma.user.findMany({
     omit: {
@@ -3295,19 +3637,19 @@ var updateUserStatus = async (userId, status) => {
   });
   if (!targetUser) {
     throw new AppError(
-      httpStatus21.NOT_FOUND,
+      httpStatus24.NOT_FOUND,
       "User not found"
     );
   }
   if (targetUser.role === Role.ADMIN) {
     throw new AppError(
-      httpStatus21.FORBIDDEN,
+      httpStatus24.FORBIDDEN,
       "Admin cannot change another admins status"
     );
   }
   if (targetUser.status === status) {
     throw new AppError(
-      httpStatus21.BAD_REQUEST,
+      httpStatus24.BAD_REQUEST,
       `User is already ${status}`
     );
   }
@@ -3407,18 +3749,18 @@ var AdminService = {
 var getAllUsers = catchAsync(async (req, res) => {
   const result = await AdminService.getAllUsersFromDb();
   sendResponse(res, {
-    statusCode: httpStatus22.OK,
+    statusCode: httpStatus25.OK,
     success: true,
     message: "All Users Data fetched successfully",
     data: result
   });
 });
 var updateUserStatus2 = catchAsync(async (req, res) => {
-  const status = req.body;
-  const targetUserId = req.user?.userId;
+  const status = req.body.status;
+  const targetUserId = req.params.userId;
   const result = await AdminService.updateUserStatus(targetUserId, status);
   sendResponse(res, {
-    statusCode: httpStatus22.OK,
+    statusCode: httpStatus25.OK,
     success: true,
     message: "User status updated successfully",
     data: result
@@ -3427,16 +3769,16 @@ var updateUserStatus2 = catchAsync(async (req, res) => {
 var getAllTechnicanUserData = catchAsync(async (req, res) => {
   const result = await AdminService.getAllTechnicanProfileFromDb();
   sendResponse(res, {
-    statusCode: httpStatus22.OK,
+    statusCode: httpStatus25.OK,
     success: true,
     message: "All Technician Users Data fetched successfully",
     data: result
   });
 });
 var getAllPaymentRecord2 = catchAsync(async (req, res) => {
-  const result = await AdminService.getAllTechnicanProfileFromDb();
+  const result = await AdminService.getAllPaymentRecord(req.query);
   sendResponse(res, {
-    statusCode: httpStatus22.OK,
+    statusCode: httpStatus25.OK,
     success: true,
     message: "All Payment record Data fetched successfully",
     data: result
@@ -3454,9 +3796,243 @@ var router11 = Router11();
 router11.get("/users", auth(Role.ADMIN), AdminController.getAllUsers);
 router11.patch("/users/:userId", auth(Role.ADMIN), AdminController.updateUserStatus);
 router11.get("/technician", auth(Role.ADMIN), AdminController.getAllTechnicanUserData);
-router11.get("/users", auth(Role.ADMIN));
-router11.get("/payment-record", auth(Role.ADMIN));
+router11.get("/payment-record", auth(Role.ADMIN), AdminController.getAllPaymentRecord);
 var AdminRoutes = router11;
+
+// src/app/modules/analytics/analytics.route.ts
+import { Router as Router12 } from "express";
+
+// src/app/modules/analytics/analytics.controller.ts
+import httpStatus26 from "http-status";
+
+// src/app/modules/analytics/analytics.service.ts
+var getCustomerAnalyticsReport = async (userId) => {
+  const totalReportedOutages = await prisma.outage.count({
+    where: {
+      userId,
+      isDeleted: false
+    }
+  });
+  const highPriorityOutages = await prisma.outage.count({
+    where: {
+      userId,
+      isDeleted: false,
+      priority: OutagePriority.HIGH
+    }
+  });
+  const restoredOutages = await prisma.outage.count({
+    where: {
+      userId,
+      isDeleted: false,
+      status: OutageStatus.RESTORED
+    }
+  });
+  const totalSpentResult = await prisma.payment.aggregate({
+    where: {
+      customerId: userId,
+      status: PaymentStatus.COMPLETED
+    },
+    _sum: {
+      amount: true
+    }
+  });
+  const totalSpent = totalSpentResult._sum.amount?.toNumber() || 0;
+  const outageStatus = await prisma.outage.groupBy({
+    by: ["status"],
+    where: {
+      userId,
+      isDeleted: false
+    },
+    _count: {
+      _all: true
+    }
+  });
+  return {
+    totalReportedOutages,
+    highPriorityOutages,
+    restoredOutages,
+    totalSpent,
+    outageStatus
+  };
+};
+var getTechnicianAnalyticsReport = async (userId) => {
+  const totalAssignedOutages = await prisma.outage.count({
+    where: {
+      technicianId: userId,
+      isDeleted: false
+    }
+  });
+  const activeOutages = await prisma.outage.count({
+    where: {
+      technicianId: userId,
+      isDeleted: false,
+      status: {
+        in: [OutageStatus.ASSIGNED, OutageStatus.IN_PROGRESS]
+      }
+    }
+  });
+  const restoredOutages = await prisma.outage.count({
+    where: {
+      technicianId: userId,
+      isDeleted: false,
+      status: OutageStatus.RESTORED
+    }
+  });
+  const highPriorityOutages = await prisma.outage.count({
+    where: {
+      technicianId: userId,
+      isDeleted: false,
+      priority: OutagePriority.HIGH
+    }
+  });
+  const outageStatus = await prisma.outage.groupBy({
+    by: ["status"],
+    where: {
+      technicianId: userId,
+      isDeleted: false
+    },
+    _count: {
+      _all: true
+    }
+  });
+  return {
+    totalAssignedOutages,
+    activeOutages,
+    restoredOutages,
+    highPriorityOutages,
+    outageStatus
+  };
+};
+var getAdminAnalyticsReport = async () => {
+  const totalUsers = await prisma.user.count();
+  const totalTechnicians = await prisma.user.count({
+    where: {
+      role: Role.TECHNICIAN
+    }
+  });
+  const totalReportedOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false
+    }
+  });
+  const activeOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false,
+      status: {
+        in: [
+          OutageStatus.REPORTED,
+          OutageStatus.ACKNOWLEDGED,
+          OutageStatus.ASSIGNED,
+          OutageStatus.IN_PROGRESS
+        ]
+      }
+    }
+  });
+  const restoredOutages = await prisma.outage.count({
+    where: {
+      isDeleted: false,
+      status: OutageStatus.RESTORED
+    }
+  });
+  const totalRevenueResult = await prisma.payment.aggregate({
+    where: {
+      status: PaymentStatus.COMPLETED
+    },
+    _sum: {
+      amount: true
+    }
+  });
+  const totalRevenue = totalRevenueResult._sum.amount?.toNumber() || 0;
+  const totalLoadSheddingSchedules = await prisma.loadShedding.count();
+  const totalPlannedOutages = await prisma.plannedOutage.count();
+  const outageStatus = await prisma.outage.groupBy({
+    by: ["status"],
+    where: {
+      isDeleted: false
+    },
+    _count: {
+      _all: true
+    }
+  });
+  const userStatus = await prisma.user.groupBy({
+    by: ["status"],
+    _count: {
+      _all: true
+    }
+  });
+  return {
+    totalUsers,
+    totalTechnicians,
+    totalReportedOutages,
+    activeOutages,
+    restoredOutages,
+    totalRevenue,
+    totalLoadSheddingSchedules,
+    totalPlannedOutages,
+    outageStatus,
+    userStatus
+  };
+};
+var AnalyticsServices = {
+  getCustomerAnalyticsReport,
+  getTechnicianAnalyticsReport,
+  getAdminAnalyticsReport
+};
+
+// src/app/modules/analytics/analytics.controller.ts
+var getCustomerAnalytics = catchAsync(async (req, res) => {
+  const userId = req.user?.userId;
+  const result = await AnalyticsServices.getCustomerAnalyticsReport(userId);
+  sendResponse(res, {
+    statusCode: httpStatus26.OK,
+    success: true,
+    message: "Customer Analytics Retrieved Successfully",
+    data: result
+  });
+});
+var getTechnicianAnalytics = catchAsync(async (req, res) => {
+  const userId = req.user?.userId;
+  const result = await AnalyticsServices.getTechnicianAnalyticsReport(userId);
+  sendResponse(res, {
+    statusCode: httpStatus26.OK,
+    success: true,
+    message: "Technician Analytics Retrieved Successfully",
+    data: result
+  });
+});
+var getAdminAnalytics = catchAsync(async (req, res) => {
+  const result = await AnalyticsServices.getAdminAnalyticsReport();
+  sendResponse(res, {
+    statusCode: httpStatus26.OK,
+    success: true,
+    message: "Admin Analytics Retrieved Successfully",
+    data: result
+  });
+});
+var AnalyticsController = {
+  getCustomerAnalytics,
+  getTechnicianAnalytics,
+  getAdminAnalytics
+};
+
+// src/app/modules/analytics/analytics.route.ts
+var router12 = Router12();
+router12.get(
+  "/customer-analytics",
+  auth(Role.CUSTOMER),
+  AnalyticsController.getCustomerAnalytics
+);
+router12.get(
+  "/technician-analytics",
+  auth(Role.TECHNICIAN),
+  AnalyticsController.getTechnicianAnalytics
+);
+router12.get(
+  "/admin-analytics",
+  auth(Role.ADMIN),
+  AnalyticsController.getAdminAnalytics
+);
+var AnalyticsRoutes = router12;
 
 // src/app.ts
 var app = express();
@@ -3469,9 +4045,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.get("/", (req, res) => {
-  res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
-});
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/technician", TechnicianRoutes);
 app.use("/api/v1/zone", ZoneRoutes);
@@ -3483,6 +4056,10 @@ app.use("/api/v1/load-shedding", LoadSheddingRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/planned-outage", PlannedOutageRoutes);
 app.use("/api/v1/admin", AdminRoutes);
+app.use("/api/v1/analytics", AnalyticsRoutes);
+app.get("/", (req, res) => {
+  res.send("Next level assignment 6 and Load Shedding & Power Management server is running");
+});
 app.use(globalErrorHandler);
 app.use(notFound);
 var app_default = app;
@@ -3526,6 +4103,90 @@ var seedTesterAdmin = async () => {
     });
   }
 };
+var seedTesterTechnician = async () => {
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const existingTechnician = await tx.user.findUnique({
+        where: {
+          email: config_default.tester_technician_email
+        }
+      });
+      if (existingTechnician) {
+        console.log("Tester technician already exists with this email");
+        return null;
+      }
+      const hashedPassword = await bcrypt2.hash(
+        config_default.tester_technician_password,
+        Number(config_default.bcrypt_salt_rounds)
+      );
+      const technician = await tx.user.create({
+        data: {
+          name: config_default.tester_technician_name,
+          email: config_default.tester_technician_email,
+          password: hashedPassword,
+          role: Role.TECHNICIAN,
+          emailVerified: true
+        }
+      });
+      const technicianProfile = await tx.technicianProfile.create({
+        data: {
+          userId: technician.id,
+          expertise: ["Electrical Maintenance", "Power Distribution"],
+          experience: 1,
+          availability: TechnicianStatus.AVAILABLE,
+          bio: "Tester technician profile",
+          technicianvProfileVerificationStatus: TechnicianProfileStatus.APPROVED
+        }
+      });
+      return {
+        technician,
+        technicianProfile
+      };
+    });
+    if (!result) return;
+    console.log("Tester technician account created:", result.technician);
+    console.log("Tester technician profile created:", result.technicianProfile);
+  } catch (error) {
+    console.log(error, "Error while tester technician seeding");
+  }
+};
+var seedTesterCustomer = async () => {
+  try {
+    const isTesterCustomer = await prisma.user.findUnique({
+      where: {
+        email: config_default.tester_customer_email
+      }
+    });
+    if (isTesterCustomer) {
+      console.log("Tester customer already exists with this email");
+      return;
+    }
+    const name = config_default.tester_customer_name;
+    const email = config_default.tester_customer_email;
+    const password = config_default.tester_customer_password;
+    const hashedPassword = await bcrypt2.hash(
+      password,
+      Number(config_default.bcrypt_salt_rounds)
+    );
+    const testerCustomer = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: Role.CUSTOMER,
+        emailVerified: true
+      }
+    });
+    console.log(testerCustomer, "Tester customer is created");
+  } catch (error) {
+    console.log(error, "Error while tester customer seeding");
+    await prisma.user.delete({
+      where: {
+        email: config_default.tester_customer_email
+      }
+    });
+  }
+};
 
 // src/server.ts
 var port = config_default.port;
@@ -3537,6 +4198,8 @@ var main = async () => {
     await redisClient.connect();
     console.log("redis cnnected sucesfull");
     await seedTesterAdmin();
+    await seedTesterTechnician();
+    await seedTesterCustomer();
     await transporter.verify();
     console.log("NOdema iler connected");
     app_default.listen(port, () => {

@@ -55,7 +55,7 @@ const verifyUserEmail = catchAsync(async (req: Request, res: Response) => {
 //login user
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
-  console.log("LOGIN user LOGIN hited controller", req.body);
+
 
   const payload = req.body;
 

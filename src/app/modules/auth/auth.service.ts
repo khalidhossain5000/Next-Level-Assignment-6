@@ -20,7 +20,7 @@ import type { TokenPayload } from "google-auth-library";
 import { googleClient } from "../../lib/googleAuth";
 import type { UploadApiResponse } from "cloudinary";
 import { cloudinary } from "../../lib/cloudinary";
-import { Prisma } from "../../../generated/prisma/client";
+import type { Prisma } from "../../../generated/prisma/client";
 
 
 
@@ -239,7 +239,6 @@ const verifyOtpAndCreateUser = async (payload: IVerifyEmailPayload) => {
 const loginUser = async (payload: ILoginUserPayload) => {
 	const { password } = payload;
 	const email = payload.email.trim().toLowerCase();
-console.log(payload,'in login user')
 	const user = await prisma.user.findUnique({
 		where: {
 			email

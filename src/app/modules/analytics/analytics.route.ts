@@ -7,7 +7,7 @@ import { AnalyticsController } from "./analytics.controller";
 const router = Router();
 
 router.get(
-    "/patient-analytics",
+    "/customer-analytics",
     auth(Role.CUSTOMER),
     AnalyticsController.getCustomerAnalytics,
 );

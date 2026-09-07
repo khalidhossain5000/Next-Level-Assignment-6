@@ -1,13 +1,8 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { Prisma } from "../../generated/prisma/client";
 import config from "../config";
 import { AppError } from "../utils/AppError";
-
-
-
-//app error is added over here
 
 export const globalErrorHandler = async (
 	err: any,
@@ -59,14 +54,15 @@ export const globalErrorHandler = async (
 		errorMessage = err.message;
 	}
 
-	console.log()
 	res.status(statusCode).json({
 		success: false,
 		statusCode: statusCode || httpStatus.INTERNAL_SERVER_ERROR,
 		name:
-			errorName,
+			config.node_env === "development" ? errorName : "Internal Server Error",
 		message:
-			errorMessage,
+			config.node_env === "development"
+				? errorMessage
+				: "Internal Server Error",
 		error: config.node_env === "development" ? err : undefined,
 		stack: config.node_env === "development" ? err.stack : undefined,
 	});
