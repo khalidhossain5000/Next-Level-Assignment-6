@@ -1,11 +1,13 @@
-import { Prisma } from "../../../generated/prisma/client";
-import { LoadSheddingStatus } from "../../../generated/prisma/enums";
-import { LoadSheddingWhereInput } from "../../../generated/prisma/models";
-import { IQuery } from "../../interfaces/interface";
+import type { Prisma } from "../../../generated/prisma/client";
+import type { LoadSheddingStatus } from "../../../generated/prisma/enums";
+import type { LoadSheddingWhereInput } from "../../../generated/prisma/models";
+import type { IQuery } from "../../interfaces/interface";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { ILoadSheddingPayload, ILoadSheddingUpdatePayload } from "./load-shedding.interface"
+import type { ILoadSheddingPayload, ILoadSheddingUpdatePayload } from "./load-shedding.interface"
 import httpStatus from "http-status"
+
+
 const createLoadSheddingScheduleInDb = async (
     payload: ILoadSheddingPayload
 ) => {

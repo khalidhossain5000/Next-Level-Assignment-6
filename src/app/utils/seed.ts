@@ -457,3 +457,10 @@ export const seedAreas = async () => {
     console.log(error, "Error while seeding areas");
   }
 };
+
+
+
+//for admin load shedding schedule and planned outage default seeding
+
+//seeding load shedding schedule
+
