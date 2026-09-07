@@ -9,13 +9,13 @@ const router = Router();
 router.get(
     "/patient-analytics",
     auth(Role.CUSTOMER),
-    AnalyticsController.getPatientAnalytics,
+    AnalyticsController.getCustomerAnalytics,
 );
 
 router.get(
     "/technician-analytics",
     auth(Role.TECHNICIAN),
-    AnalyticsController.getDoctorAnalytics,
+    AnalyticsController.getTechnicianAnalytics,
 );
 
 router.get(
