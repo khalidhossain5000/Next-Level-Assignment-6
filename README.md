@@ -15,6 +15,11 @@ Power Pulse helps an electricity service organization coordinate its day-to-day 
 
 The application exposes a REST API under `/api/v1`.
 
+## Project Links
+
+- **Repository:** [github.com/khalidhossain5000/Next-Level-Assignment-6](https://github.com/khalidhossain5000/Next-Level-Assignment-6)
+- **Live API:** [next-level-assignment-6.vercel.app](https://next-level-assignment-6.vercel.app/)
+
 ## Core Features
 
 ### Authentication and user management
@@ -102,7 +107,7 @@ Install the following before starting the project:
 1. Clone the repository and enter the project directory.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/khalidhossain5000/Next-Level-Assignment-6.git
 cd Next-Level-Assignment-6
 ```
 
@@ -243,7 +248,13 @@ The repository currently does not define an automated test suite. `npm test` is 
 
 The complete route list, access rules, analytics response fields, and endpoint count are available in [API_DOCUMENTATION.md](API_DOCUMENTATION.md).
 
-Base URL:
+### Live API base URL
+
+```text
+https://next-level-assignment-6.vercel.app/api/v1
+```
+
+### Local API base URL
 
 ```text
 http://localhost:5000/api/v1
