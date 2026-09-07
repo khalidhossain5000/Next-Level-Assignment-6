@@ -3,7 +3,7 @@
 ## Overview
 
 - Base path: `/api/v1`
-- Total route endpoints: **49**
+- Total route endpoints: **50**
 - Authentication: protected endpoints accept an access token from the `accessToken` cookie or an `Authorization` header.
 - Access labels: `Public`, `Customer only`, `Technician only`, `Admin only`, or the listed role combination.
 
