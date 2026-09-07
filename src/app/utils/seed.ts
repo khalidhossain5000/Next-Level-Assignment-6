@@ -323,3 +323,69 @@ export const seedSubstations = async () => {
 
 //seeding feeder
 
+export const seedFeeders = async () => {
+  try {
+    const feeders = [
+      {
+        name: "Chattogram Central Feeder",
+        code: "FD-CTG-001",
+        voltageLevel: "933KV",
+        substationId: "1df68ca6-a189-475e-b10e-ef9e6dbd03b0",
+      },
+      {
+        name: "Dhaka Central Feeder",
+        code: "FD-DHK-001",
+        voltageLevel: "303KV",
+        substationId: "426a4463-05ff-469d-8af9-433a9f61e24c",
+      },
+      {
+        name: "Khulna Central Feeder",
+        code: "FD-KHL-001",
+        voltageLevel: "363KV",
+        substationId: "702604ca-c79d-48a1-954c-a588d5e18d3e",
+      },
+      {
+        name: "Rangpur Central Feeder",
+        code: "FD-RNG-001",
+        voltageLevel: "1233KV",
+        substationId: "8960e3eb-728b-4a64-bdae-3ec45b4657ee",
+      },
+      {
+        name: "Sylhet Central Feeder",
+        code: "FD-SYL-001",
+        voltageLevel: "3903KV",
+        substationId: "f1ef8192-c792-40be-90c3-c4292521ccf4",
+      },
+    ];
+
+    for (const feeder of feeders) {
+      const existingFeeder = await prisma.feeder.findUnique({
+        where: {
+          code: feeder.code,
+        },
+      });
+
+      if (existingFeeder) {
+        console.log(
+          `Feeder already exists with code: ${feeder.code}`,
+        );
+        continue;
+      }
+
+      const createdFeeder = await prisma.feeder.create({
+        data: {
+          name: feeder.name,
+          code: feeder.code,
+          voltageLevel: feeder.voltageLevel,
+          substationId: feeder.substationId,
+        },
+      });
+
+      console.log(
+        `Feeder created successfully: ${createdFeeder.name}`,
+      );
+    }
+  } catch (error) {
+    console.log(error, "Error while seeding feeders");
+  }
+};

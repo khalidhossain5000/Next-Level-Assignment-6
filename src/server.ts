@@ -3,7 +3,7 @@ import config from "./app/config";
 import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
-import { seedSubstations, seedTesterAdmin, seedTesterCustomer, seedTesterTechnician, seedZones } from "./app/utils/seed";
+import { seedFeeders, seedSubstations, seedTesterAdmin, seedTesterCustomer, seedTesterTechnician, seedZones } from "./app/utils/seed";
 
 
 
@@ -25,6 +25,7 @@ const main = async () => {
 		//seeding other data
 		await seedZones()
 		await seedSubstations()
+		await seedFeeders()
 
 
 		//all seeding ends here
